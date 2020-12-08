@@ -10,6 +10,7 @@ Rake::TestTask.new(:test) do |t|
   t.test_files = FileList['test/**/*_test.rb', 'test/**/*_spec.rb']
 end
 
+desc 'Run RuboCop'
 task :rubocop do
   RuboCop::RakeTask.new
 end

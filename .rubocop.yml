@@ -1,0 +1,11 @@
+require:
+  - rubocop-minitest
+  - rubocop-rake
+
+AllCops:
+  NewCops: enable
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - test/**/*
