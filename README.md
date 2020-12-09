@@ -1,8 +1,10 @@
 # HealthCards
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/health_cards`. To experiment with that code, run `bin/console` for an interactive prompt.
+Creating verifiable credentials with FHIR using [SMART Health Cards](https://healthwallet.cards/)
 
-TODO: Delete this and the text above, and describe your gem
+## Developing
+
+Use `bin/setup` to try things out on the command line.
 
 ## Installation
 
