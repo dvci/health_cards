@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require 'date'
+require_relative 'digital_signature'
 
 module HealthCards
   # Generates a Verifiable Credential which can be issued
+  # https://www.w3.org/TR/vc-data-model/
   class VerifiableCredential
     VC_CONTEXT = ['https://www.w3.org/2018/credentials/v1'].freeze
 
@@ -15,6 +17,12 @@ module HealthCards
     ].freeze
 
     FHIR_VERSION = '4.0.1'
+
+    ENCRYPTION_KEY_TYPE = 'JsonWebKey2020'
+
+    VERIFICATION_KEY_TYPE = 'EcdsaSecp256k1VerificationKey2019'
+
+    include DigitalSignature
 
     attr_reader :fhir_bundle, :subject_id
 
@@ -29,7 +37,8 @@ module HealthCards
         type: VC_TYPE,
         issuer: '<<did:ion identifier for lab>>',
         issuanceDate: DateTime.now.to_s,
-        credentialSubject: credential_subject
+        credentialSubject: credential_subject,
+        proof: proof(credential_subject)
       }
     end
 
