@@ -9,6 +9,9 @@ GEM
     ast (2.4.1)
     json-canonicalization (0.2.0)
     minitest (5.14.2)
+    multicodecs (0.2.1)
+    multihashes (0.2.0)
+      multicodecs (>= 0.2.0, < 1)
     parallel (1.20.1)
     parser (2.7.2.0)
       ast (~> 2.4.1)
@@ -16,7 +19,7 @@ GEM
     rake (13.0.1)
     regexp_parser (2.0.0)
     rexml (3.2.4)
-    rubocop (1.5.2)
+    rubocop (1.6.1)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
@@ -36,15 +39,17 @@ GEM
 
 PLATFORMS
   ruby
+  x86_64-darwin-18
 
 DEPENDENCIES
   health_cards!
   json-canonicalization (~> 0.2.0)
   minitest (~> 5.14)
+  multihashes
   rake (~> 13.0)
   rubocop (~> 1.5)
   rubocop-minitest (~> 0.10.1)
   rubocop-rake (~> 0.5.1)
 
 BUNDLED WITH
-   2.1.4
+   2.2.2
