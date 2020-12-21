@@ -3,14 +3,12 @@
 require 'health_cards/version'
 require 'health_cards/verifiable_credential'
 require 'json/canonicalization'
-require_relative 'health_cards/ext/canonicalization'
+require_relative 'health_cards/core_ext/canonicalization'
 
-Hash.prepend HealthCards::Canonicalization
+# Add support for symbol keys
+Hash.prepend HealthCards::CoreExt::Canonicalization
 
 module HealthCards
   class Error < StandardError; end
   # Your code goes here...
 end
-
-data = {a: 'a', b: 'b'}
-puts data.to_json_c14n
