@@ -15,3 +15,4 @@ gem 'rubocop-rake', '~> 0.5.1'
 
 gem "json-canonicalization", "~> 0.2.0"
 gem 'multihashes'
+gem 'jose'
