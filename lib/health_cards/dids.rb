@@ -2,9 +2,15 @@
 
 require 'multihashes'
 require 'digest'
-require 'json-canonicalization'
+require 'base64'
 
 module Dids
+  # https://tools.ietf.org/html/rfc7515#section-2
+  # See Base64url Encoding
+  def encode(data)
+    Base64.urlsafe_encode64(data.to_s, padding: false)
+  end
+
   # https://identity.foundation/sidetree/spec/#hashing-process
   def hash(data)
     digest = Digest::SHA256.digest data
@@ -23,8 +29,8 @@ module Dids
 
   # https://identity.foundation/sidetree/spec/#create
   def generate_did(encryption_public_jwk, signing_public_jwk, update_public_jwk, recovery_public_jwk)
-    recovery_commitment = reveal_commitment(recoveryPublicJwk)
-    update_commitment = reveal_commitment(updatePublicJwk)
+    recovery_commitment = reveal_commitment(recovery_public_jwk)
+    update_commitment = reveal_commitment(update_public_jwk)
     patches = [
       {
         action: 'add-public-keys',
@@ -56,10 +62,10 @@ module Dids
     suffix_data_canonical = suffix_data.to_json_c14n
     suffix = encode hash(suffix_data_canonical)
     suffix_data_encoded = encode(suffix_data_canonical)
-    puts 'did:ion:#{suffix}:#{suffix_data_encoded}'
+    puts "did:ion:#{suffix}:#{suffix_data_encoded}"
     {
-      did_short: 'did:ion:#{suffix}',
-      did_long: 'did:ion:#{suffix}:#{suffix_data_encoded}'
+      didShort: "did:ion:#{suffix}",
+      didLong: "did:ion:#{suffix}:#{suffix_data_encoded}"
     }
   end
 end
