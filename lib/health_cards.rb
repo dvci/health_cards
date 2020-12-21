@@ -2,6 +2,7 @@
 
 require 'health_cards/version'
 require 'health_cards/verifiable_credential'
+require 'json/canonicalization'
 
 module HealthCards
   class Error < StandardError; end
