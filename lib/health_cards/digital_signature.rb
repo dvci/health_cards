@@ -48,9 +48,7 @@ module DigitalSignature
       alg: 'ES256',
       typ: 'application/json' # https://github.com/w3c/vc-data-model/issues/421
     }.to_json
-    puts header
     header_payload = [encode(header), encode(payload.to_json)].join('.')
-    puts header_payload
     digest = Digest::SHA2.hexdigest header_payload
     signature = encode sign(digest)
     [header_payload, signature].join('.')
