@@ -26,16 +26,17 @@ module DIDSIOP(state)
             @kid = state.did + '#signing-key-1'
         }
         @responseUrl = state.config.responseMode == 'formpost'
-        @siopRequestPayload = VerifierState["siopRequest"]["siopRequestPayload"] = (
-            state = siopState,
+        @siopRequestPayload = VerifierState["siopRequest"]["siopRequestPayload"] = [
+            {
+            state= siopState,
             'iss': state.did,
             'response_type': 'id_token',
             'client_id': responseUrl,
             'claims': state.config.claimsRequired.length == 0? undefined : {
-                'id_token': state.config.claimsRequired.reduce((acc, next) => ({
+                'id_token': state.config.claimsRequired.reduce((acc, next) => [{
                     ...acc,
                     [next]: { 'essential': true }
-                }), {})
+                }), {}]
             },
             'scope': 'did_authn',
             'response_mode': state.config.responseMode,
@@ -47,18 +48,19 @@ module DIDSIOP(state)
                 'id_token_signed_response_alg': 'ES256K',
                 'client_uri': serverBase
             }
-        )
+        }
+        ]
         @siopRequestPayloadSigned = await state.sk.sign(siopRequestHeader, siopRequestPayload)
-        @siopRequestCreated = await state.config.postRequest(`${serverBase}/siop/begin`,
+        @siopRequestCreated = await state.config.postRequest[`${serverBase}/siop/begin`, {
             siopRequest: siopRequestPayloadSigned
-        )
-        @siopRequestQrCodeUrl = 'openid://?' + qs.encode(
+        }]
+        @siopRequestQrCodeUrl = 'openid://?' + qs.encode[{
             response_type: 'id_token',
             scope: 'did_authn',
             request_uri: serverBase + '/siop/' + siopRequestPayload.state,
             client_id: siopRequestPayload.client_id
-        )
-        return (
+        }]
+        return [{
             type: 'siop-request-created',
             siopRequest: {
                 siopRequestPayload,
@@ -66,7 +68,7 @@ module DIDSIOP(state)
                 siopRequestQrCodeUrl,
                 siopResponsePollingUrl: siopRequestCreated.responsePollingUrl
             }
-        ) 
+        }]
     end 
 
     def parseSIOPResponse(idTokenReceived, state)  
@@ -74,7 +76,7 @@ module DIDSIOP(state)
         @idTokenVerified = await verifyJws(idTokenRetrievedDecrypted, state.config.keyGenerators)
         if idTokenVerified
             @idToken = idTokenVerified.payload
-            return (
+            return ({
                 type: 'siop-response-received',
                 siopResponse: {
                     idTokenEncrypted: idTokenRetrieved,
@@ -83,6 +85,6 @@ module DIDSIOP(state)
                     idTokenVcs: (await Promise.all((idTokenVerified.payload?.vp?.verifiableCredential || []).map(vc => verifyJws(vc, state.config.keyGenerators))))
                         .map((jws: VerificationResult) => jws.valid && jws.payload)
                 }
-            )
+            })
     end
 end

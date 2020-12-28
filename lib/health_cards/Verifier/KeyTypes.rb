@@ -7,21 +7,21 @@ VerificationResult = {
     payload = ""
 } | {
     valid = False
-};
-EncryptionKey = {
-    encrypt: (header: Header, payload: string) => Promise<EncryptionResult>;
-    decrypt: (jwe: string) => Promise<string>;
-    publicJwk: JsonWebKey;
-    privateJwk: JsonWebKey;
 }
-export interface SigningKey {
-    sign: (header: Header, payload: Payload) => Promise<SignatureResult>;
-    verify: (jws: string) => Promise<VerificationResult>;
-    publicJwk: JsonWebKey;
-    privateJwk: JsonWebKey;
+def EncryptionKey = {
+    encrypt: (header: Header, payload: string) => Promise<EncryptionResult>
+    decrypt: (jwe: string) => Promise<string>
+    publicJwk: JsonWebKey
+    privateJwk: JsonWebKey
 }
+def SigningKey [{
+    sign: (header: Header, payload: Payload) => Promise<SignatureResult>
+    verify: (jws: string) => Promise<VerificationResult>
+    publicJwk: JsonWebKey
+    privateJwk: JsonWebKey
+}]
 
 export interface KeyGenerators {
-    generateSigningKey: (inputPublic?: JsonWebKey, inputPrivate?: JsonWebKey) => Promise<SigningKey>;
-    generateEncryptionKey: (inputPublic?: JsonWebKey, inputPrivate?: JsonWebKey) => Promise<EncryptionKey>;
+    generateSigningKey: (inputPublic?: JsonWebKey, inputPrivate?: JsonWebKey) => Promise<SigningKey>
+    generateEncryptionKey: (inputPublic?: JsonWebKey, inputPrivate?: JsonWebKey) => Promise<EncryptionKey>
 }
