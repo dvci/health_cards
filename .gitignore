@@ -7,6 +7,10 @@
 /spec/reports/
 /tmp/
 
+## IDE Specific
+# JetBrains IDE files:
 .idea
 
+## Other
+# Intended to be used as a library or gem that could run in multiple environments
 .ruby-version
