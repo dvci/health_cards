@@ -9,15 +9,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ruby-version: [ 2.7.2, 3.0.0 ]
+
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Ruby
+      - name: Set up Ruby ${{ matrix.ruby-version }}
         # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
         # change this to (see https://github.com/ruby/setup-ruby#versioning):
         # uses: ruby/setup-ruby@v1
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
       - name: Install dependencies
         run: bundle install
