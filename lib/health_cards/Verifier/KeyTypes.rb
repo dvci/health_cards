@@ -14,14 +14,14 @@ def EncryptionKey = {
     publicJwk: JsonWebKey
     privateJwk: JsonWebKey
 }
-def SigningKey [{
+def SigningKey = [{
     sign: (header: Header, payload: Payload) => Promise<SignatureResult>
     verify: (jws: string) => Promise<VerificationResult>
     publicJwk: JsonWebKey
     privateJwk: JsonWebKey
 }]
 
-export interface KeyGenerators {
+def KeyGenerators = {
     generateSigningKey: (inputPublic?: JsonWebKey, inputPrivate?: JsonWebKey) => Promise<SigningKey>
     generateEncryptionKey: (inputPublic?: JsonWebKey, inputPrivate?: JsonWebKey) => Promise<EncryptionKey>
 }
