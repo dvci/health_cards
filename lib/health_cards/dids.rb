@@ -34,7 +34,7 @@ module Dids
     patches = [
       {
         action: 'add-public-keys',
-        public_keys: [
+        publicKeys: [
           {
             id: 'signing-key-1',
             purpose: ['general', 'auth'],
@@ -61,11 +61,21 @@ module Dids
     }
     suffix_data_canonical = suffix_data.to_json_c14n
     suffix = encode hash(suffix_data_canonical)
-    suffix_data_encoded = encode(suffix_data_canonical)
-    puts "did:ion:#{suffix}:#{suffix_data_encoded}"
+    long_payload = {
+      delta: delta,
+      suffixData: suffix_data
+    }
+    long_payload_encoded = encode long_payload.to_json_c14n
+    puts "did:ion:#{suffix}:#{long_payload_encoded}"
     {
       didShort: "did:ion:#{suffix}",
-      didLong: "did:ion:#{suffix}:#{suffix_data_encoded}"
+      didLong: "did:ion:#{suffix}:#{long_payload_encoded}"
     }
+  end
+
+  def resolve_did_long(did_long)
+    # did format: did:ion:<did-suffix>:<long-form-encoded-data>
+    encoded_payload = didLong.split(':')[-1]
+    JSON.parse(Base64.urlsafe_decode64(encoded_payload))
   end
 end
