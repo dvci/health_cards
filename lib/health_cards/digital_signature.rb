@@ -15,7 +15,7 @@ module DigitalSignature
 
   # https://stackoverflow.com/questions/42070180/export-public-key-to-base64-in-ruby
   def public_key
-    Base64.urlsafe_encode64(key.public_key.to_bn.to_s(2), padding: false)
+    key.public_key.to_bn.to_s(16).downcase
   end
 
   def digest
@@ -23,11 +23,16 @@ module DigitalSignature
   end
 
   def sign(data = string)
-    key.sign(digest, data)
+    key.dsa_sign_asn1(data)
   end
 
-  def verify(signature, data)
-    key.verify(digest, signature, data)
+  def verify(pub_key_hex, signature, data)
+    group = OpenSSL::PKey::EC::Group.new('secp256k1')
+    key_group = OpenSSL::PKey::EC.new(group)
+    public_key_bn = OpenSSL::BN.new(pub_key_hex, 16)
+    pub_key = OpenSSL::PKey::EC::Point.new(group, public_key_bn)
+    key_group.public_key = pub_key
+    key_group.dsa_verify_asn1(data, decode(signature))
   end
 
   # https://w3c-ccg.github.io/ld-proofs/#linked-data-proof-overview
@@ -58,5 +63,9 @@ module DigitalSignature
   # See Base64url Encoding
   def encode(data)
     Base64.urlsafe_encode64(data.to_s, padding: false)
+  end
+
+  def decode(data)
+    Base64.urlsafe_decode64(data)
   end
 end
