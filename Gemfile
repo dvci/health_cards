@@ -10,5 +10,6 @@ gem 'rake', '~> 13.0'
 
 gem 'rubocop', '~> 1.5'
 gem 'rubocop-minitest', '~> 0.10.1', require: false
+gem 'sinatra', '~> 1.4', '>= 1.4.7'
 
 gem 'rubocop-rake', '~> 0.5.1'
