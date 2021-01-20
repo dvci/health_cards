@@ -44,6 +44,7 @@ GEM
 
 PLATFORMS
   x86_64-darwin-18
+  x86_64-darwin-19
 
 DEPENDENCIES
   health_cards!
@@ -57,4 +58,4 @@ DEPENDENCIES
   rubocop-rake (~> 0.5.1)
 
 BUNDLED WITH
-   2.2.2
+   2.2.3

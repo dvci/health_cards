@@ -2,6 +2,8 @@
 
 require 'health_cards/version'
 require 'health_cards/verifiable_credential'
+require 'health_cards/dids'
+require 'health_cards/keys'
 require 'json/canonicalization'
 require_relative 'health_cards/core_ext/canonicalization'
 

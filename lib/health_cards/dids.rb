@@ -4,6 +4,7 @@ require 'multihashes'
 require 'digest'
 require 'base64'
 
+# Methods that generate and resolve DIDs
 module Dids
   # https://tools.ietf.org/html/rfc7515#section-2
   # See Base64url Encoding
@@ -12,7 +13,7 @@ module Dids
   end
 
   # https://identity.foundation/sidetree/spec/#hashing-process
-  def hash(data)
+  def sidetree_hash(data)
     digest = Digest::SHA256.digest data
     Multihashes.encode(digest, 'sha2-256')
   end
@@ -23,8 +24,8 @@ module Dids
   # hash resulting hash value again
   def reveal_commitment(jwk)
     jwk_canonicalized = jwk.to_json_c14n
-    first_hash = encode hash(jwk_canonicalized)
-    encode hash(first_hash)
+    first_hash = encode sidetree_hash(jwk_canonicalized)
+    encode sidetree_hash(first_hash)
   end
 
   # https://identity.foundation/sidetree/spec/#create
@@ -37,13 +38,13 @@ module Dids
         publicKeys: [
           {
             id: 'signing-key-1',
-            purpose: ['general', 'auth'],
+            purpose: %w[general auth],
             type: 'EcdsaSecp256k1VerificationKey2019',
             jwk: signing_public_jwk
           },
           {
             id: 'encryption-key-1',
-            purpose: ['general', 'auth'],
+            purpose: %w[general auth],
             type: 'JsonWebKey2020',
             jwk: encryption_public_jwk
           }
@@ -56,17 +57,16 @@ module Dids
     }
     delta_cononical = delta.to_json_c14n
     suffix_data = {
-      deltaHash: encode(hash(delta_cononical)),
+      deltaHash: encode(sidetree_hash(delta_cononical)),
       recoveryCommitment: recovery_commitment
     }
     suffix_data_canonical = suffix_data.to_json_c14n
-    suffix = encode hash(suffix_data_canonical)
+    suffix = encode sidetree_hash(suffix_data_canonical)
     long_payload = {
       delta: delta,
       suffixData: suffix_data
     }
     long_payload_encoded = encode long_payload.to_json_c14n
-    puts "did:ion:#{suffix}:#{long_payload_encoded}"
     {
       didShort: "did:ion:#{suffix}",
       didLong: "did:ion:#{suffix}:#{long_payload_encoded}"
@@ -75,7 +75,7 @@ module Dids
 
   def resolve_did_long(did_long)
     # did format: did:ion:<did-suffix>:<long-form-encoded-data>
-    encoded_payload = didLong.split(':')[-1]
+    encoded_payload = did_long.split(':')[-1]
     JSON.parse(Base64.urlsafe_decode64(encoded_payload))
   end
 end

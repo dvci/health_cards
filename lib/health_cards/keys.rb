@@ -3,8 +3,9 @@
 require 'openssl'
 require 'jose'
 
+# Methods to generate signing/encryption keys
 module Keys
-  def generate_key()
+  def generate_key
     key = OpenSSL::PKey::EC.generate('prime256v1')
     jwk = JOSE::JWK.from_key key
     jwk_map = jwk.to_map
