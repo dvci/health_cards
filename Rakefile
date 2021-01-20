@@ -21,7 +21,7 @@ task default: %i[test rubocop]
 
 namespace :healthcards do
   desc 'generate VC'
-  task :vc, [:credential_subject] do |task, args|
+  task :vc, [:credential_subject] do |_task, args|
     credential = HealthCards::VerifiableCredential.new(args[:credential_subject]).credential
     puts JSON.pretty_generate(credential)
   end
