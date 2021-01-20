@@ -9,3 +9,6 @@ Metrics/BlockLength:
   Enabled: true
   Exclude:
     - test/**/*
+
+Metrics/MethodLength:
+  Max: 50
