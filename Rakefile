@@ -3,6 +3,8 @@
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 require 'rubocop/rake_task'
+require 'json'
+require 'health_cards'
 
 Rake::TestTask.new(:test) do |t|
   t.libs << 'test'
@@ -16,3 +18,11 @@ task :rubocop do
 end
 
 task default: %i[test rubocop]
+
+namespace :healthcards do
+  desc 'generate VC'
+  task :vc, [:credential_subject] do |task, args|
+    credential = HealthCards::VerifiableCredential.new(args[:credential_subject]).credential
+    puts JSON.pretty_generate(credential)
+  end
+end
