@@ -8,31 +8,31 @@ set :static, true
 set :public_folder, 'static'
 set :views, 'views'
 
-
 get '/' do
   erb :patient_form
 end
 
 post '/Patient/' do
-  fn = params['fn']
+  given = params['given']
   mi = params['mi']
   ln = params['ln']
   suffix = params['suffix']
   gender = params['gender']
-  mobile = params['mobile']
+  telecom = params['telecom']
   email = params['email']
-  dob = params['dob']
+  birthdate = params['birthdate']
 
-  erb :index, locals: { 'fn' => fn, 'mi' => mi, 'ln' => ln,
-                        'suffix' => suffix, 'gender' => gender, 'mobile' => mobile,
-                        'email' => email, 'date' => dob }
+  erb :index, locals: { 'given' => given, 'mi' => mi, 'ln' => ln,
+                        'suffix' => suffix, 'gender' => gender, 'telecom' => telecom,
+                        'email' => email, 'birthdate' => birthdate }
 end
 
-get '/Patient' do 
+get '/Patient' do
   content_type :json
-  #gender = { "gender" => params['gender'] }
-  #gender.to_json
-  patient = { "fn" => params['fn'], "mi" => params['mi'], "ln" => params['ln'], "suffix" => params['suffix'], "gender" => params['gender'],
-              "mobile" => params['mobile'], "email" => params['email'], "dob" => params['dob'] }
+  # gender = { "gender" => params['gender'] }
+  # gender.to_json
+  patient = { 'given' => params['given'], 'mi' => params['mi'], 'ln' => params['ln'], 'suffix' => params['suffix'],
+              'gender' => params['gender'], 'telecom' => params['telecom'],
+              'email' => params['email'], 'birthdate' => params['birthdate'] }
   patient.to_json
 end
