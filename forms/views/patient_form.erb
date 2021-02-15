@@ -2,34 +2,81 @@
 <h1> Patient Form </h1>
 <h2>Please Put Your Information</h2>
 
-<form action="/Patient/" method="POST">
-    First Name: <input type="text" name="given">
+<form action="/Patient/" method="POST" id="patient-form">
+    First Name: <input type="text" name="given" id="given">
 
 
-    Middle Initial: <input type="text" name="mi">
+    Middle Initial: <input type="text" name="mi" id="mi">
 
 
-    Last Name: <input type="text" name="ln">
+    Last Name: <input type="text" name="ln" id="ln">
 
 
-    Suffix: <input type="text" name="suffix">
+    Suffix: <input type="text" name="suffix" id="suffix">
     <br/>
     <br/>
 
-    Gender: <input type="text" name="gender">
+    Gender: <input type="text" name="gender" id="gender">
 
 
-    Mobile phone: <input type="text" name="telecom">
+    Mobile phone: <input type="text" name="telecom" id="telecom">
 
 
-    Email address: <input type="text" name="email">
+    Email address: <input type="text" name="email" id="email">
 
 
-    Date of Birth: <input type="text" name="birthdate">
+    Date of Birth: <input type="text" name="birthdate" id="birthdate">
     <br/>
     <br/>
 
-    <input type="submit">
+    <input type="submit" value = "Submit">
+
+    <script>
+        async function postFormDataAsJson({url, formData}) {
+            const plainFormData = Object.fromEntries(formData.entries());
+            const formDataJsonString = JSON.stringify(plainFormData);
+        
+            const fetchOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/fhir+json',
+                    Accept: 'application.fhir+json'
+                },
+                body: formDataJsonString,
+                };
+        
+                const response = await fetch(url, fetchOptions)
+        
+                if(!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(errorMessage);
+                }
+        
+                return response.json();
+            }
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const form = event.currentTarget;
+            const url = form.action;
+
+            try {
+                const formData = new FormData(form);
+                const responseData = await postFormDataAsJson({url, formData});
+
+                console.log({responseData});
+            } catch (error) {
+                console.error(error);
+            }
+
+        }
+
+        const exampleForm = document.getElementById("example-form");
+        exampleForm.addEventListener("submit", handleFormSubmit);
+    </script>
+
 </form>
 
 </html>
