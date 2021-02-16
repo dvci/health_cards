@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'date'
+require 'rqrcode'
 require_relative 'digital_signature'
 
 module HealthCards
@@ -21,6 +22,8 @@ module HealthCards
     ENCRYPTION_KEY_TYPE = 'JsonWebKey2020'
 
     VERIFICATION_KEY_TYPE = 'EcdsaSecp256k1VerificationKey2019'
+
+    QR_CODE_PATH = 'credential.png'
 
     include DigitalSignature
 
@@ -43,6 +46,14 @@ module HealthCards
     end
 
     def jwt; end
+
+    def save_as_qrcode
+      qrcode = RQRCode::QRCode.new(credential.to_json, size: 40)
+      png = qrcode.as_png(size: 250)
+      file = File.open(QR_CODE_PATH, 'w')
+      file.write png.to_s
+      file.close
+    end
 
     private
 
