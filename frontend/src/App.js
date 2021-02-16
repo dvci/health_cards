@@ -1,4 +1,5 @@
-import './App.css';
+import React from "react";
+import "./App.css";
 import PatientForm from "./PatientForm";
 
 function App() {

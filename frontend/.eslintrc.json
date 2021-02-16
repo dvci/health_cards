@@ -1,0 +1,26 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest/globals": true
+  },
+  "plugins": [
+    "react",
+    "testing-library",
+    "jest"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:testing-library/react",
+    "plugin:testing-library/recommended",
+    "plugin:prettier/recommended"
+  ]
+}
