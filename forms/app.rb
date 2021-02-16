@@ -2,8 +2,6 @@
 
 require 'sinatra'
 require 'json'
-require 'fhir_client'
-require 'fhir_models'
 require 'uri'
 
 set :port, 8080
@@ -11,20 +9,13 @@ set :static, true
 set :public_folder, 'static'
 set :views, 'views'
 
-# client = FHIR::Client.new(localhost:8080)
-# FHIR::Model.client = client
-# client.default_json
-
-# before do
-#   content_type :application/fhir+json
-# end
 
 
 get '/' do
   erb :patient_form
 end
 
-post '/Patient/', :provides => :json do
+post '/Patient/' do
   #data will be in the body and not params when I change it into application/json
   # request.body.rewind
   # data_payload = JSON.parse request.body.read

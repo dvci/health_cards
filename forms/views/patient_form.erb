@@ -1,7 +1,7 @@
 <html>
 <h1> Patient Form </h1>
 <h2>Please Put Your Information</h2>
-
+<body>
 <form action="/Patient/" method="POST" id="patient-form">
     First Name: <input type="text" name="given" id="given">
 
@@ -29,54 +29,35 @@
     <br/>
     <br/>
 
-    <input type="submit" value = "Submit">
-
-    <script>
-        async function postFormDataAsJson({url, formData}) {
-            const plainFormData = Object.fromEntries(formData.entries());
-            const formDataJsonString = JSON.stringify(plainFormData);
-        
-            const fetchOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/fhir+json',
-                    Accept: 'application.fhir+json'
-                },
-                body: formDataJsonString,
-                };
-        
-                const response = await fetch(url, fetchOptions)
-        
-                if(!response.ok) {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
-                }
-        
-                return response.json();
-            }
-        }
-
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-
-            const form = event.currentTarget;
-            const url = form.action;
-
-            try {
-                const formData = new FormData(form);
-                const responseData = await postFormDataAsJson({url, formData});
-
-                console.log({responseData});
-            } catch (error) {
-                console.error(error);
-            }
-
-        }
-
-        const patientForm = document.getElementById("patient-form");
-        patientForm.addEventListener("submit", handleFormSubmit);
-    </script>
+    <button type="button" onclick="postFormDataAsJson()">Submit</button>
 
 </form>
+
+<script> 
+
+async function postFormDataAsJson() {
+    var data = new FormData(document.getElementById("patient-form"));
+    data = JSON.stringify(Object.fromEntries(data));
+    console.log(data);
+
+    fetch('http://localhost:8080/Patient/', {
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => data.text())
+    .then(data => {
+    console.log('Success:', data);
+    })
+    .catch((error) => {
+    console.error('Error:', error);
+    })
+}
+
+</script>
+</body>
 
 </html>
