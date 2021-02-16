@@ -75,7 +75,7 @@ module Dids
 
   def resolve_did_long(did_long)
     # did format: did:ion:<did-suffix>:<long-form-encoded-data>
-    encoded_payload = did_long.split(':')[-1]
+    encoded_payload = did_long.split(':').last
     JSON.parse(Base64.urlsafe_decode64(encoded_payload))
   end
 end

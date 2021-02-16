@@ -23,13 +23,13 @@ namespace :healthcards do
   task :did do
     include Dids
     include Keys
-    enc_key = Keys.generate_key
-    sign_key = Keys.generate_key
-    update_key = Keys.generate_key
-    rec_key = Keys.generate_key
-    did = Dids.generate_did(enc_key[:publicJwk], sign_key[:publicJwk], update_key[:publicJwk], rec_key[:publicJwk])
+    enc_key = generate_key
+    sign_key = generate_key
+    update_key = generate_key
+    rec_key = generate_key
+    did = generate_did(enc_key[:publicJwk], sign_key[:publicJwk], update_key[:publicJwk], rec_key[:publicJwk])
     puts did[:didShort]
     puts did[:didLong]
-    puts JSON.pretty_generate(Dids.resolve_did_long(did[:didLong]))
+    puts JSON.pretty_generate(resolve_did_long(did[:didLong]))
   end
 end
