@@ -47,7 +47,7 @@ module HealthCards
 
     def jwt; end
 
-    def save_as_qrcode
+    def save_as_qrcode(path = QR_CODE_PATH)
       qrcode = RQRCode::QRCode.new(credential.to_json, size: 40)
       png = qrcode.as_png(size: 250)
       file = File.open(QR_CODE_PATH, 'w')
