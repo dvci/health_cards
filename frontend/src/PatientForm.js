@@ -2,63 +2,116 @@ import React from "react";
 import { useState } from "react";
 
 function PatientForm() {
+  const [name, setName] = useState("");
+  const [mName, setmName] = useState("");
+  const [lName, setLName] = useState("");
+  const [suffix, setSuffix] = useState("");
+  const [gender, setGender] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [birthDate, setBirthDate] = useState("");
 
-  const [name, setName] = useState('First Name');
-  const [gender, setGender] = useState('Gender');
-  const [phone, setPhone] = useState('Phone');
-  const [email, setEmail] = useState('Email');
-  const [birthDate, setBirthDate] = useState('Date of Birth');
-
-
-  function handleSubmit() {
-    console.log('woo')
+  function handleSubmit(event) {
+    event.preventDefault(); //doesn't let it default submit the form in HTML
+    submitData();
+    console.log("submitted!");
   }
 
   function submitData() {
-    fetch("http://localhost:3000/Patient/",
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        mode: 'no-cors',
-        body: JSON.stringify({resourceType: 'Patient', name: name})
-      }
-      )
-  }
-
-  function handleChange(event) {
-    setName(event.target.value);
-    console.log(name);
-    console.log(gender)
+    //var pat = new Patient();
+    //var patEntry = client.Create(pat);
+    fetch("http://localhost:8000/Patient/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "no-cors",
+      body: JSON.stringify({
+        resourceType: "Patient",
+        name: [
+          {
+            given: [name, mName],
+            family: lName,
+            Suffix: suffix,
+          },
+        ],
+        gender: gender,
+        telecom: [
+          {
+            phone: phone,
+            email: email,
+          },
+        ],
+        birthDate: birthDate,
+      }),
+    });
   }
 
   return (
-    <form onSubmit={submitData}>
+    <form onSubmit={handleSubmit}>
       <label>
         First Name:
-        <input type="text" value={name} onChange={handleChange} />
+        <input
+          type="text"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+        />
       </label>
-      <label>Middle Initial:
-        <input type="text" value={name} onChange={handleChange} />
+      <label>
+        Middle Initial:
+        <input
+          type="text"
+          value={mName}
+          onChange={(event) => setmName(event.target.value)}
+        />
       </label>
-      <label>Last Name:
-        <input type="text" value={name} onChange={handleChange} />
+      <label>
+        Last Name:
+        <input
+          type="text"
+          value={lName}
+          onChange={(event) => setLName(event.target.value)}
+        />
       </label>
-      <label>Suffix:
-        <input type="text" value={name} onChange={handleChange} />
+      <label>
+        Suffix:
+        <input
+          type="text"
+          value={suffix}
+          onChange={(event) => setSuffix(event.target.value)}
+        />
       </label>
-      <label>Gender:
-        <input type="text" value={gender} onChange={handleChange} />
+      <label>
+        Gender:
+        <input
+          type="text"
+          value={gender}
+          onChange={(event) => setGender(event.target.value)}
+        />
       </label>
-      <label>Mobile Phone:
-        <input type="text" value={phone} onChange={handleChange} />
+      <label>
+        Mobile Phone:
+        <input
+          type="text"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+        />
       </label>
-      <label>Email Address:
-        <input type="text" value={email} onChange={handleChange} />
+      <label>
+        Email Address:
+        <input
+          type="text"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
       </label>
-      <label>Date of Birth:
-        <input type="text" value={birthDate} onChange={handleChange} />
+      <label>
+        Date of Birth:
+        <input
+          type="text"
+          value={birthDate}
+          onChange={(event) => setBirthDate(event.target.value)}
+        />
       </label>
       <input type="submit" value="Submit" />
     </form>

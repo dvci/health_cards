@@ -12,3 +12,5 @@ gem 'rubocop', '~> 1.5'
 gem 'rubocop-minitest', '~> 0.10.1', require: false
 
 gem 'rubocop-rake', '~> 0.5.1'
+gem 'sinatra'
+gem 'json'

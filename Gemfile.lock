@@ -7,10 +7,16 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.1)
+    json (2.1.0)
     minitest (5.14.2)
+    mustermann (1.1.1)
+      ruby2_keywords (~> 0.0.1)
     parallel (1.20.1)
     parser (2.7.2.0)
       ast (~> 2.4.1)
+    rack (2.2.3)
+    rack-protection (2.1.0)
+      rack
     rainbow (3.0.0)
     rake (13.0.1)
     regexp_parser (2.0.0)
@@ -31,6 +37,13 @@ GEM
     rubocop-rake (0.5.1)
       rubocop
     ruby-progressbar (1.10.1)
+    ruby2_keywords (0.0.4)
+    sinatra (2.1.0)
+      mustermann (~> 1.0)
+      rack (~> 2.2)
+      rack-protection (= 2.1.0)
+      tilt (~> 2.0)
+    tilt (2.0.10)
     unicode-display_width (1.7.0)
 
 PLATFORMS
@@ -38,11 +51,13 @@ PLATFORMS
 
 DEPENDENCIES
   health_cards!
+  json
   minitest (~> 5.14)
   rake (~> 13.0)
   rubocop (~> 1.5)
   rubocop-minitest (~> 0.10.1)
   rubocop-rake (~> 0.5.1)
+  sinatra
 
 BUNDLED WITH
    2.1.4
