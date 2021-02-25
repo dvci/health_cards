@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 require 'json'
 require 'pp'
+<<<<<<< HEAD
 require 'hashie'
 require 'base64'
 require 'zlib'
 require 'json/minify'
+=======
+>>>>>>> FHIR Bundle Constraints
 
 
 ## May want to change this to constrain health cards
@@ -14,6 +17,7 @@ module HealthCardConstraints
 
     entries = bundle['entry']
     
+<<<<<<< HEAD
     short_resources_flag = true
     url_map = Hash.new
     resource_count = 0;
@@ -57,6 +61,11 @@ module HealthCardConstraints
       
 
 
+=======
+    entries.each do |entry|
+      url = entry['fullUrl']
+      pp url
+>>>>>>> FHIR Bundle Constraints
 
 
       resource = entry['resource']
@@ -85,6 +94,7 @@ module HealthCardConstraints
 
 
       end
+<<<<<<< HEAD
 
   
       
@@ -93,6 +103,8 @@ module HealthCardConstraints
    
 
 
+=======
+>>>>>>> FHIR Bundle Constraints
         
 
       #pp resource
@@ -101,6 +113,7 @@ module HealthCardConstraints
 
     # pp resources
 
+<<<<<<< HEAD
   
     return bundle
   end
@@ -131,6 +144,16 @@ module HealthCardConstraints
       end
     end
     hash
+=======
+
+    return bundle
+  end
+
+  def minify_payload
+  end
+
+  def compress_payload
+>>>>>>> FHIR Bundle Constraints
   end
 
 
@@ -162,6 +185,7 @@ bundle = data_hash['vc']['credentialSubject']['fhirBundle']
 
 # pp bundle
 stripped = HealthCardConstraints.strip_fhir_bundle(bundle)
+<<<<<<< HEAD
 
 minified = HealthCardConstraints.minify_payload(stripped)
 
@@ -175,6 +199,12 @@ deflated = Base64.encode64(gzdeflate(minified))
 puts
 puts 
 pp stripped
+=======
+# pp stripped
+puts
+puts 
+puts
+>>>>>>> FHIR Bundle Constraints
 
 
 
