@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+<<<<<<< HEAD
     actioncable (6.1.3)
       actionpack (= 6.1.3)
       activesupport (= 6.1.3)
@@ -128,6 +129,14 @@ GEM
     nokogiri (1.11.1)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
+=======
+    ast (2.4.1)
+    hashie (4.1.0)
+    json (2.5.1)
+    json-minify (0.0.3)
+      json (> 0)
+    minitest (5.14.2)
+>>>>>>> Finish bundle constraints
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
@@ -264,6 +273,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+<<<<<<< HEAD
   bootsnap (>= 1.4.4)
   byebug
   capybara (>= 3.26)
@@ -278,6 +288,14 @@ DEPENDENCIES
   rack-mini-profiler (~> 2.0)
   rails (~> 6.1.3)
   rubocop
+=======
+  hashie (~> 4.1.0)
+  health_cards!
+  json-minify
+  minitest (~> 5.14)
+  rake (~> 13.0)
+  rubocop (~> 1.5)
+>>>>>>> Finish bundle constraints
   rubocop-minitest (~> 0.10.1)
   rubocop-rails
   rubocop-rake (~> 0.5.1)

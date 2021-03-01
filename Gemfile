@@ -26,6 +26,7 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Model has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
+<<<<<<< HEAD
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
@@ -68,3 +69,9 @@ end
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'jose'
+=======
+gem 'rubocop-rake', '~> 0.5.1'
+
+gem 'hashie', '~> 4.1.0'
+gem 'json-minify'
+>>>>>>> Finish bundle constraints
