@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-<<<<<<< HEAD
 require 'json'
 require 'pp'
 require 'hashie'
@@ -29,11 +28,3 @@ stripped = BundleSplitting.splitBundle(bundle)
 pp stripped
 
 
-=======
-
-## May want to change this to constrain health cards
-module BundleSplitting
-
-
-end
->>>>>>> FHIR Bundle Constraints
