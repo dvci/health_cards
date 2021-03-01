@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 <<<<<<< HEAD
+<<<<<<< HEAD
 require 'json'
 require 'pp'
 require 'hashie'
@@ -30,10 +31,38 @@ pp stripped
 
 
 =======
+=======
+require 'json'
+require 'pp'
+require 'hashie'
+>>>>>>> Finish bundle constraints
 
 ## May want to change this to constrain health cards
 module BundleSplitting
-
+  def splitBundle(payload, header_size = 54, signature_size = 95)
+    max_payload_size = 1195 - header_size - signature_size
+    payload
+  end
 
 end
+<<<<<<< HEAD
 >>>>>>> FHIR Bundle Constraints
+=======
+
+
+include BundleSplitting
+
+FILEPATH = 'fixtures/vc-c19-pcr-jwt-payload.json'
+file = File.read(FILEPATH)
+data_hash = JSON.parse(file)
+# pp data_hash
+
+bundle = data_hash['vc']['credentialSubject']['fhirBundle']
+
+# pp bundle
+stripped = BundleSplitting.splitBundle(bundle)
+
+pp stripped
+
+
+>>>>>>> Finish bundle constraints
