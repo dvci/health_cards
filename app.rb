@@ -12,14 +12,14 @@ post '/Patient/' do
   request.body.rewind
   params = JSON.parse(request.body.read)
 
-  @given = params['name'][0]['given'][0]
-  @mi = params['name'][0]['given'][1]
-  @ln = params['name'][0]['family']
-  @suffix = params['name'][0]['suffix']
-  @gender = params['gender']
-  @telecom = params['telecom'][0]['phone']
-  @email = params['telecom'][0]['email']
-  @birth_date = params['birthDate']
+  @@given = params['name'][0]['given'][0]
+  @@mi = params['name'][0]['given'][1]
+  @@ln = params['name'][0]['family']
+  @@suffix = params['name'][0]['suffix']
+  @@gender = params['gender']
+  @@telecom = params['telecom'][0]['phone']
+  @@email = params['telecom'][0]['email']
+  @@birth_date = params['birthDate']
 end
 
 get '/Patient/' do
@@ -27,18 +27,18 @@ get '/Patient/' do
     resourceType: 'Patient',
     name: [
       {
-        given: [@given, @mi],
-        family: @ln,
-        suffix: @suffix
+        given: [@@given, @@mi],
+        family: @@ln,
+        suffix: @@suffix
       }
     ],
-    gender: @gender,
+    gender: @@gender,
     telecom: [
       {
-        phone: @telecom,
-        email: @email
+        phone: @@telecom,
+        email: @@email
       }
     ],
-    birthDate: @birth_Date
+    birthDate: @@birth_date
   }.to_json
 end
