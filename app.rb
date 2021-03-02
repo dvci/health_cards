@@ -9,33 +9,36 @@ set :public_folder, 'static'
 set :views, 'frontend/src'
 
 post '/Patient/' do
-    request.body.rewind
-    @data_payload = JSON.parse request.body.read
-  
-    @given = data_payload['given']
-    @mi = data_payload['mi']
-    @ln = data_payload['ln']
-    @suffix = data_payload['suffix']
-    @gender = data_payload['gender']
-    @telecom = data_payload['telecom']
-    @email = data_payload['email']
-    @birthdate = data_payload['birthdate']
-  
-    @name = params["name"]
-    puts @name
-  
-  end
+  request.body.rewind
+  params = JSON.parse(request.body.read)
+
+  @given = params['name'][0]['given'][0]
+  @mi = params['name'][0]['given'][1]
+  @ln = params['name'][0]['family']
+  @suffix = params['name'][0]['suffix']
+  @gender = params['gender']
+  @telecom = params['telecom'][0]['phone']
+  @email = params['telecom'][0]['email']
+  @birth_date = params['birthDate']
+end
 
 get '/Patient/' do
-    "Hello World"
-    @given = params["name"]
-    
-  end
-
-
-# get '/Patient' do
-#   #content_type :application/fhir+json
-#   patient = { 'given' => data_payload['given'], 'mi' => data_payload['mi'], 'ln' => data_payload['ln'], 'suffix' => data_payload['suffix'],
-#               'gender' => data_payload['gender'], 'telecom' => data_payload['telecom'],
-#               'email' => data_payload['email'], 'birthdate' => data_payload['birthdate'] }
-# end
+  {
+    resourceType: 'Patient',
+    name: [
+      {
+        given: [@given, @mi],
+        family: @ln,
+        suffix: @suffix
+      }
+    ],
+    gender: @gender,
+    telecom: [
+      {
+        phone: @telecom,
+        email: @email
+      }
+    ],
+    birthDate: @birth_Date
+  }.to_json
+end

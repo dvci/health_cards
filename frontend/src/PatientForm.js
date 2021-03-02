@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 
 function PatientForm() {
-  const [name, setName] = useState("");
+  const [fName, setName] = useState("");
   const [mName, setmName] = useState("");
   const [lName, setLName] = useState("");
   const [suffix, setSuffix] = useState("");
@@ -18,8 +18,6 @@ function PatientForm() {
   }
 
   function submitData() {
-    //var pat = new Patient();
-    //var patEntry = client.Create(pat);
     fetch("http://localhost:8000/Patient/", {
       method: "POST",
       headers: {
@@ -30,9 +28,9 @@ function PatientForm() {
         resourceType: "Patient",
         name: [
           {
-            given: [name, mName],
+            given: [fName, mName],
             family: lName,
-            Suffix: suffix,
+            suffix: suffix,
           },
         ],
         gender: gender,
@@ -53,7 +51,7 @@ function PatientForm() {
         First Name:
         <input
           type="text"
-          value={name}
+          value={fName}
           onChange={(event) => setName(event.target.value)}
         />
       </label>
