@@ -18,7 +18,7 @@ module BundleSplitting
       end
 
       return chunks
-      
+
     end
   end
 
@@ -34,10 +34,9 @@ file_data = File.read(FILEPATH_SMALL).split
 small_jws = file_data[0]
 large_jws = small_jws * 10
 
-puts small_jws.length
-puts large_jws.length
 
+small_split = BundleSplitting.splitBundle(small_jws)
+large_split = BundleSplitting.splitBundle(large_jws)
 
-split = BundleSplitting.splitBundle(large_jws)
-
-puts split.length
+puts "Small JWS Payload is #{small_jws.length} characters long and is split into #{small_split.length} chunks."
+puts "Large JWS Payload is #{large_jws.length} characters long and is split into #{large_split.length} chunks."
