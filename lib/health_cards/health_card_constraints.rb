@@ -7,59 +7,34 @@ require 'zlib'
 require 'json/minify'
 
 
-## May want to change this to constrain health cards
+## Functionality for "Health Cards are Small section of the Smart Health Cards Specification"
 module HealthCardConstraints
   
+  # Remove Extraneous Fields from FHIR Bundle
   def strip_fhir_bundle(bundle)
 
     entries = bundle['entry']
-    
-    short_resources_flag = true
+
     url_map = Hash.new
     resource_count = 0;
 
-
+    # Bundle.entry.fullUrl should be populated with short resource-scheme URIs (e.g., {"fullUrl": "resource:0})
     entries.each do |entry|
       old_url = entry["fullUrl"]
-
       new_url = "Resource:#{resource_count}"
 
       url_map[old_url] = new_url
       entry["fullUrl"] = new_url
 
-
-      if (!(entry["fullUrl"].include? "resource"))
-        short_resources_flag = false
-      end
       resource_count += 1
     end
-    # pp url_map
-
-
-    # entries.extend Hashie::Extensions::DeepFind
-    # references = entries.deep_find_all("reference")
-    # if (references != nil)
-    #   references.each do |reference|
-    #     puts "This is my reference: #{reference}"
-    #     reference = url_map[reference]
-    #   end
-    # end
-    
-
-    # entries.append({"new entry" => "my entry"})
-
 
     entries.each do |entry|
-      url = entry['fullUrl']
-      # pp url
-      
-
-      
-
-
-
 
       resource = entry['resource']
+
+      # Update references to match new resource-scheme URIs
+      HealthCardConstraints.update_links(resource, url_map)
 
       # Remove Resource.id elements
       resource.delete("id")
@@ -70,7 +45,6 @@ module HealthCardConstraints
   
       resource.each do |element, value|
         if (value.kind_of?(Hash))
-
           if value.key?('coding')
             # Remove Coding.display elements
             coding = value['coding']
@@ -80,43 +54,28 @@ module HealthCardConstraints
             # Remove CodeableConcept.text elements
             value.delete("text")
           end
-          
         end
-
-
       end
 
-  
-      
-
-      HealthCardConstraints.update_links(resource, url_map)
-   
-
-
-        
-
-      #pp resource
-      puts 
     end
-
-    # pp resources
-
   
     return bundle
   end
 
-
-
+  # Payload should be minified (i.e., all optional whitespace is stripped)
   def minify_payload(payload)
-    return JSON.minify(payload.to_json)
+    minified_payload = JSON.minify(payload.to_json)
+    return JSON.unparse(minified_payload) 
   end
 
-  # According to  https://gist.github.com/alazarchuk/8223772181741c4b7a7c
-  # Also references https://agileweboperations.com/2008/09/15/how-inflate-and-deflate-data-ruby-and-php/
+  # Payload should be compressed with the DEFLATE (see RFC1951) algorithm before being signed (note, this should be "raw" DEFLATE compression, omitting any zlib or gz headers)
+    # According to  https://gist.github.com/alazarchuk/8223772181741c4b7a7c
+    # Also references https://agileweboperations.com/2008/09/15/how-inflate-and-deflate-data-ruby-and-php/
   def gzdeflate (s)
-    Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(s, Zlib::FINISH)
+    Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(s.to_s, Zlib::FINISH)
   end
 
+  # Reference.reference should be populated with short resource-scheme URIs (e.g., {"patient": {"reference": "resource:0"}})
   def update_links(hash, mapping)
     hash.each do |k, v|
       if k == "reference" && v.is_a?(String)
@@ -133,21 +92,17 @@ module HealthCardConstraints
     hash
   end
 
-
+  # Main function to operate all of the health card constraints.
   def constrain_health_cards(jws_payload)
-    # 
-    
-    
-    # Strip elements
-    ### If jws_payload.vx.credentialSubject.fhirBundle != null
-      ######strip_elements(jws_payload)
-      ### End
+    bundle = jws_payload['vc']['credentialSubject']['fhirBundle']
+    if (bundle)
+      strip_fhir_bundle(bundle)
+      minify_payload(bundle)
+      return Base64.encode64(gzdeflate(bundle))
+    end
 
-
+    return bundle
   end
-
-
-
 
 end
 
@@ -155,32 +110,7 @@ include HealthCardConstraints
 
 FILEPATH = 'fixtures/vc-c19-pcr-jwt-payload.json'
 file = File.read(FILEPATH)
-data_hash = JSON.parse(file)
-# pp data_hash
+payload = JSON.parse(file)
 
-bundle = data_hash['vc']['credentialSubject']['fhirBundle']
-
-# pp bundle
-stripped = HealthCardConstraints.strip_fhir_bundle(bundle)
-
-minified = HealthCardConstraints.minify_payload(stripped)
-
-# deflated = HealthCardConstraints.compress_payload(stripped.to_s)
-deflated = Base64.encode64(gzdeflate(minified))
-
-
-
-
-# pp stripped
-puts
-puts 
-pp stripped
-
-
-
-# if bundle
-#   puts true
-# else
-#   puts false
-# end
+puts constrain_health_cards(payload)
 
