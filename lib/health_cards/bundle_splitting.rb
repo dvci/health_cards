@@ -1,29 +1,28 @@
 # frozen_string_literal: true
 
+# Split up a JWS into chunks if encoded size is above QR Code Size constraint
 module BundleSplitting
   MAX_SINGLE_JWS_SIZE = 1195
   MAX_CHUNK_SIZE = 1191
 
-  def splitBundle(jws) 
-    if (jws.length <= MAX_SINGLE_JWS_SIZE)
-      return [jws]
+  def splitBundle(jws)
+    if jws.length <= MAX_SINGLE_JWS_SIZE
+      [jws]
     else
       chunks = []
       i = 0
       number_of_chunks = jws.length / MAX_CHUNK_SIZE
 
-      while (i < number_of_chunks)
+      while i < number_of_chunks
         chunks.push(jws.slice(i * MAX_CHUNK_SIZE, (i + 1) * MAX_CHUNK_SIZE))
-        i += 1 
+        i += 1
       end
 
-      return chunks
+      chunks
 
     end
   end
-
 end
-
 
 include BundleSplitting
 
@@ -33,7 +32,6 @@ file_data = File.read(FILEPATH_SMALL).split
 
 small_jws = file_data[0]
 large_jws = small_jws * 10
-
 
 small_split = BundleSplitting.splitBundle(small_jws)
 large_split = BundleSplitting.splitBundle(large_jws)
