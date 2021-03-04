@@ -29,7 +29,6 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
-<<<<<<< HEAD
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 gem 'fhir_models'
@@ -69,7 +68,3 @@ end
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'jose'
-=======
-gem 'hashie', '~> 4.1.0'
-gem 'json-minify'
->>>>>>> Rubocop style fixes
