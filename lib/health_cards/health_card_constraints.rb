@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'json'
-require 'pp'
-require 'hashie'
 require 'base64'
 require 'zlib'
 require 'json/minify'
@@ -41,7 +39,7 @@ module HealthCardConstraints
     resources.each do |entry|
       resource = entry['resource']
 
-      HealthCardConstraints.update_links(resource, url_map)
+      update_links(resource, url_map)
 
       resource.delete('id')
       resource.delete('meta')

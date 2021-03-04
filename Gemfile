@@ -13,5 +13,4 @@ gem 'rubocop-minitest', '~> 0.10.1', require: false
 
 gem 'rubocop-rake', '~> 0.5.1'
 
-gem 'hashie', '~> 4.1.0'
 gem 'json-minify'

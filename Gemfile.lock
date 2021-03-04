@@ -7,7 +7,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.1)
-    hashie (4.1.0)
     json (2.5.1)
     json-minify (0.0.3)
       json (> 0)
@@ -41,7 +40,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  hashie (~> 4.1.0)
   health_cards!
   json-minify
   minitest (~> 5.14)
