@@ -3,6 +3,5 @@
 require 'test_helper'
 
 class BundleSplittingTest < Minitest::Test
-  def small_jws_is_not_split
-  end
+  def test_small_jws_is_not_split; end
 end
