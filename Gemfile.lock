@@ -131,7 +131,6 @@ GEM
       racc (~> 1.4)
 =======
     ast (2.4.1)
-    hashie (4.1.0)
     json (2.5.1)
     json-minify (0.0.3)
       json (> 0)
