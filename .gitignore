@@ -1,11 +1,11 @@
-/.bundle/
-/.yardoc
-/_yardoc/
-/coverage/
-/doc/
-/pkg/
-/spec/reports/
-/tmp/
+.bundle
+.yardoc
+_yardoc
+coverage
+doc
+pkg
+tmp
+node_modules
 
 ## IDE Specific
 # JetBrains IDE files:
@@ -14,3 +14,5 @@
 ## Other
 # Intended to be used as a library or gem that could run in multiple environments
 .ruby-version
+
+.DS_Store
