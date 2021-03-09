@@ -14,3 +14,7 @@ gem 'rubocop-minitest', '~> 0.10.1', require: false
 gem 'json'
 gem 'rubocop-rake', '~> 0.5.1'
 gem 'sinatra'
+
+group :production do
+    gem 'puma'
+  end
