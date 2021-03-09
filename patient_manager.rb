@@ -18,9 +18,11 @@ class PatientManager
         end 
 
         def add_patient(patient)
-            id = SecureRandom.uuid
+            id = SecureRandom.uuid 
+            puts ("The id is " + id)
             patients[id] = patient
         end 
+
     end 
 
   end

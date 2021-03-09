@@ -18,3 +18,5 @@ gem 'sinatra'
 group :production do
     gem 'puma'
   end
+
+  gem 'sinatra-json'

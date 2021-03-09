@@ -18,7 +18,7 @@ function PatientForm() {
   }
 
   function submitData() {
-    fetch("http://localhost:8000/Patient/", {
+    fetch("http://localhost:8000/Patient", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

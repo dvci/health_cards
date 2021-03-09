@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'sinatra'
+require 'sinatra/json'
 require 'json'
 require_relative 'patient_manager'
 
@@ -9,29 +10,12 @@ set :static, true
 set :public_folder, 'static'
 set :views, 'frontend/src'
 
-post '/Patient/' do
+post '/Patient' do
   request.body.rewind
   payload = JSON.parse(request.body.read)
-  PatientManager.add_patient(payload)
-
-  # attr_reader :given, :mi, :ln, :suffix, :gender, :telecom, :email, :birth_date
-
-  # def initialize(given)
-  #   @given = params['name'][0]['given'][0]
-  # end
-
-
-  # @given = params['name'][0]['given'][0]
-  # @mi = params['name'][0]['given'][1]
-  # @ln = params['name'][0]['family']
-  # @suffix = params['name'][0]['suffix']
-  # @gender = params['gender']
-  # @telecom = params['telecom'][0]['phone']
-  # @email = params['telecom'][0]['email']
-  # @birth_date = params['birthDate']
-    
-  #return the post back to the client so it can know the id that was given
-  #return the patient in add_patient
+  x = PatientManager.add_patient(payload)
+  json x
+  puts x
 end
 
 get '/Patient/{id}' do
@@ -54,7 +38,8 @@ get '/Patient/{id}' do
   #   birthDate: @birth_date
   # }.to_json
 
-    PatientManager.get_patient_by_id(id)
+    x = PatientManager.get_patient_by_id(id)
+    puts x
 
   #   {
   #   resourceType: 'Patient',
