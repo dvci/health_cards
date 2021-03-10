@@ -16,7 +16,6 @@ class Issuer
     # Create key directory if it doesn't exist
     Dir.mkdir(KEYS_DIR_PATH) unless Dir.exist?(KEYS_DIR_PATH)
 
-    # If keys exist, load from pem file else generate new key and save
     @signing_key = check_key_exists(SIGNING_KEY_PATH, 'sig')
     @encryption_key = check_key_exists(ENCRYPTION_KEY_PATH, 'enc')
     @jwks = {
@@ -26,6 +25,7 @@ class Issuer
     Rails.logger.info JSON.pretty_generate(@jwks)
   end
 
+  # Load keys from disc if they exist else generate new keys and save
   def check_key_exists(path, type)
     if File.exist?(path)
       load_key(path, type)

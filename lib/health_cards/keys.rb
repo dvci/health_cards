@@ -19,6 +19,8 @@ module Keys
     key_to_jwk(key, 'enc')
   end
 
+  # Converts JOSE::JWK to formatted jwk
+  # Returns OpenSSL key and public jwk
   def key_to_jwk(key, type)
     jwk_map = key.to_map
     jwk = {
