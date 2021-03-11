@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'test_helper'
 require 'health_cards/verifiable_credential'
 
@@ -20,6 +21,4 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), @bundle
     assert_nil @vc.credential.dig(:credentialSubject, :id)
   end
-
-
 end

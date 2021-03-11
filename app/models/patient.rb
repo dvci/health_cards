@@ -13,7 +13,7 @@ class Patient < ApplicationRecord
   FHIR_DEFINITION = FHIR::Definitions.resource_definition('Patient')
   GENDERS = FHIR::Patient::METADATA['gender']['valid_codes']['http://hl7.org/fhir/administrative-gender']
 
-  validates_inclusion_of :gender, in: GENDERS, allow_nil: true
+  validates :gender, inclusion: { in: GENDERS, allow_nil: true }
   validate do
     FHIR_DEFINITION.errors.each { |e| errors.add(:base, e) } unless FHIR_DEFINITION.validates_resource?(fhir_patient)
   end
@@ -29,8 +29,8 @@ class Patient < ApplicationRecord
       self.family = name.family
     end
     self.gender = fhir_patient.gender
-    self.email  = fhir_patient.telecom.detect { |t|  t.system == 'email' }.value
-    self.phone  = fhir_patient.telecom.detect { |t|  t.system == 'phone' }.value
+    self.email  = fhir_patient.telecom.find { |t|  t.system == 'email' }.value
+    self.phone  = fhir_patient.telecom.find { |t|  t.system == 'phone' }.value
     self.birth_date = fhir_patient.birthDate
   end
 
