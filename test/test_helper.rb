@@ -4,6 +4,9 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 
+ActiveRecord::Base.logger.level = 1
+Rails.logger.level = 1
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers
