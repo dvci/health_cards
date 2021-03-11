@@ -4,7 +4,8 @@ require 'test_helper'
 
 class PatientsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @patient = Patient.create(given: 'foo', family: 'bar', gender: 'male')
+    @attributes = {given: 'foo', family: 'bar', gender: 'male'}
+    @patient = Patient.create(@attributes)
     assert !@patient.new_record?
   end
 
@@ -20,10 +21,13 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should create patient' do
     assert_difference('Patient.count') do
-      post patients_url, params: { patient: { json: @patient.json } }
+      post patients_url, params: { patient: @attributes }
     end
+    new_patient  = Patient.last
 
-    assert_redirected_to patient_url(Patient.last)
+    assert_attributes_equal(@patient, new_patient, @attributes.keys)
+
+    assert_redirected_to patient_url(new_patient)
   end
 
   test 'should show patient' do
