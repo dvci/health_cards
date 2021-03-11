@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        ruby-version: [ 2.7.2, 3.0.0 ]
+        ruby-version: [ 2.7.2 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -26,5 +26,7 @@ jobs:
           bundler-cache: true
       - name: Install dependencies
         run: bundle install
+      - name: Run webpack
+        run: ./bin/rake webpacker:install:react
       - name: Run tests
         run: bundle exec rake

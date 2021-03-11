@@ -1,0 +1,9 @@
+namespace :test do
+  Rake::TestTask.new('health_cards') do |t|
+    t.libs = ['lib','test']
+    t.pattern = 'health_cards/**/*_spec.rb'
+    t.verbose = true
+  end
+end
+
+Rake::Task["test:run"].enhance ["test:health_cards"]

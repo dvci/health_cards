@@ -1,10 +1,18 @@
 require:
-  - rubocop-minitest
   - rubocop-rake
 
 AllCops:
   NewCops: enable
-
+  Exclude:
+    - bin/**/*
+    - node_modules/**/*
+Style/Documentation:
+  Exclude:
+    - app/models/application_record.rb
+    - app/helpers/*
+    - config/*
+    - db/migrate/*
+    - test/**/*
 Metrics/BlockLength:
   Enabled: true
   Exclude:
