@@ -1,0 +1,13 @@
+<p id="notice"><%= notice %></p>
+
+<% @patient.attributes.each do |attr, value| %>
+<p>
+  <strong><%= attr.titleize %>:</strong>
+  <%= value %>
+</p>
+
+<%end%>
+
+
+<%= link_to 'Edit', edit_patient_path(@patient) %> |
+<%= link_to 'Back', patients_path %>

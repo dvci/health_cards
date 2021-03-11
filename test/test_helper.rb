@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'simplecov'
-SimpleCov.start do
-  enable_coverage :branch
-  add_filter '/test/'
+ENV['RAILS_ENV'] ||= 'test'
+require_relative '../config/environment'
+require 'rails/test_help'
+
+module ActiveSupport
+  class TestCase
+    # Run tests in parallel with specified workers
+    parallelize(workers: :number_of_processors)
+
+  end
 end
-
-$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
-require 'health_cards'
-
-require 'minitest/autorun'
-require 'minitest/spec'
