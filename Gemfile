@@ -38,6 +38,8 @@ group :development, :test do
   gem 'rubocop-minitest', '~> 0.10.1', require: false
   gem 'rubocop-rails'
   gem 'rubocop-rake', '~> 0.5.1'
+  gem 'pry'
+  gem 'pry-byebug'
 end
 
 group :development do
@@ -57,6 +59,7 @@ group :test do
   gem 'selenium-webdriver'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
+  gem 'simplecov'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

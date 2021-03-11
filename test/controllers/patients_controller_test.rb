@@ -4,9 +4,9 @@ require 'test_helper'
 
 class PatientsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @attributes = {given: 'foo', family: 'bar', gender: 'male'}
+    @attributes = { given: 'foo', family: 'bar', gender: 'male' }
     @patient = Patient.create(@attributes)
-    assert !@patient.new_record?
+    assert_not @patient.new_record?
   end
 
   test 'should get index' do
@@ -23,7 +23,7 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     assert_difference('Patient.count') do
       post patients_url, params: { patient: @attributes }
     end
-    new_patient  = Patient.last
+    new_patient = Patient.last
 
     assert_attributes_equal(@patient, new_patient, @attributes.keys)
 
