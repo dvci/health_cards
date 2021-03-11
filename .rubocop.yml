@@ -1,11 +1,23 @@
 require:
+  - rubocop-minitest
   - rubocop-rake
+  - rubocop-rails
 
 AllCops:
+  TargetRubyVersion: 2.7
   NewCops: enable
   Exclude:
-    - bin/**/*
-    - node_modules/**/*
+    - 'config.ru'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - '.git/**/*'
+    - 'bin/*'
+    - 'config/**'
+    - 'config/initializers/devise.rb'
+    - 'db/schema.rb'
+    - 'db/migrate/*'
+    - 'Gemfile'
+
 Style/Documentation:
   Exclude:
     - app/models/application_record.rb
@@ -13,7 +25,44 @@ Style/Documentation:
     - config/*
     - db/migrate/*
     - test/**/*
+
+Layout/BlockAlignment:
+  EnforcedStyleAlignWith: 'start_of_block'
+
+Layout/LineLength:
+  Max: 120
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: 'indented'
+
+Metrics/AbcSize:
+  Max: 30
+
 Metrics/BlockLength:
   Enabled: true
   Exclude:
     - test/**/*
+
+Metrics/ClassLength:
+  Max: 200
+
+Metrics/MethodLength:
+  Max: 25
+
+Style/CollectionMethods:
+  Enabled: true
+
+Style/DoubleNegation:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Rails/AssertNot:
+  Enabled: false
+
+Rails/FilePath:
+  EnforcedStyle: 'arguments'
