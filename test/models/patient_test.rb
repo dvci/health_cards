@@ -14,8 +14,15 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'empty patient json serialization' do
-    p1 = Patient.create
-    assert p1.valid?, 'Empty patient is not valid'
-    Patient.find(p1.id)
+    patient = Patient.create
+    assert_not patient.new_record?
+  end
+
+  test 'update patient' do
+    patient = Patient.create
+    given = 'foo'
+    assert patient.update(given: given)
+    patient.reload
+    assert_equal given, patient.given
   end
 end

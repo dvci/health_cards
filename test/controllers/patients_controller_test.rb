@@ -30,6 +30,14 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to patient_url(new_patient)
   end
 
+  test 'should not create patient' do
+    assert_no_difference('Patient.count') do
+      post patients_url, params: { patient: { gender: 'foo' } }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test 'should show patient' do
     get patient_url(@patient)
     assert_response :success
@@ -41,8 +49,20 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update patient' do
-    patch patient_url(@patient), params: { patient: { json: @patient.json } }
+    @attributes[:given] = 'baz'
+    patch patient_url(@patient), params: { patient: @attributes }
+
+    @patient.reload
+    assert_equal @attributes[:given], Patient.find(@patient.id).given
+
     assert_redirected_to patient_url(@patient)
+  end
+
+  test 'should not update patient' do
+    gender = 'NOT A VALID GENDER'
+    patch patient_url(@patient), params: { patient: { gender: gender } }
+    assert_not_equal gender, @patient.reload.gender
+    assert_response :unprocessable_entity
   end
 
   test 'should destroy patient' do
