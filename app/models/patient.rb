@@ -19,7 +19,7 @@ class Patient < ApplicationRecord
   end
 
   before_validation do
-    self.json = fhir_patient.to_json
+    self.json = new_from_attributes.to_json
   end
 
   after_find do
@@ -41,11 +41,9 @@ class Patient < ApplicationRecord
   private
 
   def fhir_patient
-    @fhir_patient ||= if json
-                        FHIR.from_contents(json)
-                      else
-                        new_from_attributes
-                      end
+    return @patient if @patient && !has_changes_to_save?
+
+    @patient = FHIR.from_contents(json)
   end
 
   def new_from_attributes
