@@ -41,4 +41,4 @@ yarn-debug.log*
 
 .DS_Store
 /coverage/*
-lib/health_cards/keys
+config/keys
