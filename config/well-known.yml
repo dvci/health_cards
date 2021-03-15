@@ -12,3 +12,5 @@ test:
   <<: *default
 production:
   <<: *default
+  authorization_endpoint: <%= ENV['AUTH_ENDPOINT'] %>
+  token_endpoint: <%= ENV['TOKEN_ENDPOINT'] %>
