@@ -13,9 +13,9 @@ class IssuerTest < ActiveSupport::TestCase
     issuer = HealthCards::Issuer.new Configuration.key_path
     jwks = issuer.jwks
 
-    assert File.exist? issuer.signing_key_path
+    assert_path_exists(issuer.signing_key_path)
     assert_equal 1, jwks[:keys].length
-    assert jwks[:keys].one? { |key| key[:use] == 'sig' && key[:alg] == 'ES256' }
+    assert(jwks[:keys].one? { |key| key[:use] == 'sig' && key[:alg] == 'ES256' })
   end
 
   test 'Use existing keys if they exist' do
