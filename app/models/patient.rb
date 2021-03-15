@@ -4,9 +4,7 @@ require 'concerns/fhir_json_storage'
 
 # Patient model to map our input form to FHIR
 class Patient < ApplicationRecord
-  include FhirJsonStorage
-
-  map_to_fhir(to: :set_fhir_json, from: :get_fhir_json)
+  include FHIRJsonStorage
 
   attribute :given, :string
   attribute :family, :string
@@ -23,9 +21,7 @@ class Patient < ApplicationRecord
     [given, family].join(' ') if given || family
   end
 
-  private
-
-  def get_fhir_json(patient)
+  def from_fhir_json(patient)
     name = patient.name.first
     given, family = nil
     if name
@@ -42,7 +38,7 @@ class Patient < ApplicationRecord
     }
   end
 
-  def set_fhir_json
+  def to_fhir_json
     {
       name: [{ given: [given], family: family }],
       gender: gender,

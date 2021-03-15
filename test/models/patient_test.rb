@@ -13,6 +13,18 @@ class PatientTest < ActiveSupport::TestCase
     end
   end
 
+  test 'invalid json validation' do
+    patient = Patient.new(json: "asdfasdasdf'jkl")
+    patient.validate_fhir_json
+    assert_not patient.errors.full_messages.empty?
+  end
+
+  test 'invalid fhir json' do
+    patient = Patient.new(json: "{\n  \"gender\": \"INVALID\",\n  \"resourceType\": \"Patient\"\n}")
+    patient.validate_fhir_json
+    assert_not patient.errors.full_messages.empty?
+  end
+
   test 'empty patient json serialization' do
     patient = Patient.create
     assert_not patient.new_record?
