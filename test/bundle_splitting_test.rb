@@ -2,15 +2,20 @@
 
 require 'test_helper'
 
-FILEPATH_SMALL = 'fixtures/example-00-d-jws.txt'
+require 'health_cards/bundle_splitting.rb'
 
-describe HealthCards do
+
+FILEPATH_SMALL = 'test/fixtures/example-00-d-jws.txt'
+
+describe HealthCards::BundleSplitting do
   before do
     @small_jws = File.read(FILEPATH_SMALL).split[0]
   end
 
   describe 'when a jws of size <= 1195 is passed into the bundle splitter' do
     it 'returns only 1 chunk' do
+      puts(HealthCards::BundleSplitting::split_bundle(@small_jws))
+      _(HealthCards::BundleSplitting::split_bundle(@small_jws)).length.must_equal 1
     end
   end
 
