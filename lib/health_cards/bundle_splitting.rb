@@ -26,17 +26,19 @@ module HealthCards
   end
 end
 
-include HealthCards::BundleSplitting
+# include HealthCards::BundleSplitting
 
-FILEPATH_SMALL = 'fixtures/example-00-d-jws.txt'
+# FILEPATH_SMALL = 'fixtures/example-00-d-jws.txt'
 
-file_data = File.read(FILEPATH_SMALL).split
+# file_data = File.read(FILEPATH_SMALL).split
 
-small_jws = file_data[0]
-large_jws = small_jws * 10
+# small_jws = file_data[0]
+# large_jws = small_jws * 10
 
-small_split = split_bundle(small_jws)
-large_split = split_bundle(large_jws)
+# small_split = split_bundle(small_jws)
+# large_split = split_bundle(large_jws)
 
-puts "Small JWS Payload is #{small_jws.length} characters long and is split into #{small_split.length} chunks."
-puts "Large JWS Payload is #{large_jws.length} characters long and is split into #{large_split.length} chunks."
+# puts "Small JWS Payload is #{small_jws.length} characters long and is split into #{small_split.length} chunks."
+# puts "Large JWS Payload is #{large_jws.length} characters long and is split into #{large_split.length} chunks."
+# puts
+# puts large_split

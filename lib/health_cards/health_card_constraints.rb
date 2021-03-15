@@ -81,6 +81,19 @@ module HealthCards
       hash
     end
 
+    def delete_key(hash, mapping) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      hash.each do |k, v|
+        if k == 'reference' && v.is_a?(String)
+          v.replace mapping[v] if mapping.key?(v)
+        elsif v.is_a?(Hash)
+          update_links(v, mapping)
+        elsif v.is_a?(Array)
+          v.flatten.each { |x| update_links(x, mapping) if x.is_a?(Hash) }
+        end
+      end
+      hash
+    end
+
     def constrain_health_cards(jws_payload)
       bundle = jws_payload['vc']['credentialSubject']['fhirBundle']
       if bundle
@@ -102,4 +115,4 @@ file = File.read(FILEPATH)
 payload = JSON.parse(file)
 
 constrain_health_cards(payload)
-puts constrain_health_cards(payload)
+# puts constrain_health_cards(payload)
