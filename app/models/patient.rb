@@ -13,6 +13,8 @@ class Patient < ApplicationRecord
   attribute :email, :string
   attribute :birth_date, :date
 
+  has_many :immunizations, dependent: :destroy
+
   GENDERS = FHIR::Patient::METADATA['gender']['valid_codes']['http://hl7.org/fhir/administrative-gender']
 
   validates :gender, inclusion: { in: GENDERS, allow_nil: true }

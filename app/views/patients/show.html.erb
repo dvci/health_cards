@@ -1,13 +1,29 @@
 <p id="notice"><%= notice %></p>
 
-<% @patient.attributes.each do |attr, value| %>
-<p>
-  <strong><%= attr.titleize %>:</strong>
-  <%= value %>
-</p>
-
-<%end%>
-
-
+<h1> <%= @patient.full_name %></h1>
+<%= link_to 'Immunize', new_patient_immunization_path(@patient) %> |
 <%= link_to 'Edit', edit_patient_path(@patient) %> |
-<%= link_to 'Back', patients_path %>
+<%= link_to 'List', patients_path %>
+<h2>Info</h2>
+<strong>Gender</strong><%= display(@patient.gender) %>
+<strong>Birth Date </strong><%= display(@patient.birth_date) %>
+<h2>Contact</h2>
+<strong>Phone</strong><p><%= display(@patient.phone) %></p>
+<strong>Email</strong><p><%= display(@patient.email) %></p>
+<h2>Immunization Record</h2>
+<table>
+<tr>
+<th>Name</th><th>Date Administered</th><th>Lot Number</th><th>Actions</th>
+<% @patient.immunizations.each do |i| %>
+<tr>
+  <td><%= i.vaccine.name %></td>
+  <td><%= i.occurrence.localtime.to_formatted_s(:long) %></td>
+  <td><%= i.lot_number %> </td>
+  <td>
+  <%= link_to 'Edit', edit_patient_immunization_path(@patient, i) %> |
+  <%= link_to 'Destroy', patient_immunization_path(@patient, i), method: :delete, data: { confirm: 'Are you sure?' } %>
+</tr>
+<% end %>
+</table>
+
+
