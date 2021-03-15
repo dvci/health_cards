@@ -14,10 +14,8 @@ class IssuerTest < ActiveSupport::TestCase
     jwks = issuer.jwks
 
     assert File.exist? issuer.signing_key_path
-    assert File.exist? issuer.encryption_key_path
-    assert_equal 2, jwks[:keys].length
+    assert_equal 1, jwks[:keys].length
     assert jwks[:keys].one? { |key| key[:use] == 'sig' && key[:alg] == 'ES256' }
-    assert jwks[:keys].one? { |key| key[:use] == 'enc' && key[:alg] == 'ECDH-ES'}
   end
 
   test 'Use existing keys if they exist' do
