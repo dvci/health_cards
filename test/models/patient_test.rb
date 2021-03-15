@@ -20,6 +20,7 @@ class PatientTest < ActiveSupport::TestCase
 
   test 'update patient' do
     patient = Patient.create
+    # byebug
     given = 'foo'
     assert patient.update(given: given)
     patient.reload
