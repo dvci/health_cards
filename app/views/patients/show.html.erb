@@ -5,8 +5,8 @@
 <%= link_to 'Edit', edit_patient_path(@patient) %> |
 <%= link_to 'List', patients_path %>
 <h2>Info</h2>
-<strong>Gender</strong><%= display(@patient.gender) %>
-<strong>Birth Date </strong><%= display(@patient.birth_date) %>
+<strong>Gender</strong><%= @patient.gender %>
+<strong>Birth Date </strong><%= @patient.birth_date %>
 <h2>Immunization Record</h2>
 <table>
 <tr>

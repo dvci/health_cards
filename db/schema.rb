@@ -32,7 +32,6 @@ ActiveRecord::Schema.define(version: 2021_03_15_205132) do
     t.string "code"
     t.string "name"
     t.integer "doses_required"
-    t.integer "days_to_effectiveness_from_last_dose"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
