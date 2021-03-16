@@ -4,7 +4,7 @@ require 'test_helper'
 
 class ImmunizationsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @patient = Patient.create
+    @patient = Patient.create(given: 'Foo')
     @vaccine = Vaccine.create(code: 'a', name: 'b')
     @immunization = @patient.immunizations.create(vaccine: @vaccine, occurrence: Time.zone.now)
   end
