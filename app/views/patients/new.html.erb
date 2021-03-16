@@ -1,5 +1,7 @@
-<h1>New Patient</h1>
+<section class="hero is-small is-link">
+  <div class="hero-body">
+    <p class="title">New Patient</p>
+  </div>
+</section>
 
-<%= render 'form', patient: @patient %>
-
-<%= link_to 'Back', patients_path %>
+<%= render 'form', patient: @patient, return_path: patients_path %>

@@ -1,40 +1,56 @@
-<%= form_with(model: patient) do |form| %>
-  <% if patient.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(patient.errors.count, "error") %> prohibited this patient from being saved:</h2>
+<section class="section">
+  <div class="container">
+    <%= form_with(model: patient) do |form| %>
+      <% if patient.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(patient.errors.count, "error") %> prohibited this patient from being saved:</h2>
 
-      <ul>
-        <% patient.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+          <ul>
+            <% patient.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
 
-  <div class="field">
-    <%= form.label 'Given Name' %>
-    <%= form.text_field :given %>
+      <div class="field">
+        <%= form.label 'Given Name', class: 'label' %>
+        <div class="control">
+          <%= form.text_field :given, class: 'input' %>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= form.label 'Family Name', class: 'label' %>
+        <div class="control">
+          <%= form.text_field :family, class: 'input' %>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= form.label :gender, class: 'label' %>
+        <div class="control">
+          <div class="select">
+            <%= form.select :gender, options_for_select(Patient::GENDERS)  %>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= form.label :birth_date, class: 'label' %>
+        <div class="control">
+          <%= form.date_field :birth_date, class: 'input' %>
+        </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <%= form.submit class: 'button is-link' %>
+        </div>
+        <div class="control">
+          <%= link_to 'Cancel', patients_path, class: 'button is-link is-light' %>
+        </div>
+      </div>
+    <% end %>
   </div>
-  
-  <div class="field">
-    <%= form.label 'Family Name' %>
-    <%= form.text_field :family %>
-  </div>
-
-  <div class="field">
-    <%= form.label :gender %>
-    <%= form.select :gender, options_for_select(Patient::GENDERS)  %>
-  </div>
-
-  <div class="field">
-    <%= form.label :birth_date %>
-    <%= form.date_select :birth_date %>
-  </div>
-
-
-  <div class="actions">
-    <%= form.submit %>
-  </div>
-  
-
-<% end %>
+</section>
