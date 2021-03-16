@@ -1,32 +1,46 @@
-<%= form_for([@patient, @immunization]) do |form| %>
-  <% if immunization.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(immunization.errors.count, "error") %> prohibited this immunization from being saved:</h2>
+<section class="section">
+  <div class="container">
+    <%= form_for([@patient, @immunization]) do |form| %>
+      <% if immunization.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(immunization.errors.count, "error") %> prohibited this immunization from being saved:</h2>
 
-      <ul>
-	<% immunization.errors.each do |error| %>
-	  <li><%= error.full_message %></li>
-	<% end %>
-      </ul>
-    </div>
-  <% end %>
+          <ul>
+            <% immunization.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
 
-  <div class="field">
-    <%= form.label :vaccine %>
-    <%= form.select :vaccine_id, options_from_collection_for_select(@vaccines, :id, :name) %>
+      <div class="field">
+        <%= form.label :vaccine, class: 'label' %>
+        <div class="control">
+          <div class="select">
+            <%= form.select :vaccine_id, options_from_collection_for_select(@vaccines, :id, :name) %>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= form.label :occurrence, class: 'label' %>
+        <%= form.date_select :occurrence, class: 'input' %>
+      </div>
+
+      <div class="field">
+        <%= form.label :lot_number, class: 'label' %>
+        <%= form.text_field :lot_number, class: 'input' %>
+      </div>
+
+
+      <div class="field is-grouped">
+        <div class="control">
+          <%= form.submit class: 'button is-link' %>
+        </div>
+        <div class="control">
+          <%= link_to 'Cancel', patient_path(@patient), class: 'button is-link is-light' %>
+        </div>
+      </div>
+    <% end %>
   </div>
-
-  <div class="field">
-    <%= form.label :occurrence %>
-    <%= form.date_select :occurrence %>
-  </div>
-
-  <div class="field">
-    <%= form.label :lot_number %>
-    <%= form.text_field :lot_number %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit %>
-  </div>
-<% end %>
+</section>
