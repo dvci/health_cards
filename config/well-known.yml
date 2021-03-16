@@ -1,6 +1,6 @@
 default: &default
-  authorization_endpoint: https://ehr.example.com/auth/authorize
-  token_endpoint: https://ehr.example.com/auth/token
+  authorization_endpoint: <%= ENV['HOST'] %>/auth/authorize
+  token_endpoint: <%= ENV['HOST'] %>/auth/token
   token_endpoint_auth_methods_supported: [client_secret_basic]
   scopes_supported: [launch/patient, patient/Immunization.read]
   response_types_supported: [code, code id_token, id_token, refresh_token]
@@ -12,5 +12,3 @@ test:
   <<: *default
 production:
   <<: *default
-  authorization_endpoint: <%= ENV['AUTH_ENDPOINT'] %>
-  token_endpoint: <%= ENV['TOKEN_ENDPOINT'] %>
