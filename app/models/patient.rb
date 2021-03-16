@@ -20,10 +20,17 @@ class Patient < ApplicationRecord
     [given, family].join(' ') if given || family
   end
 
+  def to_bundle
+    entries = [self.json] + self.immunizations.map(&:json)
+    bundle = FHIR::Bundle.new(type: 'collection', entry: entries)
+  end
+
+  # Overriden getters/setters to support FHIR JSON
+
   def given
     first_name[:given].try(:first)
   end
-
+FHIR::Bundle
   def given=(giv)
     json.name = [{ given: [giv] }]
     super(giv)
