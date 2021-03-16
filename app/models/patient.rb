@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
-# require 'concerns/fhir_json_storage'
-require 'serializers/fhir'
-
 # Patient model to map our input form to FHIR
 class Patient < ApplicationRecord
-
   attribute :given, :string
   attribute :family, :string
   attribute :gender, :string
@@ -28,36 +24,34 @@ class Patient < ApplicationRecord
     first_name[:given].try(:first)
   end
 
-  def given=(_given)
-    json.name = [{given: [_given]}]
-    super(_given)
+  def given=(giv)
+    json.name = [{ given: [giv] }]
+    super(giv)
   end
 
   def family
     first_name[:family]
   end
 
-  def family=(_family)
-    first_name[:family] = _family
-    super(_family)
+  def family=(fam)
+    first_name[:family] = fam
+    super(fam)
   end
 
-  def gender
-    json.gender
-  end
+  delegate :gender, to: :json
 
-  def gender=(_gender)
-    json.gender = _gender
-    super(_gender)
+  def gender=(gen)
+    json.gender = gen
+    super(gen)
   end
 
   def birth_date
     json.birthDate
   end
 
-  def birth_date=(_birth_date)
-    json.birthDate = _birth_date
-    super(_birth_date)
+  def birth_date=(bdt)
+    json.birthDate = bdt
+    super(bdt)
   end
 
   private
@@ -66,5 +60,4 @@ class Patient < ApplicationRecord
     json.name ||= name
     json.name[0] ||= {}
   end
-
 end

@@ -14,11 +14,9 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'invalid json validation' do
-
     assert_raises(ActiveRecord::SerializationTypeMismatch) do
       Patient.new(json: "asdfasdasdf'jkl")
     end
-
   end
 
   test 'invalid fhir json' do
@@ -26,17 +24,12 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.new_record?
   end
 
-  # test 'empty patient json serialization' do
-  #   patient = Patient.create
-  #   assert_not patient.new_record?, patient.errors.full_messages
-  # end
-
-  # test 'update patient' do
-  #   patient = Patient.create
-  #   # byebug
-  #   given = 'foo'
-  #   assert patient.update(given: given)
-  #   patient.reload
-  #   assert_equal given, patient.given
-  # end
+  test 'update patient' do
+    patient = Patient.create
+    # byebug
+    given = 'foo'
+    assert patient.update(given: given)
+    patient.reload
+    assert_equal given, patient.given
+  end
 end

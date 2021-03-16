@@ -17,8 +17,8 @@ class ImmunizationsControllerTest < ActionDispatch::IntegrationTest
   test 'should create immunization' do
     assert_difference('Immunization.count') do
       post patient_immunizations_url(@patient),
-	   params: { immunization: { lot_number: @immunization.lot_number, occurrence: @immunization.occurrence,
-				     vaccine_id: @immunization.vaccine_id } }
+           params: { immunization: { lot_number: @immunization.lot_number, occurrence: @immunization.occurrence,
+                                     vaccine_id: @immunization.vaccine_id } }
     end
 
     assert_redirected_to patient_path(@patient)
@@ -31,8 +31,8 @@ class ImmunizationsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should update immunization' do
     patch patient_immunization_url(@patient, @immunization),
-	  params: { immunization: { lot_number: @immunization.lot_number, occurrence: @immunization.occurrence,
-				    patient: @immunization.patient, vaccine: @immunization.vaccine } }
+          params: { immunization: { lot_number: @immunization.lot_number, occurrence: @immunization.occurrence,
+                                    patient: @immunization.patient, vaccine: @immunization.vaccine } }
     assert_redirected_to patient_path(@patient)
   end
 

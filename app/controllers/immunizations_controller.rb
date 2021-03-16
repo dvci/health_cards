@@ -21,11 +21,11 @@ class ImmunizationsController < ApplicationController
 
     respond_to do |format|
       if @immunization.save
-	format.html { redirect_to @patient, notice: 'Immunization was successfully created.' }
-	format.json { render :show, status: :created, location: @immunization }
+        format.html { redirect_to @patient, notice: 'Immunization was successfully created.' }
+        format.json { render :show, status: :created, location: @immunization }
       else
-	format.html { render :new, status: :unprocessable_entity }
-	format.json { render json: @immunization.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @immunization.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -34,11 +34,11 @@ class ImmunizationsController < ApplicationController
   def update
     respond_to do |format|
       if @immunization.update(immunization_params)
-	format.html { redirect_to patient_path(@patient), notice: 'Immunization was successfully updated.' }
-	format.json { render :show, status: :ok, location: @immunization }
+        format.html { redirect_to patient_path(@patient), notice: 'Immunization was successfully updated.' }
+        format.json { render :show, status: :ok, location: @immunization }
       else
-	format.html { render :edit, status: :unprocessable_entity }
-	format.json { render json: @immunization.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @immunization.errors, status: :unprocessable_entity }
       end
     end
   end

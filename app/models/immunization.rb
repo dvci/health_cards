@@ -3,7 +3,7 @@
 # Maps FHIR Immunization to Web UI. Represents a dose of an immunization, actual
 # vaccine info is stored in Vaccine. These are composited when mapping to FHIR
 class Immunization < ApplicationRecord
-  include FHIRJsonStorage
+  # include FHIRJsonStorage
 
   attribute :occurrence, :datetime
   attribute :lot_number, :string
@@ -11,26 +11,32 @@ class Immunization < ApplicationRecord
   belongs_to :patient
   belongs_to :vaccine
 
+  serialize :json, FHIR::Immunization
+
   validates :occurrence, presence: true
   validates :vaccine, presence: true
   validates :patient, presence: true
 
-  def from_fhir_json(patient)
-    {
-      occurrence: patient.occurrenceDateTime,
-      lot_number: patient.lotNumber
-    }
+  def lot_number
+    json.lotNumber
   end
 
-  def to_fhir_json
-    {
-      vaccineCode: {
-	coding: [{ system: 'http://hl7.org/fhir/sid/cvx', code: vaccine.code }]
-      },
-      status: 'completed',
-      occurrenceDateTime: occurrence,
-      lotNumber: lot_number,
-      patient: { reference: "Patient/#{patient_id}" }
-    }
+  def lot_number=(lnum)
+    json.lotNumber = lnum
+    super(lnum)
+  end
+
+  def occurrence
+    json.occurrenceDateTime
+  end
+
+  def occurrence=(occ)
+    json.occurrenceDateTime = occ
+    super(occ)
+  end
+
+  def vaccine=(vax)
+    json.vaccineCode = vax.code
+    super(vax)
   end
 end
