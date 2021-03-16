@@ -22,7 +22,7 @@ class Patient < ApplicationRecord
 
   def to_bundle
     entries = [self.json] + self.immunizations.map(&:json)
-    bundle = FHIR::Bundle.new(type: 'collection', entry: entries)
+    FHIR::Bundle.new(type: 'collection', entry: entries)
   end
 
   # Overriden getters/setters to support FHIR JSON
