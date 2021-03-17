@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'serializers/fhir_serializer'
+
 # Patient model to map our input form to FHIR
-class Patient < ApplicationRecord
+class Patient < FHIRRecord
   attribute :given, :string
   attribute :family, :string
   attribute :gender, :string
@@ -21,27 +23,25 @@ class Patient < ApplicationRecord
   end
 
   def to_bundle
-    entries = [self.json] + self.immunizations.map(&:json)
+    entries = [json] + immunizations.map(&:json)
     FHIR::Bundle.new(type: 'collection', entry: entries)
   end
 
   # Overriden getters/setters to support FHIR JSON
 
   def given
-    first_name[:given].try(:first)
+    first_name.given.try(:first)
   end
-FHIR::Bundle
+
   def given=(giv)
-    json.name = [{ given: [giv] }]
+    first_name.given = [giv]
     super(giv)
   end
 
-  def family
-    first_name[:family]
-  end
+  delegate :family, to: :first_name
 
   def family=(fam)
-    first_name[:family] = fam
+    first_name.family = fam
     super(fam)
   end
 
@@ -53,7 +53,7 @@ FHIR::Bundle
   end
 
   def birth_date
-    json.birthDate
+    json.birthDate ? Date.parse(json.birthDate) : nil
   end
 
   def birth_date=(bdt)
@@ -64,7 +64,7 @@ FHIR::Bundle
   private
 
   def first_name
-    json.name ||= name
-    json.name[0] ||= {}
+    json.name << FHIR::HumanName.new if json.name.empty?
+    json.name[0]
   end
 end

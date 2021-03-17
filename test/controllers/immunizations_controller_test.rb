@@ -7,6 +7,7 @@ class ImmunizationsControllerTest < ActionDispatch::IntegrationTest
     @patient = Patient.create(given: 'Foo')
     @vaccine = Vaccine.create(code: 'a', name: 'b')
     @immunization = @patient.immunizations.create(vaccine: @vaccine, occurrence: Time.zone.now)
+    assert_valid @immunization
   end
 
   test 'should get new' do

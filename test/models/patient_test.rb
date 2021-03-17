@@ -9,20 +9,20 @@ class PatientTest < ActiveSupport::TestCase
     assert p1.valid?, p1.errors.full_messages.join(', ')
     p2 = Patient.find(p1.id)
     p1.attributes.each do |attr, val|
-      assert_equal val, p2.send(attr), "Patient #{attr} not the same"
+      assert_equal val, p2.send(attr), "Patient #{attr} #{val.class} not the same"
     end
   end
 
   test 'invalid json validation' do
     assert_raises(ActiveRecord::SerializationTypeMismatch) do
-      Patient.new(json: "asdfasdasdf'jkl")
+      Patient.create(json: "asdfasdasdf'jkl")
     end
   end
 
   test 'bundle creation' do
     @pat = Patient.create(given: 'foo')
     vax = Vaccine.create(code: 'a', name: 'b')
-    @pat.immunizations.create(occurrence: Time.now, vaccine: vax)
+    @pat.immunizations.create(occurrence: Time.zone.now, vaccine: vax)
     bundle = @pat.to_bundle
     assert_equal 2, bundle.entry.size
     assert_equal FHIR::Patient, bundle.entry[0].class
