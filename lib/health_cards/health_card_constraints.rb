@@ -108,11 +108,11 @@ module HealthCards
   end
 end
 
-include HealthCards::HealthCardConstraints
+# include HealthCards::HealthCardConstraints
 
-FILEPATH = 'fixtures/vc-c19-pcr-jwt-payload.json'
-file = File.read(FILEPATH)
-payload = JSON.parse(file)
+# FILEPATH = 'fixtures/vc-c19-pcr-jwt-payload.json'
+# file = File.read(FILEPATH)
+# payload = JSON.parse(file)
 
-constrain_health_cards(payload)
-# puts constrain_health_cards(payload)
+# constrain_health_cards(payload)
+# # puts constrain_health_cards(payload)
