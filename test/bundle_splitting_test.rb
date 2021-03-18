@@ -1,45 +1,45 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-
-require 'health_cards/bundle_splitting.rb'
-
+require 'health_cards/bundle_splitting'
 
 FILEPATH_SMALL = 'test/fixtures/example-00-d-jws.txt'
+FILEPATH_LARGE = 'test/fixtures/example-02-d-jws.txt'
 
 describe HealthCards::BundleSplitting do
-  before do
-    @small_jws = File.read(FILEPATH_SMALL).split[0]
+  class DummyClass
+  end
+
+  before(:all) do
+    @dummy_class = DummyClass.new
+    @dummy_class.extend(HealthCards::BundleSplitting)
   end
 
   describe 'when a jws of size <= 1195 is passed into the bundle splitter' do
+    before do
+      @small_jws = File.read(FILEPATH_SMALL).split[0]
+    end
+
     it 'returns only 1 chunk' do
-      puts(HealthCards::BundleSplitting::split_bundle(@small_jws))
-      _(HealthCards::BundleSplitting::split_bundle(@small_jws)).length.must_equal 1
+      small_jws_split = @dummy_class.split_bundle(@small_jws)
+      _(small_jws_split.length).must_equal(1)
     end
   end
 
-  # describe 'when a jws of size >= 1190 is passed into the bundle splitter' do
-  #   before do
-  #     ## Later actually import the large one and move the big to do to the smaller describe
-  #     @large_jws = @small_jws * 10
-  #   end
+  describe 'when a jws of size > 1195 is passed into the bundle splitter' do
+    before do
+      @large_jws = File.read(FILEPATH_LARGE).split[0]
+      @large_jws_split = @dummy_class.split_bundle(@large_jws)
+    end
 
-  #   it 'returns multiple chunks if the string size is > 1195' do
-  #   end
-  #   it 'returns chunks that have string sizes of < 1191' do
-  #  end
+    it 'returns multiple chunks if the string size is > 1195' do
+      assert_operator(1, :<, @large_jws_split.length)
+    end
+
+    it 'returns chunks that have string sizes of < 1191' do
+      @large_jws_split.each do |chunk|
+        assert_operator(1191, :>=, chunk.length)
+      end
+    end
+   end
 end
-
-# FILEPATH_SMALL = 'fixtures/example-00-d-jws.txt'
-
-# file_data = File.read(FILEPATH_SMALL).split
-
-# small_jws = file_data[0]
-# large_jws = small_jws * 10
-
-# small_split = split_bundle(small_jws)
-# large_split = split_bundle(large_jws)
-
-# puts "Small JWS Payload is #{small_jws.length} characters long and is split into #{small_split.length} chunks."
-# puts "Large JWS Payload is #{large_jws.length} characters long and is split into #{large_split.length} chunks."
