@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'health_cards/bundle_splitting'
+require 'health_cards/chunking'
 
 FILEPATH_SMALL = 'test/fixtures/example-00-d-jws.txt'
 FILEPATH_LARGE = 'test/fixtures/example-02-d-jws.txt'
 
-describe HealthCards::BundleSplitting do
+describe HealthCards::Chunking do
   class DummyClass
   end
 
   before(:all) do
     @dummy_class = DummyClass.new
-    @dummy_class.extend(HealthCards::BundleSplitting)
+    @dummy_class.extend(HealthCards::Chunking)
   end
 
   describe 'when a jws of size <= 1195 is passed into the bundle splitter' do
