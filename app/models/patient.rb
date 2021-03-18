@@ -41,7 +41,7 @@ class Patient < FHIRRecord
   delegate :family, to: :first_name
 
   def family=(fam)
-    first_name.family = fam
+    first_name.family = fam.presence
     super(fam)
   end
 
@@ -53,12 +53,13 @@ class Patient < FHIRRecord
   end
 
   def birth_date
-    json.birthDate ? Date.parse(json.birthDate) : nil
+    from_fhir_time(json.birthDate)
   end
 
   def birth_date=(bdt)
-    json.birthDate = bdt
     super(bdt)
+    json.birthDate = to_fhir_time(attributes['birth_date'])
+    attributes['birth_date']
   end
 
   private

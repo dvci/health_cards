@@ -7,9 +7,7 @@ module FHIRSerializer
   end
 
   def dump(model)
-    unless model.class.module_parent == FHIR
-      raise ActiveRecord::SerializationTypeMismatch
-    end
+    raise ActiveRecord::SerializationTypeMismatch unless model.class.module_parent == FHIR
 
     model.to_json
   end
