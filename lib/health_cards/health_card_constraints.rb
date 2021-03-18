@@ -3,7 +3,7 @@
 require 'json'
 require 'base64'
 require 'zlib'
-require 'json/minify'
+#require 'json/minify'
 
 module HealthCards
   ## Functionality for "Health Cards are Small" section of the Smart Health Cards Specification
