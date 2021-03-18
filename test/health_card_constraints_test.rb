@@ -2,7 +2,7 @@
 
 require 'test_helper'
 require 'pp'
-require 'hash_dig_and_collect'
+# require 'hash_dig_and_collect'
 
 require 'health_cards/health_card_constraints'
 
@@ -52,7 +52,7 @@ describe HealthCards::HealthCardConstraints do
       # puts new_entries.dig_and_collect('fullUrl')
       new_entries.each do |e|
         #puts e
-        thing =  e.dig_and_collect("id")
+        #thing =  e.dig_and_collect("id")
       end
     end
 
