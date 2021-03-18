@@ -9,7 +9,7 @@ class ImmunizationTest < ActiveSupport::TestCase
   end
 
   test 'json serialization of vax data' do
-    imm = @pat.immunizations.create(vaccine: @vax, occurrence: Time.zone.now)
+    imm = @pat.immunizations.create(vaccine: @vax, occurrence: Time.zone.today)
     assert_not imm.new_record?, imm.errors.full_messages.join(', ')
     assert_equal @vax.code, imm.json.vaccineCode.coding[0].code
   end

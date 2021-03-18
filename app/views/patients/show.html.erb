@@ -14,7 +14,7 @@
 <% @patient.immunizations.each do |i| %>
 <tr>
   <td><%= i.vaccine.name %></td>
-  <td><%= i.occurrence.localtime.to_formatted_s(:long) %></td>
+  <td><%= i.occurrence %></td>
   <td><%= i.lot_number %> </td>
   <td>
   <%= link_to 'Edit', edit_patient_immunization_path(@patient, i) %> |
