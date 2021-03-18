@@ -5,7 +5,10 @@ require 'health_cards/chunking'
 
 JWS_SMALL = 's' * 1195
 JWS_LARGE = 'l' * 1196
+<<<<<<< HEAD
 JWS_3 = "#{'t' * 1191 * 2}t"
+=======
+>>>>>>> Refactor chunking_test.rb
 
 class ChunkingTest < ActiveSupport::TestCase
   setup do
@@ -21,11 +24,14 @@ class ChunkingTest < ActiveSupport::TestCase
   test 'A JWS of size > 1195 returns multiple chunks' do
     large_jws_split = @dummy_class.split_bundle(JWS_LARGE)
     assert_operator(1, :<, large_jws_split.length)
+<<<<<<< HEAD
   end
 
   test 'A JWS of size 1191 * 2 + 1 characters returns 3 chunks' do
     thrice_jws_split = @dummy_class.split_bundle(JWS_3)
     assert_equal(3, thrice_jws_split.length)
+=======
+>>>>>>> Refactor chunking_test.rb
   end
 
   test 'Individual chunks of split-up JWS have string sizes of < 1191 characters' do
