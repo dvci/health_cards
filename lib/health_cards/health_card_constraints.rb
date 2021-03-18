@@ -3,7 +3,7 @@
 require 'json'
 require 'base64'
 require 'zlib'
-#require 'json/minify'
+# require 'json/minify'
 
 module HealthCards
   ## Functionality for "Health Cards are Small" section of the Smart Health Cards Specification
@@ -110,7 +110,7 @@ end
 
 # include HealthCards::HealthCardConstraints
 
-# FILEPATH = 'fixtures/vc-c19-pcr-jwt-payload.json'
+# FILEPATH = 'fixtures/files/vc-c19-pcr-jwt-payload.json'
 # file = File.read(FILEPATH)
 # payload = JSON.parse(file)
 
