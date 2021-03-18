@@ -10,10 +10,11 @@ module HealthCards
       if jws.length <= MAX_SINGLE_JWS_SIZE
         [jws]
       else
-        chunk_count = (jws.length / MAX_CHUNK_SIZE.to_f).ceil
-        chunk_size  = (jws.length / chunk_count.to_f).ceil
-        jws.scan(/.{1,#{chunk_size}}/)
+        chunk_count = (jws.length / (MAX_CHUNK_SIZE).to_f).ceil()
+        chunk_size  = (jws.length / (chunk_count).to_f).ceil()
+        chunks = jws.scan(/.{1,#{chunk_size}}/)
 
+        return chunks
       end
     end
   end
