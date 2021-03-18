@@ -39,7 +39,6 @@ class PatientTest < ActiveSupport::TestCase
     patient = Patient.create(given: 'foo', birth_date: '')
     assert patient.birth_date.nil?
     assert patient.json.birthDate.nil?
-    # byebug
   end
 
   test 'update patient' do
