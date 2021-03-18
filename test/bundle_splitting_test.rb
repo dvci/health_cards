@@ -8,7 +8,7 @@ FILEPATH_LARGE = 'test/fixtures/example-02-d-jws.txt'
 
 describe HealthCards::Chunking do
   class DummyClass
-  end
+end
 
   before(:all) do
     @dummy_class = DummyClass.new
@@ -41,5 +41,5 @@ describe HealthCards::Chunking do
         assert_operator(1191, :>=, chunk.length)
       end
     end
-   end
+  end
 end
