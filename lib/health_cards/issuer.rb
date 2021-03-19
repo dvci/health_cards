@@ -12,7 +12,7 @@ module HealthCards
     attr_reader :key_path
 
     def initialize(key_path = Pathname.new('.'))
-      @key_path = key_path
+      @key_path = key_path.is_a?(String) ? Pathname.new(key_path) : key_path
     end
 
     def signing_key_path
