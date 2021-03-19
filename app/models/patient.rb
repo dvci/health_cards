@@ -1,58 +1,71 @@
 # frozen_string_literal: true
 
-# Patient model acts as a shim around a FHIR JSON patient blob in order to interact with
-# form builder and enable us to save the JSON into a database
-class Patient < ApplicationRecord
+require 'serializers/fhir_serializer'
+
+# Patient model to map our input form to FHIR
+class Patient < FHIRRecord
   attribute :given, :string
   attribute :family, :string
   attribute :gender, :string
-  attribute :phone, :string
-  attribute :email, :string
   attribute :birth_date, :date
 
-  FHIR_DEFINITION = FHIR::Definitions.resource_definition('Patient')
+  serialize :json, FHIR::Patient
+
+  has_many :immunizations, dependent: :destroy
+
   GENDERS = FHIR::Patient::METADATA['gender']['valid_codes']['http://hl7.org/fhir/administrative-gender']
 
+  validates :given, presence: true
   validates :gender, inclusion: { in: GENDERS, allow_nil: true }
-  validate do
-    FHIR_DEFINITION.errors.each { |e| errors.add(:base, e) } unless FHIR_DEFINITION.validates_resource?(fhir_patient)
-  end
-
-  before_validation do
-    self.json = new_from_attributes.to_json
-  end
-
-  after_find do
-    name = fhir_patient.name.first
-    if name
-      self.given  = name.given.first
-      self.family = name.family
-    end
-    self.gender = fhir_patient.gender
-    self.email  = fhir_patient.telecom.find { |t|  t.system == 'email' }.value
-    self.phone  = fhir_patient.telecom.find { |t|  t.system == 'phone' }.value
-    self.birth_date = fhir_patient.birthDate
-  end
 
   def full_name
     [given, family].join(' ') if given || family
   end
 
-  private
-
-  def fhir_patient
-    return @patient if @patient && !has_changes_to_save?
-
-    @patient = FHIR.from_contents(json)
+  def to_bundle
+    entries = [json] + immunizations.map(&:json)
+    FHIR::Bundle.new(type: 'collection', entry: entries)
   end
 
-  def new_from_attributes
-    FHIR::Patient.new(
-      name: [{ given: [given], family: family }],
-      gender: gender,
-      telecom: [{ system: 'phone', value: phone },
-                { system: 'email', value: email }],
-      birthDate: birth_date
-    )
+  # Overriden getters/setters to support FHIR JSON
+
+  def given
+    first_name.given.try(:first)
+  end
+
+  def given=(giv)
+    first_name.given = [giv]
+    super(giv)
+  end
+
+  delegate :family, to: :first_name
+
+  def family=(fam)
+    first_name.family = fam.presence
+    super(fam)
+  end
+
+  delegate :gender, to: :json
+
+  def gender=(gen)
+    json.gender = gen
+    super(gen)
+  end
+
+  def birth_date
+    from_fhir_time(json.birthDate)
+  end
+
+  def birth_date=(bdt)
+    super(bdt)
+    json.birthDate = to_fhir_time(attributes['birth_date'])
+    attributes['birth_date']
+  end
+
+  private
+
+  def first_name
+    json.name << FHIR::HumanName.new if json.name.empty?
+    json.name[0]
   end
 end

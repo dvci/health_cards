@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Immunizations</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Patient</th>
+      <th>Vaccine</th>
+      <th>Occurrence</th>
+      <th>Lot number</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @immunizations.each do |immunization| %>
+      <tr>
+	<td><%= immunization.patient %></td>
+	<td><%= immunization.vaccine %></td>
+	<td><%= immunization.occurrence %></td>
+	<td><%= immunization.lot_number %></td>
+	<td><%= link_to 'Show', immunization %></td>
+	<td><%= link_to 'Edit', edit_immunization_path(immunization) %></td>
+	<td><%= link_to 'Destroy', immunization, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Immunization', new_immunization_path %>

@@ -10,10 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_10_202025) do
+ActiveRecord::Schema.define(version: 2021_03_15_205132) do
+
+  create_table "immunizations", force: :cascade do |t|
+    t.integer "patient_id"
+    t.integer "vaccine_id"
+    t.string "json"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_immunizations_on_patient_id"
+    t.index ["vaccine_id"], name: "index_immunizations_on_vaccine_id"
+  end
 
   create_table "patients", force: :cascade do |t|
     t.string "json"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "vaccines", force: :cascade do |t|
+    t.string "code"
+    t.string "name"
+    t.integer "doses_required"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

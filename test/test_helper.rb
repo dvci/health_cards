@@ -16,6 +16,11 @@ module ActiveSupport
     # Run tests in parallel with specified workers
     # parallelize(workers: :number_of_processors)
 
+    def assert_valid(model)
+      model.validate
+      assert_empty model.errors, model.errors.full_messages.join(', ')
+    end
+
     def assert_attributes_equal(record1, record2, attr_list = nil)
       (attr_list || record1.attributes.keys).each do |attr|
         unless attr == 'id'
