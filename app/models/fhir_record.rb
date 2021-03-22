@@ -6,6 +6,11 @@ class FHIRRecord < ApplicationRecord
 
   validate :valid_fhir_json
 
+  def min_json
+    atts = ['resourceType'] + min_json_attributes
+    json.to_hash.delete_if {|k,v| !atts.include?(k) }
+  end
+
   protected
 
   def to_fhir_time(time)
@@ -21,6 +26,10 @@ class FHIRRecord < ApplicationRecord
 
   def from_fhir_time(time_string)
     Date.parse(time_string) if time_string.present?
+  end
+
+  def min_json_attributes
+    []
   end
 
   def valid_fhir_json
