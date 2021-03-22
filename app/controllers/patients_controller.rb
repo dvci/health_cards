@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'patients_helper'
 
 # PatientsController manages patients via the Web UI
 class PatientsController < ApplicationController
@@ -24,8 +25,6 @@ class PatientsController < ApplicationController
   # POST /patients or /patients.json
   def create
     @patient = Patient.new(patient_params) 
-
-
     respond_to do |format|
       if @patient.save
         format.html { redirect_to @patient, notice: 'Patient was successfully created.' }
