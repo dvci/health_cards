@@ -4,4 +4,11 @@
   </div>
 </section>
 
+<<<<<<< HEAD
 <%= render 'form', patient: @patient, return_path: patients_path %>
+=======
+<%= render 'form', patient: @patient %>
+
+<button><%= link_to 'Demo Data', new_patient_path ({:given => "John", :family => "Doe", :gender => "Male", :phone => "100-000-0000", :email => "john.doe@gmail.com", :birth_date => "01/01/1990"}) %></button>
+<%= link_to 'Back', patients_path %>
+>>>>>>> d9e684a (some changes)
