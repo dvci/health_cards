@@ -1,11 +1,17 @@
 # frozen_string_literal: true
 
 module PatientsHelper
-  def show_address(patient)
-    [patient.street_line1, patient.street_line2, patient.city, patient.state, patient.zip_code].compact.join(', ')
+  def fake_patient_params
+    gender = Patient::GENDERS.sample
+    given = case gender
+            when 'male'
+              Faker::Name.male_first_name
+            when 'female'
+              Faker::Name.female_first_name
+            else
+              Faker::Name.first_name
+            end
+    { patient: { given: given, family: Faker::Name.last_name, gender: gender,
+                 birth_date: Faker::Date.birthday(min_age: 16, max_age: 100) } }
   end
-
-    def fake_patient_params
-        {:given => Faker::Name.unique.first_name, :family => Faker::Name.unique.last_name, :gender => Faker::Gender, :birth_date => "01/01/1991"}
-    end 
 end
