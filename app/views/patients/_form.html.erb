@@ -15,7 +15,7 @@
     <%= form.label 'Given Name' %>
     <%= form.text_field :given %>
   </div>
-  
+
   <div class="field">
     <%= form.label 'Family Name' %>
     <%= form.text_field :family %>
@@ -23,7 +23,7 @@
 
   <div class="field">
     <%= form.label :gender %>
-    <%= form.select :gender, options_for_select(Patient::GENDERS)  %>
+    <%= form.select :gender, options_for_select(Patient::GENDERS, @patient.gender)  %>
   </div>
 
   <div class="field">
