@@ -17,6 +17,11 @@ class PatientsController < ApplicationController
     @patient = Patient.new
   end
 
+    # GET /patients/demo_patient
+    def new
+      @patient = Patient.new
+    end
+
   # GET /patients/1/edit
   def edit; end
 
@@ -66,6 +71,11 @@ class PatientsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def patient_params
+<<<<<<< HEAD
     params.require(:patient).permit(:given, :family, :gender, :birth_date)
+=======
+    @given = "John"
+    params.require(:patient).permit(:given, :family, :gender, :phone, :email, :birth_date)
+>>>>>>> ca3d658 (just trying different things to add the button)
   end
 end
