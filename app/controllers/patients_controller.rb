@@ -17,6 +17,11 @@ class PatientsController < ApplicationController
     @patient = Patient.new
   end
 
+    # GET /patients/demo_patient
+    def new
+      @patient = Patient.new
+    end
+
   # GET /patients/1/edit
   def edit; end
 
@@ -66,6 +71,7 @@ class PatientsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def patient_params
+    @given = "John"
     params.require(:patient).permit(:given, :family, :gender, :phone, :email, :birth_date)
   end
 end
