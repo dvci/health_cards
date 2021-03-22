@@ -5,3 +5,5 @@
 </section>
 
 <%= render 'form', patient: @patient, return_path: patients_path %>
+<%= button_to 'Demo Data', new_patient_path(@patient), method: :get %>
+<%= link_to 'Back', patients_path %>
