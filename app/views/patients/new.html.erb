@@ -3,8 +3,14 @@
 <%= render 'form', patient: @patient %>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <button><%= link_to 'Demo Data', new_patient_path ({:given => "John", :family => "Doe", :gender => "Male", :phone => "100-000-0000", :email => "john.doe@gmail.com", :birth_date => "01/01/1990"}) %></button>
 <%= link_to 'Back', patients_path %>
+=======
+<%= button_to 'Demo Data', new_patient_path(@patient), method: :get %>
+
+<%= link_to 'Back', patients_path %>
+>>>>>>> Stashed changes
 =======
 <%= button_to 'Demo Data', new_patient_path(@patient), method: :get %>
 
