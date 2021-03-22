@@ -94,6 +94,8 @@ GEM
       dotenv (= 2.7.6)
       railties (>= 3.2)
     erubi (1.10.0)
+    faker (2.17.0)
+      i18n (>= 1.6, < 2)
     ffi (1.15.0)
     fhir_models (4.1.1)
       bcp47 (>= 0.3)
@@ -276,6 +278,7 @@ DEPENDENCIES
   byebug
   capybara (>= 3.26)
   dotenv-rails
+  faker
   fhir_models
   jbuilder (~> 2.7)
   json-jwt

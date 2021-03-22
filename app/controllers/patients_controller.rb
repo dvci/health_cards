@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+
 # PatientsController manages patients via the Web UI
 class PatientsController < ApplicationController
   before_action :set_patient, only: %i[show edit update destroy]
@@ -19,7 +20,7 @@ class PatientsController < ApplicationController
 
   # GET /patients/new
   def new
-    @patient = Patient.new
+    @patient = Patient.new(params)
   end
 
     # GET /patients/demo_patient
@@ -32,7 +33,8 @@ class PatientsController < ApplicationController
 
   # POST /patients or /patients.json
   def create
-    @patient = Patient.new(patient_params)
+    @patient = Patient.new(patient_params) 
+
 
     respond_to do |format|
       if @patient.save
@@ -79,4 +81,5 @@ class PatientsController < ApplicationController
     params.require(:patient).permit(:given, :family, :gender, :birth_date, :phone, :email, :street_line1,
                                     :street_line2, :city, :state, :zip_code)
   end
+
 end
