@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 # PatientsController manages patients via the Web UI
 class PatientsController < ApplicationController
   before_action :set_patient, only: %i[show edit update destroy]
@@ -18,18 +17,12 @@ class PatientsController < ApplicationController
     @patient = Patient.new(params)
   end
 
-    # GET /patients/demo_patient
-    def new
-      @patient = Patient.new
-    end
-
   # GET /patients/1/edit
   def edit; end
 
   # POST /patients or /patients.json
   def create
-    @patient = Patient.new(patient_params) 
-
+    @patient = Patient.new(patient_params)
 
     respond_to do |format|
       if @patient.save
@@ -73,12 +66,6 @@ class PatientsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def patient_params
-<<<<<<< HEAD
     params.require(:patient).permit(:given, :family, :gender, :birth_date)
-=======
-    @given = "John"
-    params.require(:patient).permit(:given, :family, :gender, :phone, :email, :birth_date)
->>>>>>> ca3d658 (just trying different things to add the button)
   end
-
 end
