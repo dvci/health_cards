@@ -12,5 +12,4 @@ class CovidHealthCard
   def jwt
     vc.jwt(url)
   end
-
 end

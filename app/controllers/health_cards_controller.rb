@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class HealthCardsController < ApplicationController
-
   before_action :find_patient
 
   def show

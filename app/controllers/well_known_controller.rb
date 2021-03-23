@@ -12,5 +12,4 @@ class WellKnownController < ApplicationController
     issuer = Rails.application.config.issuer
     render json: JSON.pretty_generate(issuer.jwks)
   end
-
 end

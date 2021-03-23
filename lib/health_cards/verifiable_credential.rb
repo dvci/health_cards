@@ -35,6 +35,7 @@ module HealthCards
       {
         '@context': VC_CONTEXT,
         type: VC_TYPE,
+<<<<<<< HEAD
 	credentialSubject: credential_subject#,
 	# proof: proof(credential_subject)
       }
@@ -48,6 +49,14 @@ module HealthCards
       })
 
     end
+=======
+	credentialSubject: credential_subject # ,
+        # proof: proof(credential_subject)
+      }
+    end
+
+    def jwt(issuer, iat = Time.zone.now); end
+>>>>>>> refactor issuer
 
     private
 
