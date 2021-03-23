@@ -24,12 +24,16 @@
 
       <div class="field">
         <%= form.label :occurrence, class: 'label' %>
-        <%= form.date_select :occurrence, class: 'input' %>
+        <div class="control">
+          <%= form.date_field :occurrence, class: 'input' %>
+        </div>
       </div>
 
       <div class="field">
         <%= form.label :lot_number, class: 'label' %>
-        <%= form.text_field :lot_number, class: 'input' %>
+        <div class="control">
+          <%= form.text_field :lot_number, class: 'input' %>
+        </div>
       </div>
 
 
