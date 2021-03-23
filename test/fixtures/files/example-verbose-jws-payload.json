@@ -112,7 +112,7 @@
                     "display": "Not detected"
                   }
                 ],
-                "text": "CodeableConceptNotDetected"
+                "text": "NotDetectedText"
               }
             }
           }

@@ -1,28 +1,30 @@
 # frozen_string_literal: true
 
-require 'json'
 require 'base64'
 require 'zlib'
-# require 'json/minify'
+require 'json/minify'
 
 module HealthCards
   ## Functionality for "Health Cards are Small" section of the Smart Health Cards Specification
   module HealthCardConstraints
-    def strip_fhir_bundle(bundle)
-      entries = bundle['entry']
-      entries, url_map = update_uris(entries)
-      strip_resource_elements(entries, url_map)
+    def bundle_operations(payload)
+      bundle = payload['vc']['credentialSubject']['fhirBundle']
+      if bundle
+        entries = bundle['entry']
+        entries, url_map = redefine_uris(entries)
 
-      bundle
+        update_elements(entries, url_map)
+      end
+      payload
     end
 
-    def update_uris(resources)
+    def redefine_uris(resources)
       url_map = {}
       resource_count = 0
 
       resources.each do |entry|
         old_url = entry['fullUrl']
-        new_url = "Resource:#{resource_count}"
+        new_url = "resource:#{resource_count}"
 
         url_map[old_url] = new_url
         entry['fullUrl'] = new_url
@@ -33,86 +35,69 @@ module HealthCards
       [resources, url_map]
     end
 
-    def strip_resource_elements(resources, url_map)
+    def update_elements(resources, url_map)
       resources.each do |entry|
         resource = entry['resource']
-
-        update_links(resource, url_map)
 
         resource.delete('id')
         resource.delete('meta')
         resource.delete('text')
-
-        resource.each do |_element, value|
-          next unless value.is_a?(Hash) && value.key?('coding')
-
-          coding = value['coding']
-          coding.each do |codeable_concept|
-            codeable_concept.delete('display')
-          end
-          value.delete('text')
-        end
+        update_nested_elements(resource, url_map)
       end
-
       resources
     end
 
+    def update_nested_elements(hash, url_map) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      hash.each do |k, v|
+        if v.is_a?(Hash) && (k.include?('CodeableConcept') || v.key?('coding'))
+          v.delete('text')
+        elsif k == 'coding'
+          v.each do |coding|
+            coding.delete('display')
+          end
+        elsif k == 'reference' && v.is_a?(String)
+          v.replace url_map[v] if url_map.key?(v)
+        end
+
+        case v
+        when Hash
+          update_nested_elements(v, url_map)
+        when Array
+          v.flatten.each { |x| update_nested_elements(x, url_map) if x.is_a?(Hash) }
+        end
+      end
+      hash
+    end
+
     def minify_payload(payload)
-      minified_payload = JSON.minify(payload.to_json)
-      JSON.unparse(minified_payload)
+      JSON.minify(payload.to_json)
     end
 
     # According to  https://gist.github.com/alazarchuk/8223772181741c4b7a7c
     # Also references https://agileweboperations.com/2008/09/15/how-inflate-and-deflate-data-ruby-and-php/
-    def gzdeflate(payload)
-      Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(payload.to_s, Zlib::FINISH)
-    end
-
-    def update_links(hash, mapping) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      hash.each do |k, v|
-        if k == 'reference' && v.is_a?(String)
-          v.replace mapping[v] if mapping.key?(v)
-        elsif v.is_a?(Hash)
-          update_links(v, mapping)
-        elsif v.is_a?(Array)
-          v.flatten.each { |x| update_links(x, mapping) if x.is_a?(Hash) }
-        end
-      end
-      hash
-    end
-
-    def delete_key(hash, mapping) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      hash.each do |k, v|
-        if k == 'reference' && v.is_a?(String)
-          v.replace mapping[v] if mapping.key?(v)
-        elsif v.is_a?(Hash)
-          update_links(v, mapping)
-        elsif v.is_a?(Array)
-          v.flatten.each { |x| update_links(x, mapping) if x.is_a?(Hash) }
-        end
-      end
-      hash
+    def compress_payload(payload)
+      deflated = Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(payload.to_s, Zlib::FINISH)
+      Base64.encode64(deflated)
     end
 
     def constrain_health_cards(jws_payload)
-      bundle = jws_payload['vc']['credentialSubject']['fhirBundle']
-      if bundle
-        strip_fhir_bundle(bundle)
-        pp bundle
-        minify_payload(bundle)
-        return Base64.encode64(gzdeflate(bundle))
-      end
-
-      bundle
+      stripped_bundle_payload = bundle_operations(jws_payload)
+      minified_payload = minify_payload(stripped_bundle_payload)
+      compress_payload(minified_payload)
     end
   end
 end
 
-# include HealthCards::HealthCardConstraints
+include HealthCards::HealthCardConstraints
 
-# FILEPATH = 'fixtures/files/vc-c19-pcr-jwt-payload.json'
-# file = File.read(FILEPATH)
-# payload = JSON.parse(file)
+FILEPATH = 'lib/health_cards/fixtures/vc-c19-pcr-jwt-payload.json'
+# FILEPATH = 'lib/health_cards/fixtures/example-00-b-jws-payload-expanded.json'
+file = File.read(FILEPATH)
+payload = JSON.parse(file)
 
-# constrain_health_cards(payload)
-# # puts constrain_health_cards(payload)
+encoded = constrain_health_cards(payload)
+
+# puts constrain_health_cards(payload)
+
+decoded = Base64.decode64(encoded)
+inflated = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(decoded)
