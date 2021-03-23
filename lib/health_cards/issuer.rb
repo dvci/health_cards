@@ -2,6 +2,8 @@
 
 require_relative 'file_key_store'
 
+require 'json/jwk'
+
 module HealthCards
   # Verifiable Credential Issuer
   #
