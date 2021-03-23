@@ -17,7 +17,7 @@ class Immunization < FHIRRecord
   validates :vaccine, presence: true
   validates :patient, presence: true
 
-  MIN_ATTRIBUTES = %w(status vaccineCode patient occurrenceDateTime)
+  MIN_ATTRIBUTES = %w[status vaccineCode patient occurrenceDateTime].freeze
 
   after_initialize do
     json.status ||= 'completed'

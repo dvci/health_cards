@@ -14,19 +14,17 @@ class Patient < FHIRRecord
   has_many :immunizations, dependent: :destroy
 
   GENDERS = FHIR::Patient::METADATA['gender']['valid_codes']['http://hl7.org/fhir/administrative-gender']
-  MIN_ATTRIBUTES = %w(name birthDate) # Add address
+  MIN_ATTRIBUTES = %w[name birthDate].freeze # Add address
 
   validates :given, presence: true
   validates :gender, inclusion: { in: GENDERS, allow_nil: true }
-
-
 
   def full_name
     [given, family].join(' ') if given || family
   end
 
   def to_bundle
-    entries = ([min_json] + immunizations.map(&:min_json)).map { |e| FHIR::Bundle::Entry.new(resource: e)}
+    entries = ([min_json] + immunizations.map(&:min_json)).map { |e| FHIR::Bundle::Entry.new(resource: e) }
     FHIR::Bundle.new(type: 'collection', entry: entries)
   end
 

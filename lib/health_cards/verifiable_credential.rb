@@ -22,7 +22,7 @@ module HealthCards
 
     VERIFICATION_KEY_TYPE = 'EcdsaSecp256k1VerificationKey2019'
 
-    include DigitalSignature
+    # include DigitalSignature
 
     attr_reader :fhir_bundle, :subject_id
 
@@ -35,14 +35,19 @@ module HealthCards
       {
         '@context': VC_CONTEXT,
         type: VC_TYPE,
-        issuer: '<<did:ion identifier for lab>>',
-        issuanceDate: DateTime.now.to_s,
-        credentialSubject: credential_subject,
-        proof: proof(credential_subject)
+	credentialSubject: credential_subject#,
+	# proof: proof(credential_subject)
       }
     end
 
-    def jwt; end
+    def jwt(issuer, iat = Time.zone.now)
+      jwt = JOSE::JWT.from({
+	iss: issuer,
+	iat: iat,
+	vc: credential
+      })
+
+    end
 
     private
 

@@ -8,7 +8,7 @@ class FHIRRecord < ApplicationRecord
 
   def min_json
     atts = ['resourceType'] + min_json_attributes
-    json.to_hash.delete_if {|k,v| !atts.include?(k) }
+    json.to_hash.delete_if { |k, _v| atts.exclude?(k) }
   end
 
   protected

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 
   resources :patients do
     resources :immunizations
+    resource :health_card
   end
 
   get "/.well-known/smart-configuration", to: "well_known#smart", as: :well_known_smart, format: :json
