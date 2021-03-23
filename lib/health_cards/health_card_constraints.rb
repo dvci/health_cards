@@ -87,17 +87,3 @@ module HealthCards
     end
   end
 end
-
-include HealthCards::HealthCardConstraints
-
-FILEPATH = 'lib/health_cards/fixtures/vc-c19-pcr-jwt-payload.json'
-# FILEPATH = 'lib/health_cards/fixtures/example-00-b-jws-payload-expanded.json'
-file = File.read(FILEPATH)
-payload = JSON.parse(file)
-
-encoded = constrain_health_cards(payload)
-
-# puts constrain_health_cards(payload)
-
-decoded = Base64.decode64(encoded)
-inflated = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(decoded)
