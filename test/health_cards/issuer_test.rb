@@ -8,15 +8,15 @@ class IssuerTest < ActiveSupport::TestCase
   setup do
     @key_path = Rails.application.config.well_known.jwk[:key_path]
     @file_store = HealthCards::FileKeyStore.new(@key_path)
+    @issuer = HealthCards::Issuer.new(@file_store)
   end
 
   teardown do
-    FileUtils.rm_rf @key_path
+    FileUtils.rm_rf File.join(@key_path, HealthCards::FileKeyStore::FILE_NAME)
   end
 
-  test 'Creates keys' do
-    issuer = HealthCards::Issuer.new @file_store
-    jwks = issuer.jwks
+  test 'creates keys' do
+    jwks = @issuer.jwks
 
     assert_path_exists(@file_store.key_path)
     assert_equal 1, jwks[:keys].length
@@ -26,9 +26,14 @@ class IssuerTest < ActiveSupport::TestCase
     end
   end
 
+  test 'created signed jwt' do
+    vc = HealthCards::VerifiableCredential.new({})
+    signed_jwt = @issuer.sign(vc, 'http://example.com')
+    assert_instance_of String, signed_jwt
+  end
+
   test 'Use existing keys if they exist' do
-    issuer = HealthCards::Issuer.new @file_store
-    original_jwks = issuer.jwks
+    original_jwks = @issuer.jwks
 
     new_issuer = HealthCards::Issuer.new @file_store
     new_jwks = new_issuer.jwks

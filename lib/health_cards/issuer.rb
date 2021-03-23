@@ -14,17 +14,20 @@ module HealthCards
     end
 
     def signing_key
-      @signing_key ||= JSON::JWK.new(@key, use: 'sig', alg: 'ES256')
+      @signing_key ||= @key.to_jwk(use: 'sig', alg: 'ES256')
     end
 
     def public_key
       @public_key ||= signing_key.except(:d)
     end
 
+    def sign(vcr, _url)
+      jwt = JSON::JWT.new(vcr.credential)
+      jwt.sign(signing_key).to_s
+    end
+
     def jwks
-      @jwks ||= {
-	keys: [public_key]
-      }
+      @jwks ||= JSON::JWK::Set.new(keys: [public_key]).as_json
     end
   end
 end

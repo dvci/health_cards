@@ -27,7 +27,6 @@ class WellKnownControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     json = JSON.parse(response.body)
-    # byebug
     assert_equal 1, json['keys'].length
     response_key = json['keys'].first
     @issuer.jwks[:keys].one? do |key|

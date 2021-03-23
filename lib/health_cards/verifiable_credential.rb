@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'date'
-require_relative 'digital_signature'
 
 module HealthCards
   # Generates a Verifiable Credential which can be issued
@@ -35,28 +34,10 @@ module HealthCards
       {
         '@context': VC_CONTEXT,
         type: VC_TYPE,
-<<<<<<< HEAD
-	credentialSubject: credential_subject#,
-	# proof: proof(credential_subject)
-      }
-    end
-
-    def jwt(issuer, iat = Time.zone.now)
-      jwt = JOSE::JWT.from({
-	iss: issuer,
-	iat: iat,
-	vc: credential
-      })
-
-    end
-=======
-	credentialSubject: credential_subject # ,
+        credentialSubject: credential_subject # ,
         # proof: proof(credential_subject)
       }
     end
-
-    def jwt(issuer, iat = Time.zone.now); end
->>>>>>> refactor issuer
 
     private
 
