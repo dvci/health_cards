@@ -24,8 +24,10 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
-      - name: Install dependencies
+      - name: Install ruby dependencies
         run: bundle install
+      - name: Install js dependencies
+        run: yarn install
       - name: Run webpack
         run: ./bin/rake webpacker:install:react
       - name: Run tests
