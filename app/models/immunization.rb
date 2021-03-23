@@ -28,7 +28,7 @@ class Immunization < FHIRRecord
   end
 
   def lot_number=(lnum)
-    json.lotNumber = lnum
+    json.lotNumber = lnum if lnum.present?
     super(lnum)
   end
 

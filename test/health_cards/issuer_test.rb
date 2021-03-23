@@ -30,6 +30,7 @@ class IssuerTest < ActiveSupport::TestCase
     vc = HealthCards::VerifiableCredential.new({})
     signed_jwt = @issuer.sign(vc, 'http://example.com')
     assert_instance_of String, signed_jwt
+    assert_equal vc.credential.as_json, JSON::JWT.decode(signed_jwt, @issuer.public_key)
   end
 
   test 'Use existing keys if they exist' do
