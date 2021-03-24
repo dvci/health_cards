@@ -42,3 +42,6 @@ yarn-debug.log*
 .DS_Store
 /coverage/*
 config/keys
+
+## Ignore IDE specific files
+.idea
