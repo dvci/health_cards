@@ -62,6 +62,7 @@ GEM
       zeitwerk (~> 2.3)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
+    american_date (1.1.1)
     ast (2.4.2)
     bcp47 (0.3.3)
       i18n
@@ -266,6 +267,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  american_date
   bootsnap (>= 1.4.4)
   bulma-rails (~> 0.9)
   byebug
