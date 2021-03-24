@@ -17,6 +17,7 @@ Or manually with:
 ```shell
 bundle install
 yarn install
+bin/rails db:prepare
 ```
 
 ### Running the Application
