@@ -2,8 +2,10 @@
   <div class="container">
     <%= form_with(model: patient) do |form| %>
       <% if patient.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(patient.errors.count, "error") %> prohibited this patient from being saved:</h2>
+        <div class="notification is-danger is-light content">
+          <p class="subtitle">
+            <%= pluralize(patient.errors.count, "error") %> prohibited this patient from being saved:
+          </p>
 
           <ul>
             <% patient.errors.each do |error| %>

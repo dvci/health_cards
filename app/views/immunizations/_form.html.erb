@@ -2,9 +2,10 @@
   <div class="container">
     <%= form_for([patient, immunization]) do |form| %>
       <% if immunization.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(immunization.errors.count, "error") %> prohibited this immunization from being saved:</h2>
-
+        <div class="notification is-danger is-light content">
+          <p class="subtitle">
+            <%= pluralize(immunization.errors.count, "error") %> prohibited this immunization from being saved:
+          </p>
           <ul>
             <% immunization.errors.each do |error| %>
               <li><%= error.full_message %></li>
