@@ -20,8 +20,7 @@ AllCops:
 
 Style/Documentation:
   Exclude:
-    - app/models/application_record.rb
-    - app/helpers/*
+    - app/**/*
     - config/*
     - db/migrate/*
     - test/**/*

@@ -1,26 +1,58 @@
 <p id="notice"><%= notice %></p>
 
-<h1> <%= @patient.full_name %></h1>
-<%= link_to 'Immunize', new_patient_immunization_path(@patient) %> |
-<%= link_to 'Edit', edit_patient_path(@patient) %> |
-<%= link_to 'List', patients_path %>
-<h2>Info</h2>
-<strong>Gender</strong><%= @patient.gender %>
-<strong>Birth Date </strong><%= @patient.birth_date %>
-<h2>Immunization Record</h2>
-<table>
-<tr>
-<th>Name</th><th>Date Administered</th><th>Lot Number</th><th>Actions</th>
-<% @patient.immunizations.each do |i| %>
-<tr>
-  <td><%= i.vaccine.name %></td>
-  <td><%= i.occurrence %></td>
-  <td><%= i.lot_number %> </td>
-  <td>
-  <%= link_to 'Edit', edit_patient_immunization_path(@patient, i) %> |
-  <%= link_to 'Destroy', patient_immunization_path(@patient, i), method: :delete, data: { confirm: 'Are you sure?' } %>
-</tr>
-<% end %>
-</table>
-
-
+<section class="section">
+  <div class="container">
+    <div class="content">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p class="title"><%= @patient.full_name %></p>
+          </div>
+          <div class="level-item">
+            <%= link_to 'Edit', edit_patient_path(@patient), class: 'button is-info is-light' %>
+          </div>
+        </div>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Gender:</span><span><%= @patient.gender %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Birth Date:</span><span><%= format_date(@patient.birth_date) %></span>
+      </div>
+      <div class="level">
+        <div class="level-left">
+          <% if @patient.immunizations.present? %>
+            <div class="level-item">
+              <p class="title">Immunizations</p>
+            </div>
+          <% end %>
+          <div class="level-item">
+            <%= link_to 'Record Immunization', new_patient_immunization_path(@patient), class: 'button is-success' %>
+          </div>
+        </div>
+      </div>
+      <div class="tile is-ancestor">
+        <% @patient.immunizations.each do |i| %>
+          <div class="tile is-parent">
+            <div class="tile is-child box">
+              <div class="block">
+                <span class="has-text-weight-bold"><%= i.vaccine.name %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Date:</span><span><%= format_date(i.occurrence) %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Lot:</span><span><%= i.lot_number %> </span>
+              </div>
+              <div class="block">
+                <%= link_to 'Edit', edit_patient_immunization_path(@patient, i), class: 'button is-info is-light mr-2' %>
+                <%= link_to 'Destroy', patient_immunization_path(@patient, i), method: :delete, data: { confirm: 'Are you sure?' }, class: 'button is-danger is-outlined' %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <%= link_to 'Patient List', patients_path, class: 'button is-info' %>
+  </div>
+</section>

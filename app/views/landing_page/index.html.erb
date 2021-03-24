@@ -1,0 +1,82 @@
+<section class="hero is-link">
+  <div class="hero-body">
+    <p class="title">Health Cards</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="content is-medium">
+      <p>Put some sort of description here. Link to relevant specs, etc.</p>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-info is-small">
+  <div class="hero-body">
+    <p class="title">
+      Create a Vaccine Credential
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="tile is-ancestor">
+      <div class="tile is-parent">
+        <div class="tile is-child box notification is-info is-light">
+          <p class="title">Enter Patient Information</p>
+          <p class="subtitle">Manually enter patient demographics and immunization information into a form.</p>
+          <a href="<%= new_patient_path %>" class="button is-info">New Patient</a>
+          <a href="<%= patients_path %>" class="button is-info">Patient List</a>
+        </div>
+      </div>
+
+      <div class="tile is-parent">
+        <div class="tile is-child box notification">
+          <p class="title">Upload a Patient Bundle</p>
+          <p class="subtitle">Manually upload a FHIR Bundle containing Patient and Immunization resources.</p>
+          <span class="button is-info" disabled>TODO</span>
+        </div>
+      </div>
+
+      <div class="tile is-parent">
+        <div class="tile is-child box notification">
+          <p class="title">Use the FHIR API</p>
+          <p class="subtitle">Instructions for using the FHIR <code>$health-cards-issue</code> Operation.</p>
+          <span class="button is-info" disabled>TODO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-success is-small">
+  <div class="hero-body">
+    <p class="title">
+      Validate a Vaccine Credential
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="tile is-ancestor">
+      <div class="tile is-parent">
+        <div class="tile is-child box notification">
+          <p class="title">Upload a file</p>
+          <p class="subtitle">Manually upload a downloaded credential.</p>
+          <span class="button is-success" disabled>TODO</span>
+        </div>
+      </div>
+
+      <div class="tile is-parent">
+        <div class="tile is-child box notification">
+          <p class="title">Scan a QR code</p>
+          <p class="subtitle">Use a camera to scan a credential in a QR code.</p>
+          <span class="button is-success" disabled>TODO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
