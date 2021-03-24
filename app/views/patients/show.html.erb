@@ -14,16 +14,18 @@
         </div>
       </div>
       <div class="block">
-        <span class="has-text-weight-bold mr-2">Gender</span><span><%= @patient.gender %></span>
+        <span class="has-text-weight-bold mr-2">Gender:</span><span><%= @patient.gender %></span>
       </div>
       <div class="block">
-        <span class="has-text-weight-bold mr-2">Birth Date</span><span><%= @patient.birth_date %></span>
+        <span class="has-text-weight-bold mr-2">Birth Date:</span><span><%= format_date(@patient.birth_date) %></span>
       </div>
       <div class="level">
         <div class="level-left">
-          <div class="level-item">
-            <p class="title">Immunizations</p>
-          </div>
+          <% if @patient.immunizations.present? %>
+            <div class="level-item">
+              <p class="title">Immunizations</p>
+            </div>
+          <% end %>
           <div class="level-item">
             <%= link_to 'Record Immunization', new_patient_immunization_path(@patient), class: 'button is-success' %>
           </div>
@@ -37,7 +39,7 @@
                 <span class="has-text-weight-bold"><%= i.vaccine.name %></span>
               </div>
               <div class="block">
-                <span class="mr-2 has-text-weight-bold">Date:</span><span><%= i.occurrence %></span>
+                <span class="mr-2 has-text-weight-bold">Date:</span><span><%= format_date(i.occurrence) %></span>
               </div>
               <div class="block">
                 <span class="mr-2 has-text-weight-bold">Lot:</span><span><%= i.lot_number %> </span>
