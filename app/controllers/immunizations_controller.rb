@@ -4,7 +4,7 @@
 class ImmunizationsController < ApplicationController
   before_action :find_patient
   before_action :set_immunization, only: %i[edit update destroy]
-  before_action :find_vaccines, only: %i[new edit create]
+  before_action :find_vaccines, only: %i[new edit create update]
 
   # GET /immunizations/new
   def new
