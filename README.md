@@ -1,6 +1,6 @@
 # HealthCards
 
-Creating verifiable credentials with FHIR using [SMART Health Cards](https://smarthealth.cards/)
+A web application for creating vaccination [SMART Health Cards](https://smarthealth.cards/).
 
 ## Getting Started
 
