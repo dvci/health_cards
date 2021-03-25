@@ -8,9 +8,10 @@ class PatientTest < ActiveSupport::TestCase
                         birth_date: Time.zone.today)
     assert p1.valid?, p1.errors.full_messages.join(', ')
     p2 = Patient.find(p1.id)
-    p1.attributes.each do |attr, val|
-      assert_equal val, p2.send(attr), "Patient #{attr} #{val.class} not the same"
-    end
+    assert_equal p1.given, p2.given
+    assert_equal p1.family, p2.family
+    assert_equal p1.gender, p2.gender
+    assert_equal p1.birth_date, p2.birth_date
   end
 
   test 'invalid json validation' do
