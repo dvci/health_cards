@@ -14,6 +14,7 @@ class FHIRRecord < ApplicationRecord
 
   def to_fhir_time(time)
     return if time.blank?
+
     time.strftime('%Y-%m-%d')
   end
 

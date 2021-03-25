@@ -37,10 +37,10 @@ class ImmunizationsController < ApplicationController
         format.html { redirect_to patient_path(@patient), notice: 'Immunization was successfully updated.' }
         format.json { render :show, status: :ok, location: @immunization }
       else
-	format.html do
-	  find_vaccines
-	  render :edit, status: :unprocessable_entity
-	end
+        format.html do
+          find_vaccines
+          render :edit, status: :unprocessable_entity
+        end
         format.json { render json: @immunization.errors, status: :unprocessable_entity }
       end
     end

@@ -31,7 +31,7 @@ class WellKnownControllerTest < ActionDispatch::IntegrationTest
     response_key = json['keys'].first
     @issuer.jwks[:keys].one? do |key|
       key.each_pair do |att, val|
-	assert_equal val.to_s, response_key[att]
+        assert_equal val.to_s, response_key[att]
       end
 
       assert_not response_key.key?('d')

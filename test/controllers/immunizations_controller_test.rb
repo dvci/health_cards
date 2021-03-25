@@ -28,7 +28,7 @@ class ImmunizationsControllerTest < ActionDispatch::IntegrationTest
   test 'should not create invalid immunization' do
     assert_no_difference('Immunization.count') do
       post patient_immunizations_url(@patient),
-	  params: { immunization: { vaccine_id: @immunization.vaccine_id } }
+           params: { immunization: { vaccine_id: @immunization.vaccine_id } }
     end
 
     assert_response :unprocessable_entity
@@ -48,7 +48,7 @@ class ImmunizationsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should not update immunization' do
     patch patient_immunization_url(@patient, @immunization),
-	  params: { immunization: { lot_number: nil, occurrence: nil } }
+          params: { immunization: { lot_number: nil, occurrence: nil } }
     assert_response :unprocessable_entity
   end
 
