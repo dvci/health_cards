@@ -7,7 +7,7 @@ require 'json/minify'
 module HealthCards
   ## Functionality for "Health Cards are Small" section of the Smart Health Cards Specification
   module HealthCardConstraints
-    def bundle_operations(payload)
+    def strip_fhir_bundle(payload)
       bundle = payload['vc']['credentialSubject']['fhirBundle']
       if bundle
         entries = bundle['entry']
@@ -81,7 +81,7 @@ module HealthCards
     end
 
     def constrain_health_cards(jws_payload)
-      stripped_bundle_payload = bundle_operations(jws_payload)
+      stripped_bundle_payload = strip_fhir_bundle(jws_payload)
       minified_payload = minify_payload(stripped_bundle_payload)
       compress_payload(minified_payload)
     end
