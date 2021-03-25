@@ -19,6 +19,15 @@
       <div class="block">
         <span class="has-text-weight-bold mr-2">Birth Date:</span><span><%= format_date(@patient.birth_date) %></span>
       </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Phone:</span><span><%= number_to_phone(@patient.phone) %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Email:</span><span><%= @patient.email %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Address</span><span><%= show_address(@patient) %></span>
+      </div>
       <div class="level">
         <div class="level-left">
           <% if @patient.immunizations.present? %>
