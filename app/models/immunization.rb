@@ -17,8 +17,6 @@ class Immunization < FHIRRecord
   validates :vaccine, presence: true
   validates :patient, presence: true
 
-  MIN_ATTRIBUTES = %w[status vaccineCode patient occurrenceDateTime].freeze
-
   after_initialize do
     json.status ||= 'completed'
   end
@@ -64,10 +62,6 @@ class Immunization < FHIRRecord
   end
 
   private
-
-  def min_json_attributes
-    MIN_ATTRIBUTES
-  end
 
   def update_vax_code(code)
     json.vaccineCode ||= FHIR::CodeableConcept.new

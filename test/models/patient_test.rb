@@ -19,29 +19,9 @@ class PatientTest < ActiveSupport::TestCase
     end
   end
 
-  test 'bundle creation' do
-    pat = Patient.create(given: 'foo')
-    vax = Vaccine.create(code: 'a', name: 'b')
-    pat.immunizations.create(occurrence: Time.zone.now, vaccine: vax)
-    bundle = pat.to_bundle
-    assert_equal 2, bundle.entry.size
-    assert bundle.valid?
-    assert_equal FHIR::Patient, bundle.entry[0].resource.class
-    assert_equal FHIR::Immunization, bundle.entry[1].resource.class
-    assert_equal 'collection', bundle.type
-  end
-
   test 'invalid fhir json' do
     patient = Patient.create(json: FHIR::Patient.new(gender: 'INVALID GENDER'))
     assert patient.new_record?
-  end
-
-  test 'minified data' do
-    patient = Patient.create(given: 'Foo', gender: 'male', birth_date: Time.zone.today)
-    json = patient.min_json
-    assert_not_nil json['birthDate']
-    assert_not_nil json['name']
-    assert_not json['gender']
   end
 
   test 'test blank date' do

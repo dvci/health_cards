@@ -14,18 +14,12 @@ class Patient < FHIRRecord
   has_many :immunizations, dependent: :destroy
 
   GENDERS = FHIR::Patient::METADATA['gender']['valid_codes']['http://hl7.org/fhir/administrative-gender']
-  MIN_ATTRIBUTES = %w[name birthDate].freeze # Add address
 
   validates :given, presence: true
   validates :gender, inclusion: { in: GENDERS, allow_nil: true }
 
   def full_name
     [given, family].join(' ') if given || family
-  end
-
-  def to_bundle
-    entries = ([min_json] + immunizations.map(&:min_json)).map { |e| FHIR::Bundle::Entry.new(resource: e) }
-    FHIR::Bundle.new(type: 'collection', entry: entries)
   end
 
   # Overriden getters/setters to support FHIR JSON
@@ -64,10 +58,6 @@ class Patient < FHIRRecord
   end
 
   private
-
-  def min_json_attributes
-    MIN_ATTRIBUTES
-  end
 
   def first_name
     json.name << FHIR::HumanName.new if json.name.empty?
