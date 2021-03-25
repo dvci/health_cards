@@ -18,11 +18,11 @@ module HealthCards
       payload
     end
 
-    def redefine_uris(resources)
+    def redefine_uris(entries)
       url_map = {}
       resource_count = 0
 
-      resources.each do |entry|
+      entries.each do |entry|
         old_url = entry['fullUrl']
         new_url = "resource:#{resource_count}"
 
@@ -32,11 +32,11 @@ module HealthCards
         resource_count += 1
       end
 
-      [resources, url_map]
+      [entries, url_map]
     end
 
-    def update_elements(resources, url_map)
-      resources.each do |entry|
+    def update_elements(entries, url_map)
+      entries.each do |entry|
         resource = entry['resource']
 
         resource.delete('id')
@@ -44,7 +44,6 @@ module HealthCards
         resource.delete('text')
         update_nested_elements(resource, url_map)
       end
-      resources
     end
 
     def update_nested_elements(hash, url_map) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
