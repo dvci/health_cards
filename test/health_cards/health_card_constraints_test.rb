@@ -23,7 +23,7 @@ class HealthCardConstraintsTest < ActiveSupport::TestCase
     @entries = bundle['entry']
   end
 
-  test 'Bundle.entry.fullUrl elements are populated with short resource-scheme URIs (e.g., {"fullUrl": "resource:0})' do
+  test 'redefine_uris populates Bundle.entry.fullUrl elements with short resource-scheme URIs' do
     new_entries, _url_map = @dummy_class.redefine_uris(@entries)
     resource_nums = []
     new_entries.each do |resource|
@@ -37,7 +37,7 @@ class HealthCardConstraintsTest < ActiveSupport::TestCase
     assert_equal(resource_nums, inc_array)
   end
 
-  test 'Resource-level "id", "meta", and text elements are stripped from FHIR Bundle' do
+  test 'update_elements strips resource-level "id", "meta", and text elements from the FHIR Bundle' do
     stripped_resources = @dummy_class.update_elements(@entries, URL_HASH)
     stripped_resources.each do |resource|
       assert_not(resource.key?('id'))
@@ -46,7 +46,7 @@ class HealthCardConstraintsTest < ActiveSupport::TestCase
     end
   end
 
-  test 'Nested "CodeableConcept.text" and "Coding.display" elements are stripped from FHIR Bundle' do
+  test 'update_nested_elements strips any "CodeableConcept.text" and "Coding.display" elements from the FHIR Bundle' do
     wordy_resource = @entries[2]
     stripped_resource = @dummy_class.update_nested_elements(wordy_resource, URL_HASH)
     codeable_concept = stripped_resource['resource']['valueCodeableConcept']
@@ -56,18 +56,18 @@ class HealthCardConstraintsTest < ActiveSupport::TestCase
     assert_not(coding.key?('display'))
   end
 
-  test 'Reference.reference elements are populated with short resource-scheme URIs' do
+  test 'update_nested_elements populates Reference.reference elements with short resource-scheme URIs' do
     updated_resource = @dummy_class.update_nested_elements(@entries[2], URL_HASH)
     reference = updated_resource['resource']['subject']['reference']
     assert(reference.start_with?('resource:') && (reference.length <= 12))
   end
 
-  test 'JWS Payload is properly minified' do
+  test 'minify_payload removes all whitespace from the JWS Payload' do
     minified = @dummy_class.minify_payload(MOCK_JSON)
     assert_not_includes(minified, ' ')
   end
 
-  test 'JWS Payload is properly compressed with the deflate algorithm' do
+  test 'compress_payload applies a raw deflate compression and allows for the original JWS payload to be restored' do
     file = File.read(FILEPATH_MINIFIED)
     minified_payload = JSON.parse(file)
     compressed = @dummy_class.compress_payload(minified_payload)
