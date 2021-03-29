@@ -6,7 +6,9 @@ Rails.application.routes.draw do
 
   resources :patients do
     resources :immunizations
-    resource :health_card, only: :show
+    resource :health_card do
+      get "/chunks", to: "health_cards#chunks", as: :health_card_chunks, format: :json
+    end
   end
   
   get "/Patient/:id", to: "patients#show", as: :fhir_patient, format: :fhir_json
