@@ -38,14 +38,14 @@ class ChunkingTest < ActiveSupport::TestCase
   test 'A JWS of size <= 1195 returns one QR chunk' do
     small_qr_chunk = @dummy_class.generate_qr_chunks(JWS_SMALL)
     assert_equal(1, small_qr_chunk.length)
-    expected_result = [JWS_SMALL.chars.map { |c| c.ord - 45 }.join]
+    expected_result = [JWS_SMALL.chars.map { |c| format('%02d', c.ord - 45) }.join]
     assert_equal(expected_result, small_qr_chunk)
   end
 
   test 'A JWS of size 1191 * 2 + 1 characters returns 3 QR chunks' do
     qr_chunks = @dummy_class.generate_qr_chunks(JWS_3)
     assert_equal(3, qr_chunks.length)
-    expected_result = @dummy_class.split_bundle(JWS_3).map { |c| c.chars.map { |ch| ch.ord - 45 }.join }
+    expected_result = @dummy_class.split_bundle(JWS_3).map { |c| c.chars.map { |ch| format('%02d', ch.ord - 45) }.join }
     assert_equal(expected_result, qr_chunks)
   end
 end

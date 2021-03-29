@@ -26,7 +26,7 @@ module HealthCards
 
     # Each character "c" of the jws is converted into a sequence of two digits by taking c.ord - 45
     def convert_jws_to_numeric(jws)
-      jws.chars.map { |c| c.ord - 45 }.join
+      jws.chars.map { |c| format('%02d', c.ord - 45) }.join
     end
   end
 end
