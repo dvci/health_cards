@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'date'
-require_relative 'digital_signature'
 
 module HealthCards
   # Generates a Verifiable Credential which can be issued
@@ -22,7 +21,7 @@ module HealthCards
 
     VERIFICATION_KEY_TYPE = 'EcdsaSecp256k1VerificationKey2019'
 
-    include DigitalSignature
+    # include DigitalSignature
 
     attr_reader :fhir_bundle, :subject_id
 
@@ -35,14 +34,10 @@ module HealthCards
       {
         '@context': VC_CONTEXT,
         type: VC_TYPE,
-        issuer: '<<did:ion identifier for lab>>',
-        issuanceDate: DateTime.now.to_s,
-        credentialSubject: credential_subject,
-        proof: proof(credential_subject)
+        credentialSubject: credential_subject # ,
+        # proof: proof(credential_subject)
       }
     end
-
-    def jwt; end
 
     def strip_fhir_bundle
       stripped_bundle = @fhir_bundle.dup

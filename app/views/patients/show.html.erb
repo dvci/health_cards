@@ -8,8 +8,9 @@
           <div class="level-item">
             <p class="title"><%= @patient.full_name %></p>
           </div>
-          <div class="level-item">
-            <%= link_to 'Edit', edit_patient_path(@patient), class: 'button is-info is-light' %>
+          <div class="is-grouped">
+            <%= link_to 'Edit', edit_patient_path(@patient), class: 'button is-info is-light' %> 
+            <%= link_to 'Download Health Card', patient_health_card_path(@patient, format: 'smart-health-card'), class: 'button is-info is-light' %>
           </div>
         </div>
       </div>
@@ -18,6 +19,15 @@
       </div>
       <div class="block">
         <span class="has-text-weight-bold mr-2">Birth Date:</span><span><%= format_date(@patient.birth_date) %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Phone:</span><span><%= number_to_phone(@patient.phone) %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Email:</span><span><%= @patient.email %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Address</span><span><%= show_address(@patient) %></span>
       </div>
       <div class="level">
         <div class="level-left">

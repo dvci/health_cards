@@ -10,7 +10,12 @@ class PatientsController < ApplicationController
   end
 
   # GET /patients/1 or /patients/1.json
-  def show; end
+  def show
+    respond_to do |format|
+      format.html
+      format.fhir_json { render json: @patient.to_json }
+    end
+  end
 
   # GET /patients/new
   def new
@@ -66,6 +71,7 @@ class PatientsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def patient_params
-    params.require(:patient).permit(:given, :family, :gender, :birth_date)
+    params.require(:patient).permit(:given, :family, :gender, :birth_date, :phone, :email, :street_line1,
+                                    :street_line2, :city, :state, :zip_code)
   end
 end
