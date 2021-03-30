@@ -23,11 +23,28 @@ module HealthCards
       jws_chunks.map { |c| convert_jws_to_numeric(c) }
     end
 
+    # Assemble jws from qr code chunks
+    def assemble_jws(qr_chunks)
+      if qr_chunks.length === 1
+        # Strip off shc:/ and convert numeric jws
+        numeric_jws = qr_chunks[0].delete_prefix('shc:/')
+        jws = convert_numeric_jws numeric_jws
+      end
+    end
+
     private
 
     # Each character "c" of the jws is converted into a sequence of two digits by taking c.ord - 45
     def convert_jws_to_numeric(jws)
       jws.chars.map { |c| format('%02d', c.ord - 45) }.join
+    end
+
+    def convert_numeric_jws(numeric_jws)
+      result_jws = ''.dup
+      numeric_jws.chars.each_slice(2) do |a, b|
+        result_jws << ((a + b).to_i + 45).chr
+      end
+      result_jws
     end
   end
 end
