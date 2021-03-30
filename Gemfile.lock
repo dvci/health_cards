@@ -106,10 +106,13 @@ GEM
       concurrent-ruby (~> 1.0)
     jbuilder (2.11.2)
       activesupport (>= 5.0.0)
+    json (2.5.1)
     json-jwt (1.13.0)
       activesupport (>= 4.2)
       aes_key_wrap
       bindata
+    json-minify (0.0.3)
+      json (> 0)
     listen (3.4.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -278,6 +281,7 @@ DEPENDENCIES
   fhir_models
   jbuilder (~> 2.7)
   json-jwt
+  json-minify
   listen (~> 3.3)
   pry
   pry-byebug
