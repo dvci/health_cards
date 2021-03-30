@@ -6,17 +6,16 @@ class FHIRRecord < ApplicationRecord
 
   validate :valid_fhir_json
 
+  def to_json(*_args)
+    json.to_hash
+  end
+
   protected
 
   def to_fhir_time(time)
     return if time.blank?
 
-    case time
-    when String
-      time
-    else
-      time.strftime('%Y-%m-%d')
-    end
+    time.strftime('%Y-%m-%d')
   end
 
   def from_fhir_time(time_string)

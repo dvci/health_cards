@@ -16,14 +16,14 @@
       <% end %>
 
       <div class="field">
-        <%= form.label 'Given Name', class: 'label' %>
+        <%= form.label :given, 'Given Name', class: 'label' %>
         <div class="control">
           <%= form.text_field :given, class: 'input', required: true %>
         </div>
       </div>
 
       <div class="field">
-        <%= form.label 'Family Name', class: 'label' %>
+        <%= form.label :family, 'Family Name', class: 'label' %>
         <div class="control">
           <%= form.text_field :family, class: 'input', required: true %>
         </div>
@@ -39,7 +39,7 @@
       </div>
 
       <div class="field">
-        <%= form.label :birth_date, class: 'label' %>
+        <%= form.label :birth_date, "Date of Birth", class: 'label' %>
         <div class="control">
           <%= form.date_field :birth_date,
            class: 'input',
@@ -52,6 +52,40 @@
           %>
         </div>
       </div>
+
+      <div class="field">
+        <%= form.label :phone, class: "label" %>
+        <%= form.phone_field :phone, class: "input" %>
+      </div>
+
+      <div class="field">
+        <%= form.label :email, class: "label" %>
+        <%= form.email_field :email, class: "input" %>
+      </div>
+        
+      <div class="field">
+        <%= form.label :street_line1, 'Street address, P.O Box, etc.', class: "label" %>
+        <%= form.text_field :street_line1, class: "input" %>
+        <%= form.label :street_line2, 'Apt, Suite, Unit, Building, Floor, etc.', class: "label" %>
+        <%= form.text_field :street_line2, class: "input" %>
+      </div>
+
+      <div class="field">
+        <%= form.label :city, class: "label" %>
+        <%= form.text_field :city, class: "input" %>
+      </div>
+
+      <div class="field">
+        <%= form.label :state, class: "label" %>
+        <%= form.text_field :state, class: "input" %>
+      </div>
+
+      <div class="field">
+        <%= form.label :zip_code, class: "label" %>
+        <%= form.text_field :zip_code, class: "input" %>
+      </div>
+
+
 
       <div class="field is-grouped">
         <div class="control">

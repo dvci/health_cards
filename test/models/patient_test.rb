@@ -5,29 +5,19 @@ require 'test_helper'
 class PatientTest < ActiveSupport::TestCase
   test 'json serialization' do
     p1 = Patient.create(given: 'Foo', family: 'Bar', gender: 'male',
-                        birth_date: Time.zone.now)
+                        birth_date: Time.zone.today)
     assert p1.valid?, p1.errors.full_messages.join(', ')
     p2 = Patient.find(p1.id)
-    p1.attributes.each do |attr, val|
-      assert_equal val, p2.send(attr), "Patient #{attr} #{val.class} not the same"
-    end
+    assert_equal p1.given, p2.given
+    assert_equal p1.family, p2.family
+    assert_equal p1.gender, p2.gender
+    assert_equal p1.birth_date, p2.birth_date
   end
 
   test 'invalid json validation' do
     assert_raises(ActiveRecord::SerializationTypeMismatch) do
       Patient.create(json: "asdfasdasdf'jkl")
     end
-  end
-
-  test 'bundle creation' do
-    @pat = Patient.create(given: 'foo')
-    vax = Vaccine.create(code: 'a', name: 'b')
-    @pat.immunizations.create(occurrence: Time.zone.now, vaccine: vax)
-    bundle = @pat.to_bundle
-    assert_equal 2, bundle.entry.size
-    assert_equal FHIR::Patient, bundle.entry[0].class
-    assert_equal FHIR::Immunization, bundle.entry[1].class
-    assert_equal 'collection', bundle.type
   end
 
   test 'invalid fhir json' do
