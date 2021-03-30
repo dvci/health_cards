@@ -23,16 +23,14 @@ function addPrefixToQrCodes(chunks) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  fetch('health_card/chunks.json').then((res) => res.json()).then((chunks) => {
-    const qrCodes = addPrefixToQrCodes(chunks);
-    const container = document.getElementById('qr-code');
+fetch(`${window.location.href}/health_card/chunks.json`).then((res) => res.json()).then((chunks) => {
+  const qrCodes = addPrefixToQrCodes(chunks);
+  const container = document.getElementById('qr-code');
 
-    // Add each QR code to the qr-code container
-    qrCodes.forEach((qrCode) => {
-      const canvas = document.createElement('canvas');
-      QRCode.toCanvas(canvas, qrCode, { version: 22, errorCorrectionLevel: 'L' });
-      container.appendChild(canvas);
-    });
+  // Add each QR code to the qr-code container
+  qrCodes.forEach((qrCode) => {
+    const canvas = document.createElement('canvas');
+    QRCode.toCanvas(canvas, qrCode, { version: 22, errorCorrectionLevel: 'L' });
+    container.appendChild(canvas);
   });
 });

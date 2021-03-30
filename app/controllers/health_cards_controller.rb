@@ -18,12 +18,12 @@ class HealthCardsController < ApplicationController
   private
 
   def health_card
-    @covid_health_card ||= CovidHealthCard.new(@patient) do |record|
+    @health_card ||= CovidHealthCard.new(@patient) do |record|
       case record
       when Patient
-        patient_url(record)
+        fhir_patient_url(record)
       when Immunization
-        immunization_url(record)
+        fhir_immunization_url(record)
       end
     end
   end

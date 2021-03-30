@@ -2,7 +2,8 @@
 
 module HealthCards
   # Split up a JWS into chunks if encoded size is above QR Code Size constraint
-  module Chunking extend self
+  module Chunking
+    extend self
     MAX_SINGLE_JWS_SIZE = 1195
     MAX_CHUNK_SIZE = 1191
 

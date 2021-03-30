@@ -8,7 +8,6 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     @vax = Vaccine.create(code: 'a')
     @imm = @patient.immunizations.create(vaccine: @vax, occurrence: Time.zone.today)
     @issuer = Rails.application.config.issuer
-    @covid_health_card = CovidHealthCard.new(@patient, 'url')
   end
 
   test 'get health card download' do
