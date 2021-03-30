@@ -3,34 +3,26 @@
 require 'test_helper'
 require 'health_cards/verifiable_credential'
 
-FILEPATH_JWS_PAYLOAD = 'test/fixtures/files/example-verbose-jws-payload.json'
-
-MOCK_JSON = { key1: 'value1', key2: 'value2' }.freeze
-
 class VerifiableCredentialTest < ActiveSupport::TestCase
+  FILEPATH_JWS_PAYLOAD = 'test/fixtures/files/example-verbose-jws-payload.json'
+  BUNDLE_SKELETON = { resourceType: 'Bundle', entries: [] }.freeze
+
   setup do
-    @bundle = { resourceType: 'Bundle', entries: [] }
-
-    # @dummy_class = Class.new
-    # @dummy_class.extend(HealthCards::VerifiableCredential)
-
     file = File.read(FILEPATH_JWS_PAYLOAD)
-    jws_payload = JSON.parse(file)
-    @verbose_bundle = jws_payload['vc']['credentialSubject']['fhirBundle']
-    @entries = @verbose_bundle['entry']
+    @verbose_bundle = JSON.parse(file)
   end
 
   test 'with subject identified' do
     @subject = 'foo'
-    @vc = HealthCards::VerifiableCredential.new(@bundle, @subject)
+    @vc = HealthCards::VerifiableCredential.new(BUNDLE_SKELETON, @subject)
 
-    assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), @bundle
+    assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), BUNDLE_SKELETON
     assert_equal @vc.credential.dig(:credentialSubject, :id), @subject
   end
 
   test 'without subject identifier' do
-    @vc = HealthCards::VerifiableCredential.new(@bundle)
-    assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), @bundle
+    @vc = HealthCards::VerifiableCredential.new(BUNDLE_SKELETON)
+    assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), BUNDLE_SKELETON
     assert_nil @vc.credential.dig(:credentialSubject, :id)
   end
 
@@ -39,7 +31,6 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     stripped_bundle = @vc.strip_fhir_bundle
 
     resource_nums = []
-
     new_entries = stripped_bundle['entry']
     new_entries.each do |resource|
       url = resource['fullUrl']
@@ -52,7 +43,7 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     assert_equal(resource_nums, inc_array)
   end
 
-  test 'update_elements strips resource-level "id", "meta", and text elements from the FHIR Bundle' do
+  test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
     @vc = HealthCards::VerifiableCredential.new(@verbose_bundle)
 
     stripped_bundle = @vc.strip_fhir_bundle
@@ -70,8 +61,8 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     stripped_bundle = @vc.strip_fhir_bundle
     stripped_resources = stripped_bundle['entry']
 
-    stripped_resource = stripped_resources[2]
-    codeable_concept = stripped_resource['resource']['valueCodeableConcept']
+    resource_with_codeable_concept = stripped_resources[2]
+    codeable_concept = resource_with_codeable_concept['resource']['valueCodeableConcept']
     coding = codeable_concept['coding'][0]
 
     assert_not(codeable_concept.key?('text'))
@@ -89,7 +80,7 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   end
 
   test 'compress_payload applies a raw deflate compression and allows for the original JWS payload to be restored' do
-    @vc = HealthCards::VerifiableCredential.new(@bundle)
+    @vc = HealthCards::VerifiableCredential.new(BUNDLE_SKELETON)
     original_vc = JSON.parse(@vc.minify_payload)
 
     compressed_vc = @vc.compress_credential
