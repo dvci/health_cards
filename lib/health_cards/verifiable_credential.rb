@@ -65,12 +65,6 @@ module HealthCards
       Base64.encode64(deflated)
     end
 
-    def constrain_health_cards(jws_payload)
-      stripped_bundle_payload = strip_fhir_bundle(jws_payload)
-      minified_payload = minify_payload(stripped_bundle_payload)
-      compress_payload(minified_payload)
-    end
-
     private
 
     def credential_subject
@@ -79,6 +73,8 @@ module HealthCards
         fhirBundle: strip_fhir_bundle
       }.tap { |subject| subject[:id] = subject_id if subject_id }
     end
+
+    # Helper methods for strip_fhir_bundle
 
     def redefine_uris(entries)
       url_map = {}
