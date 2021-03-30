@@ -9,7 +9,7 @@ class CovidHealthCardTest < ActiveSupport::TestCase
     @imm = @pat.immunizations.create(occurrence: Time.zone.now, vaccine: @vax)
     @card = CovidHealthCard.new(@pat) do |record|
       url = 'example.com'
-      
+
       url = "#{url}/example.com/#{record.class.name}/#{record.id}" if record
       url
     end

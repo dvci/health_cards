@@ -10,9 +10,9 @@ class PatientsController < ApplicationController
   end
 
   # GET /patients/1 or /patients/1.json
-  def show; 
+  def show
     respond_to do |format|
-      format.html {}
+      format.html
       format.fhir_json { render json: @patient.to_json }
     end
   end

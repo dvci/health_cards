@@ -30,7 +30,7 @@ class ImmunizationsControllerTest < ActionDispatch::IntegrationTest
     fhir = FHIR.from_contents(response.body)
     assert fhir.valid?
     assert_response :success
-  end 
+  end
 
   test 'should not create invalid immunization' do
     assert_no_difference('Immunization.count') do

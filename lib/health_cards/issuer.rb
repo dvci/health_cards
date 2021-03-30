@@ -22,7 +22,7 @@ module HealthCards
     end
 
     def sign(vcr, url)
-      jwt = JSON::JWT.new(vcr.credential.merge(nbf: Time.now, iss: url))
+      jwt = JSON::JWT.new(vcr.credential.merge(nbf: Time.zone.now, iss: url))
       jwt.sign(signing_key).to_s
     end
 
