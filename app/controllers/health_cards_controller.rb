@@ -17,6 +17,14 @@ class HealthCardsController < ApplicationController
 
   def scan; end
 
+  def qr_contents
+    contents = JSON.parse(params[:qr_contents])
+
+    # TODO: decode the contents and display them
+    flash[:notice] = 'Viewing contents not yet implemented'
+    redirect_to scan_health_card_path
+  end
+
   private
 
   def health_card

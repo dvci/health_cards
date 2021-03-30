@@ -5,6 +5,11 @@
     <p class="title">Scan a QR Code</p>
   </div>
 </section>
+<% flash.each do |type, msg| %>
+  <div class="notification is-warning is-light">
+    <p><%= msg %></p>
+  </div>
+<% end %>
 <div class="section">
   <div class="container">
     <button id="start" class="button is-info">Start</button>
@@ -23,7 +28,10 @@
         </div>
         <div class="level-right">
           <div class="level-item">
-            <a href="" class="button is-info">View Contents</a>
+            <%= form_with url: '/health_cards/qr_contents', method: :post do |f| %>
+              <%= f.hidden_field :qr_contents, id: 'qr-contents' %>
+              <%= f.submit 'View Contents', class: 'button is-info' %>
+            <% end %>
           </div>
         </div>
       </div>

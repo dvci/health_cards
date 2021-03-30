@@ -17,4 +17,5 @@ Rails.application.routes.draw do
   get "/.well-known/jwks", to: "well_known#jwks", as: :well_known_jwks, format: :json
 
   get '/health_cards/scan', to: 'health_cards#scan', as: :scan_health_card
+  post '/health_cards/qr_contents', to: 'health_cards#qr_contents', as: :health_card_qr_contents
 end
