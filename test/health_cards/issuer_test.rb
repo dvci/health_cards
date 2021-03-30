@@ -12,7 +12,8 @@ class IssuerTest < ActiveSupport::TestCase
   end
 
   teardown do
-    FileUtils.rm_rf File.join(@key_path, HealthCards::FileKeyStore::FILE_NAME)
+    FileUtils.rm File.join(@key_path, HealthCards::FileKeyStore::FILE_NAME)
+    FileUtils.rmdir @key_path
   end
 
   test 'creates keys' do

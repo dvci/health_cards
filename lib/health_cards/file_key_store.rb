@@ -9,7 +9,7 @@ module HealthCards
 
     def initialize(path)
       @path = Pathname.new(path)
-      Dir.mkdir_p(@path) unless Dir.exist?(@path)
+      FileUtils.mkdir_p(@path) unless Dir.exist?(@path)
     end
 
     def load_or_create_key
