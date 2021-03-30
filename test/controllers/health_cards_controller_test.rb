@@ -8,6 +8,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     @vax = Vaccine.create(code: 'a')
     @imm = @patient.immunizations.create(vaccine: @vax, occurrence: Time.zone.today)
     @issuer = Rails.application.config.issuer
+    @covid_health_card = CovidHealthCard.new(@patient, 'url')
   end
 
   test 'get health card download' do
@@ -40,5 +41,13 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @vax.code, imm.vaccineCode.coding[0].code
 
     assert_response :success
+  end
+
+  test 'get chunks for QR code generation' do
+    get(chunks_patient_health_card_url(@patient))
+    assert_response :success
+
+    json = JSON.parse(response.body)
+    assert_equal 1, json.size
   end
 end

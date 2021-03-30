@@ -12,9 +12,7 @@ class HealthCardsController < ApplicationController
   end
 
   def chunks
-    respond_to do |format|
-      format.json { render json: health_card.chunks.to_json }
-    end
+    render json: health_card.chunks.to_json
   end
 
   private
