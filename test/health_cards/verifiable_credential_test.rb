@@ -4,7 +4,6 @@ require 'test_helper'
 require 'health_cards/verifiable_credential'
 
 FILEPATH_JWS_PAYLOAD = 'test/fixtures/files/example-verbose-jws-payload.json'
-FILEPATH_MINIFIED = 'test/fixtures/files/example-jws-payload-minified.json'
 
 URL_HASH = { 'urn:uuid:643e199d-1aaf-49af-8a3b-c7ae375d11ce' => 'resource:0',
              'urn:uuid:4fe4f8d4-9b6e-4780-8ea5-6b5791230c85' => 'resource:1',
