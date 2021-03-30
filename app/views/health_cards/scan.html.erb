@@ -1,0 +1,45 @@
+<%= javascript_pack_tag 'qr_code_scan' %>
+
+<section class="hero is-small is-success">
+  <div class="hero-body">
+    <p class="title">Scan a QR Code</p>
+  </div>
+</section>
+<div class="section">
+  <div class="container">
+    <button id="start" class="button is-info">Start</button>
+    <button id="stop" class="button is-info" disabled>Stop</button>
+    <video id="preview"></video>
+
+    <div class="notification is-success is-light" hidden id="success-notification">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <span class="icon is-large">
+              <i class="fa fa-check-circle fa-2x"></i>
+            </span>
+            <span class="is-size-4">QR code scanned successfully.</span>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <a href="" class="button is-info">View Contents</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification is-danger is-light" hidden id="error-notification">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <span class="icon is-large">
+              <i class="fa fa-times-circle fa-2x"></i>
+            </span>
+            <span class="is-size-4">QR code does not contain a SMART Health Card.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

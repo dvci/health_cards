@@ -3,7 +3,7 @@
 # HealthCardsController is the endpoint for download of health cards
 # In the future issue endpoint will use this controller as well
 class HealthCardsController < ApplicationController
-  before_action :find_patient
+  before_action :find_patient, only: [:show]
 
   def show
     respond_to do |format|
@@ -14,6 +14,8 @@ class HealthCardsController < ApplicationController
   def chunks
     render json: health_card.chunks.to_json
   end
+
+  def scan; end
 
   private
 

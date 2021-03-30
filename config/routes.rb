@@ -15,4 +15,6 @@ Rails.application.routes.draw do
   get "/Immunization/:id", to: "immunizations#show", as: :fhir_immunization, format: :fhir_json
   get "/.well-known/smart-configuration", to: "well_known#smart", as: :well_known_smart, format: :json
   get "/.well-known/jwks", to: "well_known#jwks", as: :well_known_jwks, format: :json
+
+  get '/health_cards/scan', to: 'health_cards#scan', as: :scan_health_card
 end
