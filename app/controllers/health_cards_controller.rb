@@ -7,7 +7,14 @@ class HealthCardsController < ApplicationController
 
   def show
     respond_to do |format|
-      hc = CovidHealthCard.new(@patient, root_url)
+      hc = CovidHealthCard.new(@patient) do |record|
+        case record
+        when Patient
+          patient_url(record)
+        when Immunization
+          immunization_url(record)
+        end
+      end
       format.healthcard { render json: hc.to_json }
     end
   end

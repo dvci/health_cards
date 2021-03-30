@@ -21,7 +21,7 @@ module HealthCards
       @public_key ||= signing_key.except(:d)
     end
 
-    def sign(vcr, _url)
+    def sign(vcr)
       jwt = JSON::JWT.new(vcr.credential)
       jwt.sign(signing_key).to_s
     end

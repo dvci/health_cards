@@ -28,7 +28,7 @@ class IssuerTest < ActiveSupport::TestCase
 
   test 'created signed jwt' do
     vc = HealthCards::VerifiableCredential.new({})
-    signed_jwt = @issuer.sign(vc, 'http://example.com')
+    signed_jwt = @issuer.sign(vc)
     assert_instance_of String, signed_jwt
     assert_equal vc.credential.as_json, JSON::JWT.decode(signed_jwt, @issuer.public_key)
   end

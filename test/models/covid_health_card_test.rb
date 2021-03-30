@@ -7,7 +7,10 @@ class CovidHealthCardTest < ActiveSupport::TestCase
     @pat = Patient.create(given: 'foo', birth_date: Time.zone.today, gender: 'male')
     @vax = Vaccine.create(code: 'a', name: 'b')
     @imm = @pat.immunizations.create(occurrence: Time.zone.now, vaccine: @vax)
-    @card = CovidHealthCard.new(@pat, 'http://example-issuer.org')
+    @card = CovidHealthCard.new(@pat) do |record|
+      "example.com/#{record.class.name}/#{record.id}"
+    end
+
     @issuer = Rails.application.config.issuer
   end
 
@@ -35,9 +38,10 @@ class CovidHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'minified entries' do
-    assert_equal 2, @card.bundle.entry.size
-    patient = @card.bundle.entry[0].resource
-    imm = @card.bundle.entry[1].resource
+    bundle = @card.bundle
+    assert_equal 2, bundle.entry.size
+    patient = bundle.entry[0].resource
+    imm = bundle.entry[1].resource
 
     assert_equal @pat.given, patient.name.first.given.first
     assert_equal @pat.birth_date.to_s, patient.birthDate

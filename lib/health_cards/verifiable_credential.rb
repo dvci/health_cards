@@ -39,10 +39,6 @@ module HealthCards
       }
     end
 
-<<<<<<< HEAD
-=======
-    def jwt; end
-
     def strip_fhir_bundle
       stripped_bundle = @fhir_bundle.dup
       if stripped_bundle.key?('entry') && stripped_bundle['entry'].length.positive?
@@ -64,7 +60,6 @@ module HealthCards
       Base64.encode64(deflated)
     end
 
->>>>>>> f07d4792268d77b3e567cf438b486b095f5e9d06
     private
 
     def credential_subject
