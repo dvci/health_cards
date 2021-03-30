@@ -3040,7 +3040,7 @@ figgy-pudding@^3.5.1:
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.2.tgz#b4eee8148abb01dcf1d1ac34367d59e12fa61d6e"
   integrity sha512-0btnI/H8f2pavGMN8w40mlSKOfTK2SVJmBfBeVIj3kNw0swwgzyRq0d5TJVOwodFmtvpPeWPN/MCcfuWF0Ezbw==
 
-file-loader@^6.0.0:
+file-loader@^6.0.0, file-loader@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-6.2.0.tgz#baef7cf8e1840df325e4390b4484879480eebe4d"
   integrity sha512-qo3glqyTa61Ytg4u73GultjHGjdRyig3tG6lPtyX/jOEJvHif9uB0/OCI2Kif6ctF3caQTW2G5gym21oAsI4pw==
@@ -6105,6 +6105,11 @@ qrcode@^1.4.4:
     isarray "^2.0.1"
     pngjs "^3.3.0"
     yargs "^13.2.4"
+
+qr-scanner@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/qr-scanner/-/qr-scanner-1.2.0.tgz#845a263d167a06f6d4aaebd5b2f66b64ba460c86"
+  integrity sha512-oTuOxV/UT0O1BMyNCoWusd8B8/Za4zNvDWxTN54+s0mRvnavU0OjQiwI2o3HCuXUVGO88Ee9yY9qjrt8yUYaSw==
 
 qs@6.7.0:
   version "6.7.0"
