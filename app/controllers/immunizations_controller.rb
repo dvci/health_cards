@@ -2,7 +2,7 @@
 
 # Handles immunization of patients through web UI
 class ImmunizationsController < ApplicationController
-  before_action :find_patient
+  before_action :find_patient, except: :show
   before_action :set_immunization, only: %i[edit update destroy]
   before_action :find_vaccines, only: %i[new edit create update]
 
@@ -28,6 +28,12 @@ class ImmunizationsController < ApplicationController
         format.json { render json: @immunization.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def show
+    @immunization = Immunization.find(params[:id])
+
+    render json: @immunization.to_json
   end
 
   # PATCH/PUT /immunizations/1 or /immunizations/1.json

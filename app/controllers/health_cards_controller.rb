@@ -10,9 +10,11 @@ class HealthCardsController < ApplicationController
       hc = CovidHealthCard.new(@patient) do |record|
         case record
         when Patient
-          patient_url(record)
+          fhir_patient_url(record)
         when Immunization
-          immunization_url(record)
+          fhir_immunization_url(record)
+        else
+          root_url
         end
       end
       format.healthcard { render json: hc.to_json }

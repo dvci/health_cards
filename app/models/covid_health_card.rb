@@ -23,7 +23,7 @@ class CovidHealthCard
     return @vc if @vc
 
     vc = HealthCards::VerifiableCredential.new(bundle.to_hash)
-    @vc ||= Rails.application.config.issuer.sign(vc)
+    @vc ||= Rails.application.config.issuer.sign(vc, @url_handler.call)
   end
 
   def to_json(*_args)

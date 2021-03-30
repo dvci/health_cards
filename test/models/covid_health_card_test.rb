@@ -8,7 +8,10 @@ class CovidHealthCardTest < ActiveSupport::TestCase
     @vax = Vaccine.create(code: 'a', name: 'b')
     @imm = @pat.immunizations.create(occurrence: Time.zone.now, vaccine: @vax)
     @card = CovidHealthCard.new(@pat) do |record|
-      "example.com/#{record.class.name}/#{record.id}"
+      url = 'example.com'
+      
+      url = "#{url}/example.com/#{record.class.name}/#{record.id}" if record
+      url
     end
 
     @issuer = Rails.application.config.issuer

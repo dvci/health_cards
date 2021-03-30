@@ -28,9 +28,14 @@ class IssuerTest < ActiveSupport::TestCase
 
   test 'created signed jwt' do
     vc = HealthCards::VerifiableCredential.new({})
-    signed_jwt = @issuer.sign(vc)
+    signed_jwt = @issuer.sign(vc, 'http://example.com')
     assert_instance_of String, signed_jwt
-    assert_equal vc.credential.as_json, JSON::JWT.decode(signed_jwt, @issuer.public_key)
+    jwt = {}
+    assert_nothing_raised do
+      jwt = JSON::JWT.decode(signed_jwt, @issuer.public_key)
+    end
+    assert_not_nil jwt['iss']
+    assert_not_nil jwt['nbf']
   end
 
   test 'Use existing keys if they exist' do
