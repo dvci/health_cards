@@ -7,7 +7,34 @@ class HealthCardsController < ApplicationController
 
   def show
     respond_to do |format|
-      format.healthcard { render json: { verifiableCredential: [jws.to_s] } }
+      vc = jws.to_s
+      format.healthcard { render json: { verifiableCredential: [vc] } }
+      format.fhir_json do
+        fhir_params = FHIR.from_contents(request.raw_post)
+        types = nil
+        err_msg = nil
+
+        if fhir_params.nil?
+          err_msg = 'Unable to find FHIR::Parameter JSON'
+        elsif !fhir_params.valid?
+          err_msg = fhir_params.validate.to_s
+        else
+          types = fhir_params.parameter.map(&:valueUri).compact
+          err_msg = 'Invalid Parameter: Expected valueUri' if types.empty?
+        end
+
+        if err_msg
+          render json: FHIR::OperationOutcome.new(severity: 'error', code: 'invalid',
+                                                  diagnostics: err_msg).to_json and return
+        end
+
+        out_params = FHIR::Parameters.new(parameter: [])
+        if HealthCards::COVIDHealthCard.supports_type?(*types)
+          out_params.parameter << FHIR::Parameters::Parameter.new(name: 'verifiableCredential', valueString: vc)
+        end
+
+        render json: out_params.to_json
+      end
     end
   end
 
@@ -43,5 +70,9 @@ class HealthCardsController < ApplicationController
 
   def issuer
     Rails.application.config.issuer
+  end
+
+  def health_card_params
+    params.require([:resourceType, :parameter])
   end
 end
