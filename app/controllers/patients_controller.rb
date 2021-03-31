@@ -79,8 +79,4 @@ class PatientsController < ApplicationController
   def new_patient_params
     params[:patient] ? patient_params : {}
   end
-
-  def new_patient_params
-    params[:patient] ? patient_params : {}
-  end
 end
