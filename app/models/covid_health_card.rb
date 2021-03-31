@@ -30,6 +30,10 @@ class CovidHealthCard
     { verifiableCredential: [vc.to_s] }
   end
 
+  def chunks
+    HealthCards::Chunking.generate_qr_chunks vc.to_s
+  end
+
   private
 
   def bundle_entries
