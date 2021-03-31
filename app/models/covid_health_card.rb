@@ -27,7 +27,17 @@ class CovidHealthCard
   end
 
   def to_json(*_args)
-    { verifiableCredential: [vc.to_s] }
+    { verifiableCredential: [vc] }
+  end
+
+  def issue(fhir_params)
+    params = FHIR.from_contents(fhir_params)
+    vc_param = nil
+    if params.valid?
+      vc_param = FHIR::Parameters::Parameter.new(name: 'verifiableCredential', valueString: vc.to_s)
+      FHIR::Parameters.new(parameter: [vc_param]).to_hash
+    end
+    
   end
 
   private
@@ -36,9 +46,12 @@ class CovidHealthCard
     return @bundle_entries if @bundle_entries
 
     patient_url = @url_handler.call(patient)
+
     patient_entry = min_json(@patient, patient_url, PATIENT_MIN_ATTRIBUTES)
     immunization_entries = @patient.immunizations.map do |imm|
-      min_json(imm, @url_handler.call(imm), IMM_MIN_ATTRIBUTES)
+      imm_json = min_json(imm, @url_handler.call(imm), IMM_MIN_ATTRIBUTES)
+      imm_json.resource.patient.reference = patient_url
+      imm_json
     end
     @bundle_entries ||= [patient_entry] + immunization_entries
   end

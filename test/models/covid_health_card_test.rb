@@ -8,10 +8,7 @@ class CovidHealthCardTest < ActiveSupport::TestCase
     @vax = Vaccine.create(code: 'a', name: 'b')
     @imm = @pat.immunizations.create(occurrence: Time.zone.now, vaccine: @vax)
     @card = CovidHealthCard.new(@pat) do |record|
-      url = 'example.com'
-
-      url = "#{url}/example.com/#{record.class.name}/#{record.id}" if record
-      url
+      record ? "example.com/#{record.class.name}/#{record.id}" : 'example.com'
     end
 
     @issuer = Rails.application.config.issuer
@@ -21,8 +18,13 @@ class CovidHealthCardTest < ActiveSupport::TestCase
     bundle = @card.bundle
     assert_equal 2, bundle.entry.size
     assert bundle.valid?
-    assert_equal FHIR::Patient, bundle.entry[0].resource.class
-    assert_equal FHIR::Immunization, bundle.entry[1].resource.class
+    patient = bundle.entry[0].resource
+    assert_equal FHIR::Patient, patient.class
+    assert patient.valid?
+    imm = bundle.entry[1].resource
+    assert_equal FHIR::Immunization, imm.class
+
+    assert imm.valid?
     assert_equal 'collection', bundle.type
   end
 

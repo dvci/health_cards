@@ -103,7 +103,7 @@ module HealthCards
             coding.delete('display')
           end
         elsif k == 'reference' && v.is_a?(String)
-          v.replace @url_map[v] if @url_map.key?(v)
+          hash[k] = @url_map[v] if @url_map.key?(v)
         end
 
         case v

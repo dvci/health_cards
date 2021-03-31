@@ -6,18 +6,21 @@ class HealthCardsController < ApplicationController
   before_action :find_patient
 
   def show
-    respond_to do |format|
-      hc = CovidHealthCard.new(@patient) do |record|
-        case record
-        when Patient
-          fhir_patient_url(record)
-        when Immunization
-          fhir_immunization_url(record)
-        else
-          root_url
-        end
+    hc = CovidHealthCard.new(@patient) do |record|
+      url = case record
+      when Patient
+        fhir_patient_url(record)
+      when Immunization
+        fhir_immunization_url(record)
+      else
+        root_url
       end
+      url
+    end
+    
+    respond_to do |format|
       format.healthcard { render json: hc.to_json }
+      format.fhir_json { render json: hc.issue(request.raw_post) }
     end
   end
 
@@ -25,5 +28,9 @@ class HealthCardsController < ApplicationController
 
   def find_patient
     @patient = Patient.find(params[:patient_id])
+  end
+
+  def health_card_params
+    params.require([:resourceType, :parameter])
   end
 end
