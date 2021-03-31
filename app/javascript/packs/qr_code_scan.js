@@ -75,54 +75,41 @@ const handleScan = result => {
 
   if(healthCardPattern.test(result)) {
     const match = result.match(healthCardPattern);
-
     if(match.groups.multipleChunks) {
-      handleMultipleQRCodeScan(result, match);
+      hideErrorNotification();
+      const chunkCount = +match.groups.chunkCount;
+      const currentChunkIndex = +match.groups.chunkIndex;
+      if(scannedCodes.length !== chunkCount) {
+        scannedCodes = new Array(chunkCount);
+        for(let i = 0; i < chunkCount; i++) {
+          scannedCodes[i] = null;
+        }
+      }
+      scannedCodes[currentChunkIndex - 1] = result;
+      multiStatusContainer.innerHTML =
+        scannedCodes
+        .map((code, index) => {
+          return code ?
+            multiPresentElement(index +1, chunkCount) : multiMissingElement(index + 1, chunkCount);
+        }).join('\n');
+
+      if(scannedCodes.every(code => code)) {
+        stopScanning();
+
+        inputField.value = JSON.stringify([scannedCodes]);
+        showSuccessNotification();
+      }
     } else {
-      handleSingleQRCodeScan(result);
+      stopScanning();
+
+      multiStatusContainer.innerHTML = '';
+      inputField.value = JSON.stringify([result]);
+      showSuccessNotification();
     }
   } else {
     stopScanning();
 
     showErrorNotification();
-  }
-};
-
-const handleSingleQRCodeScan = (scannedCode) => {
-  stopScanning();
-
-  scannedCodes = [];
-  multiStatusContainer.innerHTML = '';
-  inputField.value = JSON.stringify([scannedCode]);
-  showSuccessNotification();
-};
-
-const handleMultipleQRCodeScan = (scannedCode, match) => {
-  const chunkCount = +match.groups.chunkCount;
-  const currentChunkIndex = +match.groups.chunkIndex;
-
-  hideErrorNotification();
-
-  if(scannedCodes.length !== chunkCount) {
-    scannedCodes = new Array(chunkCount);
-    for(let i = 0; i < chunkCount; i++) {
-      scannedCodes[i] = null;
-    }
-  }
-
-  scannedCodes[currentChunkIndex - 1] = scannedCode;
-  multiStatusContainer.innerHTML =
-    scannedCodes
-    .map((code, index) => {
-      return code ?
-        multiPresentElement(index +1, chunkCount) : multiMissingElement(index + 1, chunkCount);
-    }).join('\n');
-
-  if(scannedCodes.every(code => code)) {
-    stopScanning();
-
-    inputField.value = JSON.stringify([scannedCodes]);
-    showSuccessNotification();
   }
 };
 
