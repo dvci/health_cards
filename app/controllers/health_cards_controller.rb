@@ -3,7 +3,7 @@
 # HealthCardsController is the endpoint for download of health cards
 # In the future issue endpoint will use this controller as well
 class HealthCardsController < ApplicationController
-  before_action :find_patient, only: [:show]
+  before_action :find_patient, except: [:scan, :qr_contents]
 
   def show
     respond_to do |format|
@@ -19,6 +19,8 @@ class HealthCardsController < ApplicationController
 
   def qr_contents
     contents = JSON.parse(params[:qr_contents])
+
+    Rails.logger.info(contents.join("\n"))
 
     # TODO: decode the contents and display them
     flash[:notice] = 'Viewing contents not yet implemented'

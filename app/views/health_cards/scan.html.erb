@@ -12,8 +12,18 @@
 <% end %>
 <div class="section">
   <div class="container">
-    <button id="start" class="button is-info">Start</button>
-    <button id="stop" class="button is-info" disabled>Stop</button>
+    <div class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <button id="start" class="button is-info">Start</button>
+        </div>
+        <div class="level-item">
+          <button id="stop" class="button is-info" disabled>Stop</button>
+        </div>
+      </div>
+      <div class="level-right" id="multi-status-container">
+      </div>
+    </div>
     <video id="preview"></video>
 
     <div class="notification is-success is-light" hidden id="success-notification">

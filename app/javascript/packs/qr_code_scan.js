@@ -10,6 +10,9 @@ let stopButton;
 let successNotification;
 let errorNotification;
 let inputField;
+let multiStatusContainer;
+
+let scannedCodes = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   const videoElement = document.getElementById('preview');
@@ -21,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   successNotification = document.getElementById('success-notification');
   errorNotification = document.getElementById('error-notification');
   inputField = document.getElementById('qr-contents');
+  multiStatusContainer = document.getElementById('multi-status-container');
 
   startButton.addEventListener('click', startScanning);
   stopButton.addEventListener('click', stopScanning);
@@ -68,12 +72,74 @@ const showErrorNotification = () => {
 
 const handleScan = result => {
   console.log(result);
-  stopScanning();
 
   if(healthCardPattern.test(result)) {
-    inputField.value = JSON.stringify([result]);
-    showSuccessNotification();
+    const match = result.match(healthCardPattern);
+
+    if(match.groups.multipleChunks) {
+      handleMultipleQRCodeScan(result, match);
+    } else {
+      handleSingleQRCodeScan(result);
+    }
   } else {
+    stopScanning();
+
     showErrorNotification();
   }
 };
+
+const handleSingleQRCodeScan = (scannedCode) => {
+  stopScanning();
+
+  scannedCodes = [];
+  multiStatusContainer.innerHTML = '';
+  inputField.value = JSON.stringify([scannedCode]);
+  showSuccessNotification();
+};
+
+const handleMultipleQRCodeScan = (scannedCode, match) => {
+  const chunkCount = +match.groups.chunkCount;
+  const currentChunkIndex = +match.groups.chunkIndex;
+
+  hideErrorNotification();
+
+  if(scannedCodes.length !== chunkCount) {
+    scannedCodes = new Array(chunkCount);
+    for(let i = 0; i < chunkCount; i++) {
+      scannedCodes[i] = null;
+    }
+  }
+
+  scannedCodes[currentChunkIndex - 1] = scannedCode;
+  multiStatusContainer.innerHTML =
+    scannedCodes
+    .map((code, index) => {
+      return code ?
+        multiPresentElement(index +1, chunkCount) : multiMissingElement(index + 1, chunkCount);
+    }).join('\n');
+
+  if(scannedCodes.every(code => code)) {
+    stopScanning();
+
+    inputField.value = JSON.stringify([scannedCodes]);
+    showSuccessNotification();
+  }
+};
+
+const multiPresentElement = (current, max) => `
+  <div class="level-item tag is-large is-success">
+    <span class="icon">
+      <i class="fa fa-check-circle"></i>
+    </span>
+    <span>${current}/${max}</span>
+  </div>
+`;
+
+const multiMissingElement = (current, max) => `
+  <div class="level-item tag is-large is-danger">
+    <span class="icon">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <span>${current}/${max}</span>
+  </div>
+`;
