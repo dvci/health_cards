@@ -29,6 +29,9 @@ module HealthCards
         # Strip off shc:/ and convert numeric jws
         numeric_jws = qr_chunks[0].delete_prefix('shc:/')
         jws = convert_numeric_jws numeric_jws
+      else
+        ordered_qr_chunks = strip_prefix_and_sort qr_chunks
+        jws = ordered_qr_chunks.map { |c| convert_numeric_jws(c) }.join
       end
     end
 
@@ -45,6 +48,14 @@ module HealthCards
         result_jws << ((a + b).to_i + 45).chr
       end
       result_jws
+    end
+
+    def strip_prefix_and_sort(qr_chunks)
+      # Multiple QR codes are prefixed with 'shc:/C/N' where C is the index and N is the total number of chunks
+      # Sorts chunks by C
+      sorted_chunks = qr_chunks.sort_by { |c| c[/\/(.*?)\//, 1].to_i }
+      # Strip prefix
+      qr_chunks.map { |c| c.sub(/shc:\/(.*?)\/(.*?)\//, '') }
     end
   end
 end

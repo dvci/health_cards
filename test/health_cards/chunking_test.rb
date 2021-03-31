@@ -8,7 +8,9 @@ JWS_LARGE = 'l' * 1196
 JWS_3 = "#{'t' * 1191 * 2}t"
 
 FILEPATH_NUMERIC_QR_CODE = 'test/fixtures/files/example-numeric-qr-code.json'
+FILEPATH_NUMERIC_QR_CODE_MULTIPLE = 'test/fixtures/files/example-numeric-qr-code-multiple.json'
 FILEPATH_JWS = 'test/fixtures/files/example-jws.json'
+FILEPATH_JWS_MULTIPLE = 'test/fixtures/files/example-jws-multiple.json'
 
 class ChunkingTest < ActiveSupport::TestCase
   setup do
@@ -56,6 +58,16 @@ class ChunkingTest < ActiveSupport::TestCase
     qr_file = File.read(FILEPATH_NUMERIC_QR_CODE)
     qr_chunks = JSON.parse(qr_file)
     jws_file = File.read(FILEPATH_JWS)
+    expected_jws = JSON.parse(jws_file)
+
+    assembled_jws = @dummy_class.assemble_jws qr_chunks
+    assert_equal expected_jws, assembled_jws
+  end
+
+  test 'Multiple QR codes return correctly assembled JWS' do
+    qr_file = File.read(FILEPATH_NUMERIC_QR_CODE_MULTIPLE)
+    qr_chunks = JSON.parse(qr_file)
+    jws_file = File.read(FILEPATH_JWS_MULTIPLE)
     expected_jws = JSON.parse(jws_file)
 
     assembled_jws = @dummy_class.assemble_jws qr_chunks
