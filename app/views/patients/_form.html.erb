@@ -33,7 +33,7 @@
         <%= form.label :gender, class: 'label' %>
         <div class="control">
           <div class="select">
-            <%= form.select :gender, options_for_select(Patient::GENDERS)  %>
+            <%= form.select :gender, options_for_select(Patient::GENDERS, @patient.gender)  %>
           </div>
         </div>
       </div>
