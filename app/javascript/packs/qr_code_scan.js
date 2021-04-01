@@ -81,9 +81,7 @@ const handleScan = result => {
       const currentChunkIndex = +match.groups.chunkIndex;
       if(scannedCodes.length !== chunkCount) {
         scannedCodes = new Array(chunkCount);
-        for(let i = 0; i < chunkCount; i++) {
-          scannedCodes[i] = null;
-        }
+        scannedCodes.fill(null, 0, chunkCount);
       }
       scannedCodes[currentChunkIndex - 1] = result;
       multiStatusContainer.innerHTML =
