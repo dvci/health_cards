@@ -1,5 +1,5 @@
+<%= javascript_pack_tag 'qrcode' %>
 <p id="notice"><%= notice %></p>
-
 <section class="section">
   <div class="container">
     <div class="content">
@@ -63,6 +63,7 @@
         <% end %>
       </div>
     </div>
+    <div id="qr-code"></div>
     <%= link_to 'Patient List', patients_path, class: 'button is-info' %>
   </div>
 </section>
