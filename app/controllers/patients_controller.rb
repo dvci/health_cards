@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'patients_helper'
-
 # PatientsController manages patients via the Web UI
 class PatientsController < ApplicationController
   before_action :set_patient, only: %i[show edit update destroy]
