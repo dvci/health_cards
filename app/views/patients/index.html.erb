@@ -1,36 +1,24 @@
 <section class="hero is-small is-info">
-  <div class="hero-body">
-    <p class="title">Patients</p>
-  </div>
+<div class="hero-body">
+  <p class="title">Patients</p>
+</div>
 </section>
 
-  <tbody>
-    <% @patients.each do |patient| %>
-      <tr>
-        <td><%= patient.full_name || "((Unknown))" %></td>
-        <td><%= link_to 'Show', patient %></td>
-        <td><%= link_to 'Edit', edit_patient_path(patient) %></td>
-        <td><%= link_to 'Destroy', patient, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
+<p id="notice"><%= notice %></p>
 
 <section class="section">
-  <div class="container">
-    <table class="table">
-      <tbody>
-        <% @patients.each do |patient| %>
-          <tr>
-            <td><%= link_to patient.full_name || "((Unknown))", patient %></td>
-            <td><%= link_to 'Edit', edit_patient_path(patient), class: 'button is-info is-light is-small' %></td>
-            <td><%= link_to 'Destroy', patient, method: :delete, data: { confirm: 'Are you sure?' }, class: 'button is-danger is-outlined is-small' %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <%= link_to 'New Patient', new_patient_path, class: 'button is-info' %>
-  </div>
+<div class="container">
+  <table class="table">
+    <tbody>
+      <% @patients.each do |patient| %>
+        <tr>
+          <td><%= link_to patient.full_name || "((Unknown))", patient %></td>
+          <td><%= link_to 'Edit', edit_patient_path(patient), class: 'button is-info is-light is-small' %></td>
+          <td><%= link_to 'Destroy', patient, method: :delete, data: { confirm: 'Are you sure?' }, class: 'button is-danger is-outlined is-small' %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <%= link_to 'New Patient', new_patient_path, class: 'button is-info' %>
+</div>
 </section>

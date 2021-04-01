@@ -5,4 +5,5 @@
 </section>
 
 <%= button_to 'Demo Data', new_patient_path, params: fake_patient_params, method: :get, class: 'button is-info is-light' %>
-<%= render 'form', patient: @patient %>
+<%= render 'form', patient: @patient, return_path: patients_path %>
+%>
