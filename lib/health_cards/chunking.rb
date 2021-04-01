@@ -25,14 +25,21 @@ module HealthCards
 
     # Assemble jws from qr code chunks
     def assemble_jws(qr_chunks)
-      if qr_chunks.length === 1
+      if qr_chunks.length == 1
         # Strip off shc:/ and convert numeric jws
         numeric_jws = qr_chunks[0].delete_prefix('shc:/')
-        jws = convert_numeric_jws numeric_jws
+        convert_numeric_jws numeric_jws
       else
         ordered_qr_chunks = strip_prefix_and_sort qr_chunks
-        jws = ordered_qr_chunks.map { |c| convert_numeric_jws(c) }.join
+        ordered_qr_chunks.map { |c| convert_numeric_jws(c) }.join
       end
+    end
+
+    def get_payload_from_qr(qr_chunks)
+      jws = assemble_jws qr_chunks
+      jwk = JOSE::JWK.generate_key([:ec, 'prime256v1'])
+      _verified, message = jwk.verify jws
+      JSON.parse(Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(message))
     end
 
     private
@@ -53,9 +60,9 @@ module HealthCards
     def strip_prefix_and_sort(qr_chunks)
       # Multiple QR codes are prefixed with 'shc:/C/N' where C is the index and N is the total number of chunks
       # Sorts chunks by C
-      sorted_chunks = qr_chunks.sort_by { |c| c[/\/(.*?)\//, 1].to_i }
+      sorted_chunks = qr_chunks.sort_by { |c| c[%r{/(.*?)/}, 1].to_i }
       # Strip prefix
-      qr_chunks.map { |c| c.sub(/shc:\/(.*?)\/(.*?)\//, '') }
+      sorted_chunks.map { |c| c.sub(%r{shc:/(.*?)/(.*?)/}, '') }
     end
   end
 end

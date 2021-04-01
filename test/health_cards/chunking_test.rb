@@ -11,6 +11,7 @@ FILEPATH_NUMERIC_QR_CODE = 'test/fixtures/files/example-numeric-qr-code.json'
 FILEPATH_NUMERIC_QR_CODE_MULTIPLE = 'test/fixtures/files/example-numeric-qr-code-multiple.json'
 FILEPATH_JWS = 'test/fixtures/files/example-jws.json'
 FILEPATH_JWS_MULTIPLE = 'test/fixtures/files/example-jws-multiple.json'
+FILEPATH_PAYLOAD_MINIFIED = 'test/fixtures/files/example-jws-payload-minified.json'
 
 class ChunkingTest < ActiveSupport::TestCase
   setup do
@@ -72,5 +73,15 @@ class ChunkingTest < ActiveSupport::TestCase
 
     assembled_jws = @dummy_class.assemble_jws qr_chunks
     assert_equal expected_jws, assembled_jws
+  end
+
+  test 'VC should get returned from QR code' do
+    qr_file = File.read(FILEPATH_NUMERIC_QR_CODE)
+    qr_chunks = JSON.parse(qr_file)
+    jws_payload = File.read(FILEPATH_PAYLOAD_MINIFIED)
+    payload = JSON.parse(jws_payload)
+    decoded_payload = @dummy_class.get_payload_from_qr qr_chunks
+
+    assert_equal payload['vc'], decoded_payload['vc']
   end
 end
