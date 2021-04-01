@@ -41,4 +41,12 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+
+  test 'get chunks for QR code generation' do
+    get(chunks_patient_health_card_url(@patient))
+    assert_response :success
+
+    json = JSON.parse(response.body)
+    assert_equal 1, json.size
+  end
 end
