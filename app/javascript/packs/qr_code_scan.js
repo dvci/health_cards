@@ -90,7 +90,7 @@ const handleScan = result => {
         scannedCodes
         .map((code, index) => {
           return code ?
-            multiPresentElement(index +1, chunkCount) : multiMissingElement(index + 1, chunkCount);
+            multiPresentElement(index + 1, chunkCount) : multiMissingElement(index + 1, chunkCount);
         }).join('\n');
 
       if(scannedCodes.every(code => code)) {
