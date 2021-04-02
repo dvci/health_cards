@@ -65,11 +65,11 @@ module HealthCards
     end
 
     def encode(data)
-      Base64.encode64(data).gsub("\n", "")
+      Base64.urlsafe_encode64(data, padding: false).gsub("\n", "")
     end
 
     def decode(data)
-      Base64.decode64(data)
+      Base64.urlsafe_decode64(data)
     end
 
     def jws

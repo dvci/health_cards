@@ -54,11 +54,11 @@ class IssuerTest < ActiveSupport::TestCase
     header, payload, sigg = HealthCards::JWS.new(private_key, 'asdfasdf').jws.split('.')
     puts HealthCards::JWS.new(private_key, 'asdfasdf').jws
 
-    assert private_key.dsa_verify_asn1(payload, Base64.decode64(sigg))
-    assert_not private_key.dsa_verify_asn1('asdf', Base64.decode64(sigg))
-    assert_equal'asdfasdf', Base64.decode64(payload)
+    assert private_key.dsa_verify_asn1(payload, Base64.urlsafe_decode64(sigg))
+    assert_not private_key.dsa_verify_asn1('asdf', Base64.urlsafe_decode64(sigg))
+    assert_equal'asdfasdf', Base64.urlsafe_decode64(payload)
 
-    decoded_header = JSON.parse(Base64.decode64(header))
+    decoded_header = JSON.parse(Base64.urlsafe_decode64(header))
     assert_equal 'DEF', decoded_header['zip']
     assert_equal 'ES256', decoded_header['alg']
     assert decoded_header['kid']
