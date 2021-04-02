@@ -17,7 +17,7 @@ module HealthCards
       end
 
       def from_jws(jws, public_key: nil, private_key: nil)
-        header, payload, signature = jws.split('.').map { |entry| decode(entry)}
+        header, payload, signature = jws.split('.').map { |entry| decode(entry) }
         Card.new(header: header, payload: payload, signature: signature,
                  public_key: public_key, private_key: private_key)
       end
@@ -37,11 +37,10 @@ module HealthCards
                                           alg: 'ES256',
                                           kid: @public_key.thumbprint
                                         })
-
     end
 
     def to_jws
-      [header, payload, signature].map{|entry| Card.encode(entry)}.join('.')
+      [header, payload, signature].map { |entry| Card.encode(entry) }.join('.')
     end
 
     def encoded_payload
@@ -56,13 +55,13 @@ module HealthCards
     def signature
       return @signature if @signature
 
-      raise MissingPrivateKey.new unless private_key
+      raise MissingPrivateKey unless private_key
 
       @signature ||= private_key.sign(encoded_payload)
     end
 
     def verify
-      raise MissingPublicKey.new unless public_key
+      raise MissingPublicKey unless public_key
 
       @public_key.verify(encoded_payload, signature)
     end
@@ -73,16 +72,18 @@ module HealthCards
       @signature = nil
     end
 
+    # Thrown when attempting to sign a card without providing a private key
     class MissingPrivateKey < StandardError
       def initialize(msg = nil)
-        msg ||= "Missing private key"
+        msg ||= 'Missing private key'
         super(msg)
       end
     end
 
+    # Thrown when attempting to verify a card without providing a public key
     class MissingPublicKey < StandardError
       def initialize(msg = nil)
-        msg ||= "Missing private key"
+        msg ||= 'Missing private key'
         super(msg)
       end
     end
