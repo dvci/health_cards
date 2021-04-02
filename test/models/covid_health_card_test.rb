@@ -31,7 +31,7 @@ class CovidHealthCardTest < ActiveSupport::TestCase
     vc = HealthCards::VerifiableCredential.decompress_credential(@card.vc)
 
     entries = vc.dig('credentialSubject', 'fhirBundle', 'entry')
-    
+
     assert_not_nil entries
     name = entries[0].dig('resource', 'name')
     assert_not_nil name

@@ -22,7 +22,7 @@ module HealthCards
         # TODO
       end
 
-      def load_string(signature)
+      def load_string(_signature)
         byebug
       end
     end
@@ -54,6 +54,5 @@ module HealthCards
     def to_json(*_args)
       @jwks ||= JSON::JWK::Set.new(keys: [signing_key.to_jwk(use: 'sig', alg: 'ES256').except(:d)]).as_json
     end
-    
   end
 end

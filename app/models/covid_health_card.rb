@@ -11,7 +11,7 @@ class CovidHealthCard < HealthCards::Card
   def initialize(patient, &url_handler)
     @patient = patient
     @url_handler = url_handler
-    
+
     super(Rails.application.config.hc_key, vc)
   end
 
@@ -23,6 +23,7 @@ class CovidHealthCard < HealthCards::Card
 
   def vc
     return @vc if @vc
+
     @vc ||= HealthCards::VerifiableCredential.new(@url_handler.call, bundle.to_hash).compress_credential
   end
 

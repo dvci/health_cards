@@ -11,7 +11,7 @@ class KeyTest < ActiveSupport::TestCase
   end
 
   teardown do
-    FileUtils.rm @key_path if File.exists?(@key_path)
+    FileUtils.rm @key_path if File.exist?(@key_path)
   end
 
   test 'creates keys' do
@@ -42,7 +42,7 @@ class KeyTest < ActiveSupport::TestCase
     assert card.verify
     assert @key.signing_key.dsa_verify_asn1(payload, Base64.urlsafe_decode64(sigg))
     assert_not @key.signing_key.dsa_verify_asn1('asdf', Base64.urlsafe_decode64(sigg))
-    assert_equal'asdfasdf', Base64.urlsafe_decode64(payload)
+    assert_equal 'asdfasdf', Base64.urlsafe_decode64(payload)
 
     decoded_header = JSON.parse(Base64.urlsafe_decode64(header))
     assert_equal 'DEF', decoded_header['zip']

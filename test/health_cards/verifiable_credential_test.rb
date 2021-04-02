@@ -18,12 +18,12 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   setup do
     file = File.read(FILEPATH_JWS_PAYLOAD)
     @verbose_bundle = JSON.parse(file)
-    @verbose_vc = HealthCards::VerifiableCredential.new("http://example.com", @verbose_bundle)
+    @verbose_vc = HealthCards::VerifiableCredential.new('http://example.com', @verbose_bundle)
   end
 
   test 'with subject identified' do
     @subject = 'foo'
-    @vc = HealthCards::VerifiableCredential.new("http://example.com", BUNDLE_SKELETON, @subject)
+    @vc = HealthCards::VerifiableCredential.new('http://example.com', BUNDLE_SKELETON, @subject)
 
     assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), BUNDLE_SKELETON
     assert_equal @vc.credential.dig(:credentialSubject, :id), @subject
@@ -36,7 +36,6 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   end
 
   test 'redefine_uris populates Bundle.entry.fullUrl elements with short resource-scheme URIs' do
-    
     stripped_bundle = @verbose_vc.strip_fhir_bundle
 
     resource_nums = []
@@ -53,7 +52,6 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   end
 
   test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
-
     stripped_bundle = @verbose_vc.strip_fhir_bundle
     stripped_resources = stripped_bundle['entry']
 
@@ -86,7 +84,7 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   end
 
   test 'compress_payload applies a raw deflate compression and allows for the original JWS payload to be restored' do
-    @vc = HealthCards::VerifiableCredential.new("http://example.com", BUNDLE_SKELETON)
+    @vc = HealthCards::VerifiableCredential.new('http://example.com', BUNDLE_SKELETON)
     original_vc = JSON.parse(@vc.minify_payload)
 
     compressed_vc = @vc.compress_credential
@@ -96,6 +94,5 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     original_vc.each_pair do |k, v|
       assert_equal v, new_vc[k]
     end
-
   end
 end

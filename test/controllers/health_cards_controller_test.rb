@@ -7,11 +7,9 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     @patient = Patient.create!(given: 'foo')
     @vax = Vaccine.create(code: 'a')
     @imm = @patient.immunizations.create(vaccine: @vax, occurrence: Time.zone.today)
-    
+
     @key_path = Rails.application.config.hc_key_path
     @key = Rails.application.config.hc_key
-
-
   end
 
   test 'get health card download' do
