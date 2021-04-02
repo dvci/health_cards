@@ -12,7 +12,8 @@ class CovidHealthCard < HealthCards::Card
     @patient = patient
     @url_handler = url_handler
 
-    super(Rails.application.config.hc_key, vc)
+    key_set = Rails.application.config.hc_key
+    super(payload: vc, private_key: key_set, public_key: key_set)
   end
 
   def bundle
@@ -28,7 +29,7 @@ class CovidHealthCard < HealthCards::Card
   end
 
   def to_json(*_args)
-    { verifiableCredential: [jws] }
+    { verifiableCredential: [to_jws] }
   end
 
   def chunks

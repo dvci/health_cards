@@ -37,8 +37,8 @@ class KeyTest < ActiveSupport::TestCase
   end
 
   test 'create a signed jws' do
-    card = HealthCards::Card.new(@key, 'asdfasdf')
-    header, payload, sigg = card.jws.split('.')
+    card = HealthCards::Card.new(private_key: @key, public_key: @key, payload: 'asdfasdf')
+    header, payload, sigg = card.to_jws.split('.')
     assert card.verify
     assert @key.signing_key.dsa_verify_asn1(payload, Base64.urlsafe_decode64(sigg))
     assert_not @key.signing_key.dsa_verify_asn1('asdf', Base64.urlsafe_decode64(sigg))
