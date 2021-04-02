@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HealthCards
   # Handle JWS with non-JSON Payloads
   class Card
