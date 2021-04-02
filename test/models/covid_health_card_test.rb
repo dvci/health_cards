@@ -28,9 +28,10 @@ class CovidHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'verifiable credential' do
-    vc = @card.vc
-    entries = vc.dig(:credentialSubject, :fhirBundle, 'entry')
+    vc = HealthCards::VerifiableCredential.decompress_credential(@card.vc)
 
+    entries = vc.dig('credentialSubject', 'fhirBundle', 'entry')
+    
     assert_not_nil entries
     name = entries[0].dig('resource', 'name')
     assert_not_nil name

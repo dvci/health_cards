@@ -21,6 +21,10 @@ module HealthCards
       def load_url
         # TODO
       end
+
+      def load_string(signature)
+        byebug
+      end
     end
 
     def initialize(key)

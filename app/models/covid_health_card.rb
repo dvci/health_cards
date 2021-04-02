@@ -2,7 +2,7 @@
 
 # Ties together FHIR models, HealthCard and Rails to create
 # COVID Health Card IG complianct payloads
-class CovidHealthCard
+class CovidHealthCard < HealthCards::Card
   attr_reader :url, :patient
 
   PATIENT_MIN_ATTRIBUTES = %w[name birthDate].freeze # Add address
@@ -11,6 +11,8 @@ class CovidHealthCard
   def initialize(patient, &url_handler)
     @patient = patient
     @url_handler = url_handler
+    
+    super(Rails.application.config.hc_key, vc)
   end
 
   def bundle
@@ -21,13 +23,11 @@ class CovidHealthCard
 
   def vc
     return @vc if @vc
-
-    @vc ||= HealthCards::VerifiableCredential.new(bundle.to_hash).credential
+    @vc ||= HealthCards::VerifiableCredential.new(@url_handler.call, bundle.to_hash).compress_credential
   end
 
   def to_json(*_args)
-    card = HealthCards::Card.new(Rails.application.config.hc_key, vc.to_s)
-    { verifiableCredential: [card.jws] }
+    { verifiableCredential: [jws] }
   end
 
   def chunks

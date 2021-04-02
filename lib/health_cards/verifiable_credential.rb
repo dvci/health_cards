@@ -23,19 +23,21 @@ module HealthCards
 
     # include DigitalSignature
 
-    attr_reader :fhir_bundle, :subject_id
+    attr_reader :issuer, :nbf, :fhir_bundle, :subject_id
 
-    def initialize(fhir_bundle, subject_id = nil)
+    def initialize(iss, fhir_bundle, subject_id = nil)
+      @issuer = iss
       @fhir_bundle = fhir_bundle
       @subject_id = subject_id
     end
 
     def credential
       {
+        iss: issuer,
+        nbf: Time.now.to_i,
         '@context': VC_CONTEXT,
         type: VC_TYPE,
-        credentialSubject: credential_subject # ,
-        # proof: proof(credential_subject)
+        credentialSubject: credential_subject
       }
     end
 
@@ -58,6 +60,12 @@ module HealthCards
     def compress_credential
       deflated = Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(minify_payload.to_s, Zlib::FINISH)
       Base64.encode64(deflated)
+    end
+
+    def self.decompress_credential(vc)
+      dec = Base64.decode64(vc)
+      inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(dec)
+      JSON.parse(inf)
     end
 
     private
