@@ -5,11 +5,11 @@ require 'health_cards'
 # WellKnownController exposes the .well-known configuration to identify relevant urls and server capabilities
 class WellKnownController < ApplicationController
   def smart
-    render json: Rails.application.config.well_known.smart.to_json
+    render json: Rails.application.config.smart.to_json
   end
 
   def jwks
-    issuer = Rails.application.config.issuer
-    render json: JSON.pretty_generate(issuer.jwks)
+    @key = Rails.application.config.hc_key
+    render json: JSON.pretty_generate(@key.to_json)
   end
 end

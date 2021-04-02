@@ -15,7 +15,6 @@ module HealthCards
           key = OpenSSL::PKey::EC.generate('prime256v1')
           File.write(path, key.to_pem)
         end
-        byebug
         Key.new(key)
       end
 
@@ -33,11 +32,11 @@ module HealthCards
     end
 
     def sign(payload)
-      signing_key.dsa_sign_asn1(jws_payload)
+      signing_key.dsa_sign_asn1(payload)
     end
 
     def verify(payload, signature)
-      public_key.dsa_verify_asn1(payload, signature)
+      signing_key.dsa_verify_asn1(payload, signature)
     end
 
     def signing_key
@@ -49,7 +48,7 @@ module HealthCards
     end
 
     def to_json(*_args)
-      @jwks ||= JSON::JWK::Set.new(keys: [public_key]).as_json
+      @jwks ||= JSON::JWK::Set.new(keys: [signing_key.to_jwk(use: 'sig', alg: 'ES256').except(:d)]).as_json
     end
     
   end

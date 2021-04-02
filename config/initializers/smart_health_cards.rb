@@ -3,7 +3,7 @@
 require 'health_cards'
 
 Rails.application.configure do
-  config.well_known = config_for('well-known')
-  key_store = HealthCards::FileKeyStore.new(config.well_known.jwk[:key_path])
-  config.issuer = HealthCards::Issuer.new(key_store)
+  config.smart = config_for('well-known')
+  config.hc_key_path = ENV['KEY_PATH']
+  config.hc_key = HealthCards::Key.load_file(config.hc_key_path)
 end

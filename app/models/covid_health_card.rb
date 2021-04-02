@@ -22,12 +22,12 @@ class CovidHealthCard
   def vc
     return @vc if @vc
 
-    vc = HealthCards::VerifiableCredential.new(bundle.to_hash)
-    @vc ||= Rails.application.config.issuer.sign(vc, @url_handler.call)
+    @vc ||= HealthCards::VerifiableCredential.new(bundle.to_hash).credential
   end
 
   def to_json(*_args)
-    { verifiableCredential: [vc.to_s] }
+    card = HealthCards::Card.new(Rails.application.config.hc_key, vc.to_s)
+    { verifiableCredential: [card.jws] }
   end
 
   def chunks

@@ -14,7 +14,8 @@ class CovidHealthCardTest < ActiveSupport::TestCase
       url
     end
 
-    @issuer = Rails.application.config.issuer
+    @key_path = Rails.application.config.hc_key_path
+    @key = Rails.application.config.hc_key
   end
 
   test 'bundle creation' do
@@ -28,9 +29,8 @@ class CovidHealthCardTest < ActiveSupport::TestCase
 
   test 'verifiable credential' do
     vc = @card.vc
+    entries = vc.dig(:credentialSubject, :fhirBundle, 'entry')
 
-    jwt = JSON::JWT.decode(vc, @issuer.public_key)
-    entries = jwt.dig('credentialSubject', 'fhirBundle', 'entry')
     assert_not_nil entries
     name = entries[0].dig('resource', 'name')
     assert_not_nil name

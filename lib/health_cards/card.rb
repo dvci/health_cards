@@ -42,11 +42,12 @@ module HealthCards
       [jose_header, jws_payload, jws_signature].join('.')
     end
 
-    def self.verify(jws)
+    def self.verify(jws, key)
       _, payload_to_verify, signature_to_verify = jws.split('.')
-      verified = @key.verify(payload_to_verify, signature_to_verify)
+      verified = key.verify(payload_to_verify, signature_to_verify)
       [verified, decode(payload_to_verify)]
     end
 
 
   end
+end
