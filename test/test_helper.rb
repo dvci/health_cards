@@ -21,6 +21,18 @@ module ActiveSupport
       assert_empty model.errors, model.errors.full_messages.join(', ')
     end
 
+    def cleanup_keys
+      FileUtils.rm_rf rails_key_path if File.exist?(rails_key_path)
+    end
+
+    def rails_key_path
+      Rails.application.config.hc_key_path
+    end
+
+    def rails_key_pair
+      Rails.application.config.hc_key_pair
+    end
+
     def assert_attributes_equal(record1, record2, attr_list = nil)
       (attr_list || record1.attributes.keys).each do |attr|
         unless attr == 'id'

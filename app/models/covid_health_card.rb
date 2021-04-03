@@ -12,8 +12,8 @@ class CovidHealthCard < HealthCards::Card
     @patient = patient
     @url_handler = url_handler
 
-    key_set = Rails.application.config.hc_key
-    super(payload: vc, private_key: key_set, public_key: key_set)
+    key_set = Rails.application.config.hc_key_pair
+    super(payload: vc, private_key: key_set.private_key, public_key: key_set.public_key)
   end
 
   def bundle

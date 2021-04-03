@@ -62,8 +62,8 @@ module HealthCards
       Base64.encode64(deflated)
     end
 
-    def self.decompress_credential(vc)
-      dec = Base64.decode64(vc)
+    def self.decompress_credential(vcr)
+      dec = Base64.decode64(vcr)
       inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(dec)
       JSON.parse(inf)
     end

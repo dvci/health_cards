@@ -9,7 +9,13 @@ class WellKnownController < ApplicationController
   end
 
   def jwks
-    @key = Rails.application.config.hc_key
-    render json: JSON.pretty_generate(@key.to_json)
+    render json: JSON.pretty_generate(key_set.to_json)
+  end
+
+  private
+
+  def key_set
+    key = Rails.application.config.hc_public_key
+    HealthCards::Key::Set.new(key)
   end
 end

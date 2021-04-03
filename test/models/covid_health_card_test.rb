@@ -13,9 +13,6 @@ class CovidHealthCardTest < ActiveSupport::TestCase
       url = "#{url}/example.com/#{record.class.name}/#{record.id}" if record
       url
     end
-
-    @key_path = Rails.application.config.hc_key_path
-    @key = Rails.application.config.hc_key
   end
 
   test 'bundle creation' do
