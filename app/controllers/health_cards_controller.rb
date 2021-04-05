@@ -20,11 +20,12 @@ class HealthCardsController < ApplicationController
   def qr_contents
     contents = JSON.parse(params[:qr_contents])
 
-    Rails.logger.info(contents.join("\n"))
+    jws_payload = HealthCards::Chunking.get_payload_from_qr contents
+    render json: JSON.pretty_generate(jws_payload)
 
     # TODO: decode the contents and display them
-    flash[:notice] = 'Viewing contents not yet implemented'
-    redirect_to scan_health_card_path
+    # flash[:notice] = 'Viewing contents not yet implemented'
+    # redirect_to scan_health_card_path
   end
 
   private

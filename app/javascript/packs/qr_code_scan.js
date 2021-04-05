@@ -96,7 +96,7 @@ const handleScan = result => {
       if(scannedCodes.every(code => code)) {
         stopScanning();
 
-        inputField.value = JSON.stringify([scannedCodes]);
+        inputField.value = JSON.stringify(scannedCodes);
         showSuccessNotification();
       }
     } else {
