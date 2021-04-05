@@ -43,9 +43,9 @@ module HealthCards
 
       @private_key = PrivateKey.new(key)
 
-      # vk = OpenSSL::PKey::EC.new('secp112r1')
-      # vk.public_key = key.public_key
-      @public_key = PublicKey.new(key)
+      pub = OpenSSL::PKey::EC.new('prime256v1')
+      pub.public_key = key.public_key
+      @public_key = PublicKey.new(pub)
     end
   end
 
