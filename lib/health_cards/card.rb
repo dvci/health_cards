@@ -30,7 +30,9 @@ module HealthCards
     def initialize(payload:, private_key: nil, public_key: nil, header: nil, signature: nil)
       @payload = payload
       @private_key = private_key
-      @public_key = public_key
+
+      # Use the given public key, otherwise get the public key from the private key
+      @public_key = public_key || private_key.public_key
       @signature = signature
       @header = header || JSON.generate({
                                           zip: 'DEF',
