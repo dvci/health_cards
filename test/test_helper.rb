@@ -29,8 +29,12 @@ module ActiveSupport
       Rails.application.config.hc_key_path
     end
 
-    def rails_key_pair
-      Rails.application.config.hc_key_pair
+    def rails_private_key
+      Rails.application.config.hc_key
+    end
+
+    def rails_public_key
+      Rails.application.config.hc_key.public_key
     end
 
     def assert_attributes_equal(record1, record2, attr_list = nil)

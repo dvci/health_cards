@@ -14,6 +14,17 @@ module HealthCards
       @key.to_jwk(use: 'sig', alg: 'ES256')
     end
 
+    delegate :thumbprint, to: :to_json
+
+    def to_jwk
+      {
+        kty: 'EC',
+        use: 'sig',
+        alg: 'ES256',
+        crv: 'P-256'
+      }
+    end
+
     # Represents a set of Public Keys
     class Set
       attr_reader :keys
@@ -26,33 +37,41 @@ module HealthCards
         JSON::JWK::Set.new(keys: keys.map(&:to_json)).as_json
       end
     end
-  end
 
-  # Convience class to facilitate loading of public and private keys from a single file
-  class KeyPair
-    attr_reader :private_key, :public_key
+    private
 
-    def initialize(path)
-      key = nil
-      if File.exist?(path)
-        key = OpenSSL::PKey::EC.new(File.read(path))
-      else
-        key = OpenSSL::PKey::EC.generate('prime256v1')
-        File.write(path, key.to_pem)
-      end
-
-      @private_key = PrivateKey.new(key)
-
-      pub = OpenSSL::PKey::EC.new('prime256v1')
-      pub.public_key = key.public_key
-      @public_key = PublicKey.new(pub)
+    def encode(val)
+      Base64.urlsafe_encode64(val.pack('H*'), padding: false)
     end
   end
 
   # A key used for singing JWS
   class PrivateKey < Key
+    def self.from_file(path)
+      pem = OpenSSL::PKey::EC.new(File.read(path))
+      PrivateKey.new(pem)
+    end
+
+    def self.from_file!(path)
+      if File.exist?(path)
+        from_file(path)
+      else
+        key = OpenSSL::PKey::EC.generate('prime256v1')
+        File.write(path, key.to_pem)
+        PrivateKey.new(key)
+      end
+    end
+
     def sign(payload)
       @key.dsa_sign_asn1(payload)
+    end
+
+    def public_key
+      return @public_key if @public_key
+
+      pub = OpenSSL::PKey::EC.new('prime256v1')
+      pub.public_key = @key.public_key
+      @public_key = PublicKey.new(pub)
     end
   end
 
@@ -65,8 +84,6 @@ module HealthCards
     def verify(payload, signature)
       @key.dsa_verify_asn1(payload, signature)
     end
-
-    delegate :thumbprint, to: :to_json
 
     def to_json(*_args)
       super.except(:d)

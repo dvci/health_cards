@@ -5,7 +5,7 @@ require 'test_helper'
 class WellKnownControllerTest < ActionDispatch::IntegrationTest
   setup do
     @well_known = Rails.application.config.smart
-    @key = rails_key_pair.public_key
+    @key = rails_public_key
   end
 
   teardown do

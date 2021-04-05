@@ -7,9 +7,7 @@ Rails.application.configure do
 
   config.hc_key_path = ENV['KEY_PATH']
   FileUtils.mkdir_p(File.dirname(ENV['KEY_PATH']))
-  kp = HealthCards::KeyPair.new(config.hc_key_path)
+  kp = HealthCards::PrivateKey.from_file!(config.hc_key_path)
 
-  config.hc_key_pair = kp
-  config.hc_public_key = kp.public_key
-  config.hc_private_key = kp.private_key
+  config.hc_key = kp
 end

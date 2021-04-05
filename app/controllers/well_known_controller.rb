@@ -15,7 +15,7 @@ class WellKnownController < ApplicationController
   private
 
   def key_set
-    key = Rails.application.config.hc_public_key
+    key = Rails.application.config.hc_key.public_key
     HealthCards::Key::Set.new(key)
   end
 end
