@@ -44,6 +44,7 @@ module HealthCards
 
     def coordinates
       return @coordinates if @coordinates
+
       coor = @key.private_key? ? { d: @key.private_key.to_s(16) } : {}
       key_hex = @key.public_key.to_bn.to_s(16)
       xy = { x: key_hex[2..65], y: key_hex[66..130] }

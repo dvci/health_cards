@@ -7,36 +7,42 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     @patient = Patient.create!(given: 'foo')
     @vax = Vaccine.create(code: 'a')
     @imm = @patient.immunizations.create(vaccine: @vax, occurrence: Time.zone.today)
+    @key = rails_public_key
   end
 
   test 'get health card download' do
     get(patient_health_card_path(@patient, format: 'smart-health-card'))
+
     json = JSON.parse(response.body)
     vc = json['verifiableCredential']
 
     assert_not_nil vc
-    # assert_equal 1, vc.size
+    assert_equal 1, vc.size
 
-    # json = nil
-    # assert_nothing_raised do
-    #   json = JSON::JWT.decode(vc.first, @issuer.public_key)
-    # end
+    card = nil
 
-    # assert_not json.nil?
+    assert_nothing_raised do
+      card = HealthCards::Card.from_jws(vc.first, public_key: @key)
+    end
 
-    # entries = json.dig('credentialSubject', 'fhirBundle', 'entry')
+    json = HealthCards::VerifiableCredential.decompress_credential(card.payload)
 
-    # assert_not entries.nil?
+    assert_not_nil json
 
-    # patient = FHIR.from_contents(entries[0]['resource'].to_json)
-    # assert patient.valid?
-    # assert_equal @patient.given, patient.name[0].given[0]
+    entries = json.dig('credentialSubject', 'fhirBundle', 'entry')
 
-    # imm = FHIR.from_contents(entries[1]['resource'].to_json)
+    assert_not_nil entries
 
+    patient = FHIR.from_contents(entries[0]['resource'].to_json)
+    assert patient.valid?
+    assert_equal @patient.given, patient.name[0].given[0]
+
+    imm = FHIR.from_contents(entries[1]['resource'].to_json)
+
+    # Deactivated until spec or FHIR validator is updated
     # assert imm.valid?
 
-    # assert_equal @vax.code, imm.vaccineCode.coding[0].code
+    assert_equal @vax.code, imm.vaccineCode.coding[0].code
 
     assert_response :success
   end

@@ -58,13 +58,11 @@ module HealthCards
     # According to  https://gist.github.com/alazarchuk/8223772181741c4b7a7c
     # Also references https://agileweboperations.com/2008/09/15/how-inflate-and-deflate-data-ruby-and-php/
     def compress_credential
-      deflated = Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(minify_payload.to_s, Zlib::FINISH)
-      Base64.encode64(deflated)
+      Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(minify_payload.to_s, Zlib::FINISH)
     end
 
     def self.decompress_credential(vcr)
-      dec = Base64.decode64(vcr)
-      inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(dec)
+      inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(vcr)
       JSON.parse(inf)
     end
 
@@ -111,7 +109,7 @@ module HealthCards
             coding.delete('display')
           end
         elsif k == 'reference' && v.is_a?(String)
-          v.replace @url_map[v] if @url_map.key?(v)
+          hash[k] = @url_map[v] if @url_map.key?(v)
         end
 
         case v
