@@ -18,9 +18,10 @@ class KeyTest < ActiveSupport::TestCase
   end
 
   test 'exports to jwk' do
-    jwks = HealthCards::Key::Set.new(@key.public_key).to_json
-    assert_equal 1, jwks[:keys].length
-    jwk = jwks[:keys].first
+    ks = HealthCards::Key::Set.new(@key.public_key)
+    jwks = JSON.parse(ks.to_json)
+    assert_equal 1, jwks['keys'].length
+    jwk = jwks['keys'].first
     assert_equal 'sig', jwk['use']
     assert_equal 'ES256', jwk['alg']
   end

@@ -1,28 +1,28 @@
 # frozen_string_literal: true
 
 require 'openssl'
-require 'json/jwt'
+# require 'json/jwt'
 
 module HealthCards
   # Methods to generate signing keys and jwk
   class Key
+    BASE = { kty: 'EC', crv: 'P-256' }.freeze
+    DIGEST = OpenSSL::Digest.new('SHA256')
+
     def initialize(key)
       @key = key
     end
 
     def to_json(*_args)
-      @key.to_jwk(use: 'sig', alg: 'ES256')
+      to_jwk.to_json
     end
 
-    delegate :thumbprint, to: :to_json
-
     def to_jwk
-      {
-        kty: 'EC',
-        use: 'sig',
-        alg: 'ES256',
-        crv: 'P-256'
-      }
+      required.merge(thumbprint: thumbprint, use: 'sig', alg: 'ES256')
+    end
+
+    def thumbprint
+      Base64.urlsafe_encode64(DIGEST.digest(required.except(:d).to_json), padding: false)
     end
 
     # Represents a set of Public Keys
@@ -34,14 +34,22 @@ module HealthCards
       end
 
       def to_json(*_args)
-        JSON::JWK::Set.new(keys: keys.map(&:to_json)).as_json
+        { keys: keys.map(&:to_jwk) }.to_json
       end
     end
 
-    private
+    def required
+      BASE.merge(coordinates)
+    end
 
-    def encode(val)
-      Base64.urlsafe_encode64(val.pack('H*'), padding: false)
+    def coordinates
+      return @coordinates if @coordinates
+      coor = @key.private_key? ? { d: @key.private_key.to_s(16) } : {}
+      key_hex = @key.public_key.to_bn.to_s(16)
+      xy = { x: key_hex[2..65], y: key_hex[66..130] }
+      @coordinates = coor.merge(xy).transform_values do |val|
+        Base64.urlsafe_encode64([val].pack('H*'), padding: false)
+      end
     end
   end
 
@@ -83,10 +91,6 @@ module HealthCards
 
     def verify(payload, signature)
       @key.dsa_verify_asn1(payload, signature)
-    end
-
-    def to_json(*_args)
-      super.except(:d)
     end
   end
 end
