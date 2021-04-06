@@ -5,9 +5,9 @@ module HealthCards
   #
   # Provides methods for generating the JWS representation of a Health Card.
   class Card
-    attr_writer :signature
-    attr_reader :private_key
-    attr_accessor :public_key, :payload, :header
+    attr_writer :signature, :header
+    attr_reader :private_key, :public_key
+    attr_accessor :payload
 
     class << self
       def encode(data)
@@ -34,13 +34,9 @@ module HealthCards
       @private_key = private_key
 
       # Use the given public key, otherwise get the public key from the private key
-      @public_key = public_key || private_key.public_key
+      @public_key = public_key || private_key&.public_key
       @signature = signature
-      @header = header || JSON.generate({
-                                          zip: 'DEF',
-                                          alg: 'ES256',
-                                          kid: @public_key.thumbprint
-                                        })
+      @header = header
     end
 
     def to_jws
@@ -54,6 +50,23 @@ module HealthCards
     def private_key=(new_private_key)
       reset_signature
       @private_key = new_private_key
+    end
+
+    def public_key=(new_public_key)
+      reset_header
+      @public_key = new_public_key
+    end
+
+    def header
+      return @header if @header
+
+      raise MissingPublicKey unless public_key
+
+      @header ||= JSON.generate({
+                                  zip: 'DEF',
+                                  alg: 'ES256',
+                                  kid: @public_key.thumbprint
+                                })
     end
 
     def signature
@@ -74,6 +87,10 @@ module HealthCards
 
     def reset_signature
       @signature = nil
+    end
+
+    def reset_header
+      @header = nil
     end
 
     # Thrown when attempting to sign a card without providing a private key
