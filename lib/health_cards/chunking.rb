@@ -37,8 +37,9 @@ module HealthCards
 
     def get_payload_from_qr(qr_chunks)
       jws = assemble_jws qr_chunks
-      jwk = JOSE::JWK.generate_key([:ec, 'prime256v1'])
-      _verified, message = jwk.verify jws
+
+      # Get JWS payload, then decode and inflate
+      message = Base64.urlsafe_decode64 jws.split('.')[1]
       JSON.parse(Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(message))
     end
 
