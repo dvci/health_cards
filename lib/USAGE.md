@@ -50,7 +50,7 @@ key = HealthCards::Key.generate_key # or `key = HealthCards::Key.from_file`
 health_card = HealthCards::HealthCard.new(payload: FHIR::Patient.new, key: key)
 health_card.to_jws
 
-# Can also verify the Health Card
+# By default a HealthCard will attempt to resolve keys to verify the payload
 health_card.verify
 ```
 
@@ -63,16 +63,10 @@ jws = 'foofoofoo.barbarbar.bazbazbaz'
 # Create Health Card from JWS
 health_card = HealthCards::HealthCard.from_jws(jws)
 
-# By default the health_card will attempt to resolve keys to verify the payload
-health_card.resolves_keys?
-# We can disable that with:
-health_card.resolve_keys = false
-# Note this can also be globally disabled with
-health_card.globally_resolve_keys = 
-
 # A key can be manually added to verify if needed
 health_card.public_key = public_key
 
+# By default a HealthCard will attempt to resolve keys to verify the payload
 health_card.verify
 ```
 
