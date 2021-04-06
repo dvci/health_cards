@@ -27,7 +27,7 @@ module HealthCards
       # Creates a Card from a JWS
       # @param jws [String] the JWS string
       # @param public_key [HealthCards::PublicKey] the public key associated with the JWS
-      # @param private_key [HealthCards::PublicKey] the private key associated with the JWS
+      # @param private_key [HealthCards::PrivateKey] the private key associated with the JWS
       # @return [HealthCards::Card]
       def from_jws(jws, public_key: nil, private_key: nil)
         header, payload, signature = jws.split('.').map { |entry| decode(entry) }
