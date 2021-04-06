@@ -1,5 +1,15 @@
 <section class="section">
   <div class="container">
+    <% if current_page? new_patient_path %>
+      <div class="block">
+        <%= button_to 'Demo Data',
+        new_patient_path,
+        params: fake_patient_params,
+        method: :get,
+        class: 'button is-info is-light'
+        %>
+      </div>
+    <% end %>
     <%= form_with(model: patient) do |form| %>
       <% if patient.errors.any? %>
         <div class="notification is-danger is-light content">
@@ -33,7 +43,7 @@
         <%= form.label :gender, class: 'label' %>
         <div class="control">
           <div class="select">
-            <%= form.select :gender, options_for_select(Patient::GENDERS)  %>
+            <%= form.select :gender, options_for_select(Patient::GENDERS, @patient.gender)  %>
           </div>
         </div>
       </div>
@@ -41,7 +51,7 @@
       <div class="field">
         <%= form.label :birth_date, "Date of Birth", class: 'label' %>
         <div class="control">
-          <%= form.date_field :birth_date,
+          <%= form.text_field :birth_date,
            class: 'input',
            placeholder: 'mm/dd/yyyy',
            value: format_date(patient.birth_date),
