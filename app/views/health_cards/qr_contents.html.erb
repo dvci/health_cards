@@ -1,0 +1,55 @@
+<p id="notice"><%= notice %></p>
+<section class="section">
+  <div class="container">
+    <div class="content">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p class="title"><%= @pat.full_name %></p>
+          </div>
+        </div>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Gender:</span><span><%= @pat.gender %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Birth Date:</span><span><%= format_date(@pat.birth_date) %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Phone:</span><span><%= number_to_phone(@pat.phone) %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Email:</span><span><%= @pat.email %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Address:</span><span><%= show_address(@pat) %></span>
+      </div>
+      <div class="level">
+        <div class="level-left">
+          <% if @pat.immunizations.present? %>
+            <div class="level-item">
+              <p class="title">Immunizations</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="tile is-ancestor">
+        <% @pat.immunizations.each do |i| %>
+          <div class="tile is-parent">
+            <div class="tile is-child box">
+              <div class="block">
+                <span class="has-text-weight-bold"><%= i.vaccine.name %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Date:</span><span><%= format_date(i.occurrence) %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Lot:</span><span><%= i.lot_number %> </span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
