@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module HealthCards
-  # Handle JWS with non-JSON Payloads
+  # Construct JWS Health Cards.
+  #
+  # Provides methods for generating the JWS representation of a Health Card.
   class Card
     attr_writer :signature
     attr_reader :private_key

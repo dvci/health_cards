@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'openssl'
-# require 'json/jwt'
 
 module HealthCards
   # Methods to generate signing keys and jwk
