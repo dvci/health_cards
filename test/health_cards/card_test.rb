@@ -82,4 +82,22 @@ class CardTest < ActiveSupport::TestCase
     card.private_key = @wrong_private_key
     assert_not_equal before_signature, card.signature
   end
+
+  test 'card can be created from JWS' do
+    card = HealthCards::Card.new(payload: @payload, private_key: @private_key)
+    jws = card.to_jws
+
+    new_card = HealthCards::Card.from_jws jws
+    assert_equal new_card.header, card.header
+    assert_equal new_card.payload, card.payload
+    assert_equal new_card.signature, card.signature
+
+    assert_raises HealthCards::Card::MissingPublicKey do
+      new_card.verify
+    end
+
+    new_card.public_key = @public_key
+    assert_equal new_card.header, card.header
+    assert new_card.verify
+  end
 end
