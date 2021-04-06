@@ -14,7 +14,7 @@ let multiStatusContainer;
 
 let scannedCodes = [];
 
-document.addEventListener('DOMContentLoaded', () => {
+const onLoad = () => {
   const videoElement = document.getElementById('preview');
 
   qrScanner = new QrScanner(videoElement, handleScan);
@@ -28,7 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   startButton.addEventListener('click', startScanning);
   stopButton.addEventListener('click', stopScanning);
-});
+};
+
+document.addEventListener('DOMContentLoaded', onLoad);
 
 const startScanning = () => {
   disableStartButton();
