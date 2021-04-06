@@ -88,7 +88,7 @@ HealthCards.resolve_keys=false
 ```
 
 #### Verifier and HealthCard
-Public Key resolution can be disabled for all Verifiers or Health Cards with:
+Public Key resolution can be disabled for all `Verifier` instances with:
 ```ruby
 # The current state can be checked with:
 HealthCards::Verifier.resolves_keys?
@@ -101,12 +101,14 @@ Public key resolution can be disabled for a single instance issuer with:
 ```ruby
 verifier = HealthCards::Verifier.new
 
-# Public key resolution:
+# The current state can be checked with:
 verifier.resolves_keys?
-
+# Public key resolution can be disabled with
 verifier.resolve_keys = false
 
 # Keys can be manually added that the verifier can use to verify credentials
 key = HealthCards::Key.load_file('my_keys.pem')
 verifier.add_key(key) # this only requires the public key so `verifier.add_key(key.public_key)` works too
 ```
+
+The `HealthCard` supports these features as well.
