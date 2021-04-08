@@ -82,7 +82,7 @@ Custom `HealthCard` or `Issuer` class can be created to customize their behavior
 
 # Subclass the base `HealthCard` class to add specific behavior
 class CustomHealthCard < HealthCards::HealthCard
-  def preprocess_bundle_hook(bundle)
+  def preprocess_bundle(bundle)
     bundle.id = "customprefix-#{bundle.id}"
   end
 end
