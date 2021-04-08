@@ -72,6 +72,29 @@ health_card.verify
 
 ## Configuration
 
+### Custom Health Cards
+
+An application might want to issue specific types of Health Cards. 
+Custom `HealthCard` or `Issuer` class can be created to customize their behavior.
+`HealthCard` provides hooks for adding functionality to the health card.
+
+```ruby
+
+# Subclass the base `HealthCard` class to add specific behavior
+class CustomHealthCard < HealthCards::HealthCard
+  def preprocess_bundle_hook(bundle)
+    bundle.id = "customprefix-#{bundle.id}"
+  end
+end
+
+# Create an Issuer that creates `CustomHealthCard` instances
+custom_issuer = HealthCards::Issuer.new(key: private_key, health_card_type: CustomHealthCard)
+```
+
+Currently, only one hook exists:
+
+- `#preprocess_bundle_hook`
+
 ### Disable Public Key Resolution
 
 **Should the global configuration be prefixed with `globally_`? e.g. `HealthCards.globally_resolve_keys = false`**
