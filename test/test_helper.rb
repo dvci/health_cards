@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'simplecov'
+require 'webmock/minitest'
+
 SimpleCov.start do
   enable_coverage :branch
   add_filter '/test/'
@@ -44,6 +46,17 @@ module ActiveSupport
                        "#{record1.class.name} #{attr} not the same"
         end
       end
+    end
+
+    ## Refactor test-helpers
+    def private_key
+      HealthCards::Key.generate_key
+    end
+
+    def bundle_payload
+      bundle = FHIR::Bundle.new
+      bundle.entry << FHIR::Patient.new
+      bundle
     end
   end
 end

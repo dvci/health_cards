@@ -7,7 +7,6 @@
 **API**
 - `::new`
 - `::from_jws`
-- `::verify_jws`
 - `::globally_resolve_keys=`
 - `::globally_resolves_keys?`
 - `#to_jws`
@@ -16,6 +15,10 @@
 - `#verify`
 - `#resolve_keys=`
 - `#resolves_keys?`
+- `#key=`
+- `#key`
+- `#public_key=`
+- `#public_key`
 
 ## HealthCards::Issuer
 > Issues health cards based on a stored private key
@@ -25,7 +28,7 @@
 - `::new`
 - `#private_key=`
 - `#create_health_card`
-- `#public_keys_as_jwk`
+- `#keys` // Returns HealthCards::KeySet
 
 ## HealthCards::Verifier
 > Verify health cards based on a stored public key
@@ -33,12 +36,13 @@
 
 **API**
 - `::new`
-- `#public_keys_as_jwk`
+- `#keys_as_jwk`
 - `#add_key`
 - `#remove_key`
 - `#verify`
 - `#resolve_keys=`
 - `#resolves_keys?`
+- `::verify`
 
 
 # Other Classes/ Helper classes
@@ -69,9 +73,11 @@
 
 **API**
 - `::new`
+- `#add_key`
+- `#remove_key`
 - `#keys`
-- `#keys=`
-- `#to_json`
+- `#to_jwk` // Option `include_private_keys` off by default
+- `#include?`
 
 ## HealthCards::Key
 > Represents a cryptographic key
@@ -85,7 +91,6 @@
 - `#to_json`
 - `#to_jwk`
 - `#thumbprint`
-- `#public_key`
 - `#public_key`
 
 ## HealthCards::PrivateKey < Key
