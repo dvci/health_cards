@@ -31,7 +31,7 @@ class IssuerTest < ActiveSupport::TestCase
   test 'Issuer throws exception when attempting to generate health card without a private key' do
     issuer = HealthCards::Issuer.new
     assert_raises HealthCards::MissingPrivateKey do
-      issuer.key payload
+      issuer.create_health_card @bundle
     end
   end
 
@@ -39,32 +39,32 @@ class IssuerTest < ActiveSupport::TestCase
 
   test 'Issuer exports public keys as JWK' do
     issuer = HealthCards::Issuer.new(key: @private_key)
-    key_set = issuer.keys
-    assert key_set.is_a? HealthCards::KeySet
+    key = issuer.key
+    assert key.is_a? HealthCards::PrivateKey
   end
 
   ## Adding and Removing Keys
 
   test 'Issuer allows private keys to be added' do
     issuer = HealthCards::Issuer.new
-    assert_empty issuer.keys
-    issuer.add_key @private_key
-    assert_not_empty issuer.keys
-    assert_includes issuer.keys, @private_key
+    assert_nil issuer.key
+    issuer.key = @private_key
+    assert_not_empty issuer.key
+    assert_equal issuer.key, @private_key
   end
 
   test 'Issuer allows private keys to be removed' do
-    issuer = HealthCards::Issuer.new(key:@private_key)
-    assert_not_empty issuer.keys
-    assert_includes issuer.keys, @private_key
-    issuer.remove_key @private_key
-    assert_empty issuer.keys
+    issuer = HealthCards::Issuer.new(key: @private_key)
+    assert_not_empty issuer.key
+    assert_equal issuer.key, @private_key
+    issuer.key = nil
+    assert_nil issuer.key
   end
 
   test 'Issuer does not allow public key to be added' do
     issuer = HealthCards::Issuer.new
     assert_raises HealthCards::MissingPrivateKey do
-      issuer.add_key @private_key.public_key
+      issuer.key = @private_key.public_key
     end
   end
 
@@ -85,11 +85,5 @@ class IssuerTest < ActiveSupport::TestCase
     end
     health_card.public_key = @private_key.public_key
     assert health_card.verify
-  end
-
-  test 'Issuer public keys as JWK contains public key for private key' do
-    issuer = HealthCards::Issuer.new(key: @private_key)
-    key_set = issuer.keys
-    key_set.keys.include? @private_key.public_key
   end
 end

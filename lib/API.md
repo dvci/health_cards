@@ -26,9 +26,9 @@
 
 **API**
 - `::new`
-- `#private_key=`
 - `#create_health_card`
-- `#keys` // Returns HealthCards::KeySet
+- `#key` // Returns HealthCards::PrivateKey
+- `#key=`
 
 ## HealthCards::Verifier
 > Verify health cards based on a stored public key
