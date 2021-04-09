@@ -12,11 +12,11 @@ module HealthCards
     def initialize(keys: nil)
       @keys = case keys
               when KeySet
-                   keys
+                keys
               when Key
-                   KeySet.new(keys)
+                KeySet.new(keys)
               else
-                   raise ArgumentError
+                raise ArgumentError
               end
     end
 

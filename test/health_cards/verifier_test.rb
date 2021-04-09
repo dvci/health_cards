@@ -12,17 +12,17 @@ class VerifierTest < ActiveSupport::TestCase
   ## Constructors
 
   test 'Create a new Verifier with a public key' do
-    HealthCards::Verifier.new(key: @public_key)
+    HealthCards::Verifier.new(keys: @public_key)
   end
 
   test 'Create a new Verifier with a private key' do
-    HealthCards::Verifier.new(key: @private_key)
+    HealthCards::Verifier.new(keys: @private_key)
   end
 
   ## Key Export
 
   test 'Verifier exports public keys as JWK' do
-    verifier = HealthCards::Verifier.new(key: @private_key)
+    verifier = HealthCards::Verifier.new(keys: @private_key)
     key_set = verifier.keys
     assert key_set.is_a? HealthCards::JWK
   end
@@ -38,7 +38,7 @@ class VerifierTest < ActiveSupport::TestCase
   end
 
   test 'Verifier allows public keys to be removed' do
-    verifier = HealthCards::Verifier.new(key: @public_key)
+    verifier = HealthCards::Verifier.new(keys: @public_key)
     assert_not_empty verifier.keys
     assert_includes verifier.keys, @public_key
     verifier.remove_key @public_key
@@ -54,7 +54,7 @@ class VerifierTest < ActiveSupport::TestCase
   end
 
   test 'Verifier allows private keys to be removed' do
-    verifier = HealthCards::Verifier.new(key:@private_key)
+    verifier = HealthCards::Verifier.new(keys: @private_key)
     assert_not_empty verifier.keys
     assert_includes verifier.keys, @private_key
     verifier.remove_key @private_key
@@ -64,12 +64,12 @@ class VerifierTest < ActiveSupport::TestCase
   ## Verification
 
   test 'Verifier can verify health cards' do
-    verifier = HealthCards::Verifier.new(public_key: @public_key)
+    verifier = HealthCards::Verifier.new(keys: @public_key)
     verifier.verify(@health_card)
   end
 
   test 'Verifier can verify JWS' do
-    verifier = HealthCards::Verifier.new(public_key: @public_key)
+    verifier = HealthCards::Verifier.new(keys: @public_key)
     verifier.verify(@health_card.to_jws)
   end
 
