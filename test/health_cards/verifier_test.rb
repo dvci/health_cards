@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class Verifier < ActiveSupport::TestCase
+class VerifierTest < ActiveSupport::TestCase
   setup do
     @private_key = private_key
     @public_key = @private_key.public_key
