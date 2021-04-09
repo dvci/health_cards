@@ -38,33 +38,33 @@ class HealthCardTest < ActiveSupport::TestCase
   test 'HealthCard allows private keys to be added' do
     health_card = HealthCards::HealthCard.new
     assert_nil health_card.key
-    health_card.add_key @private_key
-    assert_not_nil health_card.keys
-    assert_includes health_card.keys, @private_key
+    health_card.key= @private_key
+    assert_not_nil health_card.key
+    assert_includes health_card.key, @private_key
   end
 
   test 'HealthCard allows private keys to be removed' do
     health_card = HealthCards::Issuer.new(key: @private_key)
-    assert_not_empty health_card.key
-    assert_includes health_card.keys, @private_key
+    assert health_card.key
+    assert_equal health_card.key, @private_key
     health_card.key = nil
-    assert_nil health_card.keys
+    assert_nil health_card.key
   end
 
   test 'HealthCard allows public keys to be added' do
     health_card = HealthCards::HealthCard.new
-    assert_nil health_card.key
-    health_card.add_key @public_key
-    assert_not_nil health_card.keys
-    assert_includes health_card.keys, @public_key
+    assert_nil health_card.public_key
+    health_card.public_key= @public_key
+    assert_not_nil health_card.public_key
+    assert_equal health_card.public_key, @public_key
   end
 
   test 'HealthCard allows public keys to be removed' do
-    health_card = HealthCards::HealthCard.new(key: @public_key)
-    assert_not_empty health_card.key
-    assert_includes health_card.keys, @public_key
-    health_card.key = nil
-    assert_nil health_card.keys
+    health_card = HealthCards::HealthCard.new(public_key: @public_key)
+    assert health_card.public_key
+    assert_includes health_card.public_key, @public_key
+    health_card.public_key = nil
+    assert_nil health_card.public_key
   end
 
   ## JWS Encoding
