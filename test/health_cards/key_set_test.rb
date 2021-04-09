@@ -91,4 +91,16 @@ class KeySetTest < ActiveSupport::TestCase
     assert_not_includes key_set, @keys[0]
     assert_not_includes key_set, @keys[1]
   end
+
+  ## JWK Tests
+
+  test 'exports to jwk' do
+    key_set = HealthCards::KeySet.new(@keys)
+    jwks = JSON.parse(key_set.to_jwk)
+    assert_equal 2, jwks['keys'].length
+    jwks['keys'].each do |entry|
+      assert_equal 'sig', entry['use']
+      assert_equal 'ES256', entry['alg']
+    end
+  end
 end

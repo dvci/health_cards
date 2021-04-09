@@ -18,6 +18,13 @@ module HealthCards
       @keys ||= Set.new
     end
 
+    # Returns the keys as a JWK
+    #
+    # @return
+    def to_jwk
+      { keys: keys.map(&:to_jwk) }.to_json
+    end
+
     # Add keys to KeySet
     #
     # Keys are added based on the key thumbprint
