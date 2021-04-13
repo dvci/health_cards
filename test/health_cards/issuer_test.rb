@@ -49,13 +49,13 @@ class IssuerTest < ActiveSupport::TestCase
     issuer = HealthCards::Issuer.new
     assert_nil issuer.key
     issuer.key = @private_key
-    assert_not_empty issuer.key
+    assert_not_nil issuer.key
     assert_equal issuer.key, @private_key
   end
 
   test 'Issuer allows private keys to be removed' do
     issuer = HealthCards::Issuer.new(key: @private_key)
-    assert_not_empty issuer.key
+    assert_not_nil issuer.key
     assert_equal issuer.key, @private_key
     issuer.key = nil
     assert_nil issuer.key
@@ -80,7 +80,8 @@ class IssuerTest < ActiveSupport::TestCase
     issuer = HealthCards::Issuer.new(key: @private_key)
     health_card = issuer.create_health_card(@bundle)
     health_card.key = nil
-    assert_raises HealthCards::MissingPublicKey do
+    # byebug
+    assert_raises HealthCards::MissingPrivateKey do
       health_card.verify
     end
     health_card.public_key = @private_key.public_key

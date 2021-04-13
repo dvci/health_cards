@@ -64,11 +64,11 @@ module HealthCards
       if File.exist?(path)
         from_file(path)
       else
-        generate_new_key(file_path: path)
+        generate_key(file_path: path)
       end
     end
 
-    def self.generate_new_key(file_path: nil)
+    def self.generate_key(file_path: nil)
       key = OpenSSL::PKey::EC.generate('prime256v1')
       File.write(file_path, key.to_pem) if file_path
       PrivateKey.new(key)

@@ -10,7 +10,7 @@ class CardTest < ActiveSupport::TestCase
     @public_key = @private_key.public_key
     @payload = 'foobar'
 
-    @wrong_private_key = HealthCards::PrivateKey.generate_new_key
+    @wrong_private_key = HealthCards::PrivateKey.generate_key
     @wrong_public_key = @wrong_private_key.public_key
   end
 

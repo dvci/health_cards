@@ -6,7 +6,7 @@ class VerifierTest < ActiveSupport::TestCase
   setup do
     @private_key = private_key
     @public_key = @private_key.public_key
-    @health_card = HealthCards::HealthCard.new(payload: bundle_payload, private_key: @private_key)
+    @health_card = HealthCards::HealthCard.new(payload: bundle_payload, key: @private_key)
   end
 
   ## Constructors

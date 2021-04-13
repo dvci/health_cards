@@ -18,11 +18,14 @@ class KeyTest < ActiveSupport::TestCase
   end
 
   test 'exports to jwk' do
-    jwks = @key.to_jwk
-    assert_equal 1, jwks['keys'].length
-    jwk = jwks['keys'].first
-    assert_equal 'sig', jwk['use']
-    assert_equal 'ES256', jwk['alg']
+    jwk = @key.public_key.to_jwk
+
+    assert_not_nil jwk[:x]
+    assert_not_nil jwk[:x]
+    assert_nil jwk[:d]
+    
+    assert_equal 'sig', jwk[:use]
+    assert_equal 'ES256', jwk[:alg]
   end
 
   test 'Use existing keys if they exist' do

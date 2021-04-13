@@ -31,23 +31,23 @@ module HealthCards
     #
     # @param new_keys [HealthCards::Key, Array<HealthCards::Key>, HealthCards::KeySet] the initial keys
     def add_keys(new_keys)
-      if keys.is_a? KeySet
-        keys.merge(new_keys)
+      if new_keys.is_a? KeySet
+        keys.merge(new_keys.keys)
       else
         keys.merge([*new_keys].map { |new_key| SetKey.new new_key })
       end
     end
 
-    # Add keys to KeySet
+    # Remove keys from KeySet
     #
-    # Keys are added based on the key thumbprint
+    # Keys are remove based on the key thumbprint
     #
     # @param new_keys [HealthCards::Key, Array<HealthCards::Key>, HealthCards::KeySet] the initial keys
     def remove_keys(new_keys)
-      if keys.is_a? KeySet
-        keys.merge(new_keys)
+      if new_keys.is_a? KeySet
+        keys.subtract(new_keys.keys)
       else
-        keys.merge([*new_keys].map { |new_key| SetKey.new new_key })
+        keys.subtract([*new_keys].map { |new_key| SetKey.new new_key })
       end
     end
 
@@ -55,7 +55,10 @@ module HealthCards
     #
     # @param key [HealthCards::Key]
     # @return [Boolean]
-    delegate :include?, to: :keys
+    def include?(key)
+      keys.include?(SetKey.new(key))  
+    end
+
     delegate :empty?, to: :keys
 
     # Container class for keys in the key set
@@ -69,13 +72,19 @@ module HealthCards
 
       attr_reader :key
 
+      delegate :to_jwk, to: :key
+
       # Create a new SetKey
       #
       # @param key [HealthCards::Key] the key
       def initialize(key)
         raise ArgumentError unless key.is_a? Key
 
-        self.key = key
+        @key = key
+      end
+
+      def eql?(other)
+        self.hash == other.hash
       end
 
       # @see https://ruby-doc.org/core-2.7.2/Object.html#method-i-hash

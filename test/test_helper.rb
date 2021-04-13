@@ -50,7 +50,7 @@ module ActiveSupport
 
     ## Refactor test-helpers
     def private_key
-      HealthCards::Key.generate_key
+      HealthCards::PrivateKey.generate_key
     end
 
     def bundle_payload

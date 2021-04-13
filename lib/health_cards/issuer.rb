@@ -17,7 +17,7 @@ module HealthCards
     #
     # @param bundle [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
     def create_health_card(bundle)
-      raise MissingPrivateKey if key.nil?
+      raise HealthCards::MissingPrivateKey if key.nil?
 
       HealthCards::HealthCard.new(payload: bundle, key: key)
     end
@@ -26,7 +26,7 @@ module HealthCards
     #
     # @param key [HealthCards::PrivateKey, nil] the private key used for signing issued health cards
     def key=(key)
-      raise HealthCards::MissingPrivateKey unless public_key.is_a?(PrivateKey) || public_key.nil?
+      raise HealthCards::MissingPrivateKey unless key.is_a?(PrivateKey) || key.nil?
 
       @key = key
     end

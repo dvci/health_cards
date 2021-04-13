@@ -117,20 +117,5 @@ module HealthCards
       Card.encode(payload)
     end
 
-    # Thrown when attempting to sign a card without providing a private key
-    class MissingPrivateKey < StandardError
-      def initialize(msg = nil)
-        msg ||= 'Missing private key'
-        super(msg)
-      end
-    end
-
-    # Thrown when attempting to verify a card without providing a public key
-    class MissingPublicKey < StandardError
-      def initialize(msg = nil)
-        msg ||= 'Missing private key'
-        super(msg)
-      end
-    end
   end
 end

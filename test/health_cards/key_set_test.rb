@@ -38,7 +38,7 @@ class KeySetTest < ActiveSupport::TestCase
   ## Adding and Removing Keys
 
   test 'A single private can be added to an existing KeySet' do
-    key_set = HealthCards::KeySet
+    key_set = HealthCards::KeySet.new
     assert_not_includes key_set, @keys[0]
     key_set.add_keys @keys[0]
     assert_includes key_set, @keys[0]
@@ -52,10 +52,10 @@ class KeySetTest < ActiveSupport::TestCase
   end
 
   test 'An array of private keys can be added to an existing KeySet' do
-    key_set = HealthCards::KeySet
+    key_set = HealthCards::KeySet.new
     assert_not_includes key_set, @keys[0]
     assert_not_includes key_set, @keys[1]
-    key_set.add_keys @keys[0]
+    key_set.add_keys @keys
     assert_includes key_set, @keys[0]
     assert_includes key_set, @keys[1]
   end
