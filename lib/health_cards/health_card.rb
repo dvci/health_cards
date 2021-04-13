@@ -42,7 +42,7 @@ module HealthCards
     # @param payload [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
     def initialize(payload: nil, key: nil, public_key: nil, header: nil, signature: nil)
       self.key = key
-      self.public_key = public_key
+      self.public_key = public_key || key.public_key
       self.payload = payload
       self.header = header
       self.signature = signature
@@ -127,6 +127,7 @@ module HealthCards
     private
 
     def jws
+      byebug
       @jws ||= JWS.new(payload: payload, header: header, signature: signature, key: key, public_key: public_key)
     end
 
@@ -135,8 +136,8 @@ module HealthCards
     # @param bundle [Object] the suspected FHIR Bundle
     # @return [Boolean]
     def fhir_bundle?(bundle)
-      bundle = FHIR.from_contents(bundle) if bundle.is_a? String
-      bundle.is_a? FHIR::Bundle
+      bundle_obj = bundle.is_a? String ? FHIR.from_contents(bundle) : bundle
+      bundle_obj.is_a? FHIR::Bundle
     end
 
     # Resets the signature
