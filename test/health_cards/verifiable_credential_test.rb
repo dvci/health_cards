@@ -56,7 +56,6 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
 
     stripped_bundle = @vc.strip_fhir_bundle
     stripped_entries = stripped_bundle['entry']
-    pp stripped_bundle
 
     stripped_entries.each do |entry|
       resource = entry['resource']
