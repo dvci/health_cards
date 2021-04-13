@@ -88,8 +88,8 @@ module HealthCards
       entries.each do |entry|
         resource = entry['resource']
         resource.delete('id')
-        resource.delete('meta')
         resource.delete('text')
+        resource['meta'] = resource['meta'].slice('security') if resource.key?('meta')
         update_nested_elements(resource)
       end
     end
