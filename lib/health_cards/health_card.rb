@@ -48,23 +48,32 @@ module HealthCards
       self.signature = signature
     end
 
+    # The signature component of the card
+    #
+    # @return [String] the unencoded signature
+    delegate :signature, to: :jws
+
+    # Set the private key used for signing issued health cards
+    #
+    # @param key [HealthCards::PrivateKey, nil] the private key used for signing issued health cards
+    delegate :key=, to: :jws
+
+    # Verify the digital signature on the card
+    #
+    # @return [Boolean]
+    delegate :verify, to: :jws
+
     # Set the HealthCard payload
     #
     # @param payload [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
     def payload=(payload)
       raise InvalidPayloadException unless fhir_bundle? payload
 
-      @payload = payload
+      jws.payload = payload
     end
 
-    # Set the private key used for signing issued health cards
-    #
-    # @param key [HealthCards::PrivateKey, nil] the private key used for signing issued health cards
-    def key=(key)
-      raise HealthCards::MissingPrivateKey unless public_key.is_a?(PrivateKey) || public_key.nil?
-
-      reset_signature
-      @key = key
+    def payload
+      @payload
     end
 
     # Set the private key used for signing issued health cards
@@ -81,7 +90,7 @@ module HealthCards
     #
     # @return [String] the JWS string
     def to_jws
-      JWS.new(key: private_key, payload: payload, header: header).to_s
+      jws.to_s
     end
 
     # Save the HealthCard as a file
@@ -95,15 +104,6 @@ module HealthCards
       File.open(file_name, 'w') do |file|
         file.write(file_data.to_json)
       end
-    end
-
-    # Verify the digital signature on the card
-    #
-    # @return [Boolean]
-    def verify
-      raise MissingPublicKey unless public_key
-
-      @public_key.verify(encoded_payload, signature)
     end
 
     # Whether the instance is configured to resolve public keys
@@ -124,18 +124,11 @@ module HealthCards
       @header ||= { zip: 'DEF', alg: 'ES256', kid: @public_key.thumbprint }
     end
 
-    # The signature component of the card
-    #
-    # @return [String] the unencoded signature
-    def signature
-      return @signature if @signature
-
-      raise MissingPrivateKey unless private_key
-
-      @signature ||= private_key.sign(encoded_payload)
-    end
-
     private
+
+    def jws
+      @jws ||= JWS.new(payload: payload, header: header, signature: signature, key: key, public_key: public_key)
+    end
 
     # Check if argument is a FHIR Bundle
     #
