@@ -89,7 +89,11 @@ module HealthCards
         resource = entry['resource']
         resource.delete('id')
         resource.delete('text')
-        resource['meta'] = resource['meta'].slice('security') if resource.key?('meta')
+        if resource.dig('meta', 'security')
+          resource['meta'] = resource['meta'].slice('security')
+        else
+          resource.delete('meta')
+        end
         update_nested_elements(resource)
       end
     end
