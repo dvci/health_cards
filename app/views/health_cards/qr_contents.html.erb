@@ -5,28 +5,28 @@
       <div class="level">
         <div class="level-left">
           <div class="level-item">
-            <p class="title"><%= @pat.full_name %></p>
+            <p class="title"><%= @patient.full_name %></p>
           </div>
         </div>
       </div>
       <div class="block">
-        <span class="has-text-weight-bold mr-2">Gender:</span><span><%= @pat.gender %></span>
+        <span class="has-text-weight-bold mr-2">Gender:</span><span><%= @patient.gender %></span>
       </div>
       <div class="block">
-        <span class="has-text-weight-bold mr-2">Birth Date:</span><span><%= format_date(@pat.birth_date) %></span>
+        <span class="has-text-weight-bold mr-2">Birth Date:</span><span><%= format_date(@patient.birth_date) %></span>
       </div>
       <div class="block">
-        <span class="has-text-weight-bold mr-2">Phone:</span><span><%= number_to_phone(@pat.phone) %></span>
+        <span class="has-text-weight-bold mr-2">Phone:</span><span><%= number_to_phone(@patient.phone) %></span>
       </div>
       <div class="block">
-        <span class="has-text-weight-bold mr-2">Email:</span><span><%= @pat.email %></span>
+        <span class="has-text-weight-bold mr-2">Email:</span><span><%= @patient.email %></span>
       </div>
       <div class="block">
-        <span class="has-text-weight-bold mr-2">Address:</span><span><%= show_address(@pat) %></span>
+        <span class="has-text-weight-bold mr-2">Address:</span><span><%= show_address(@patient) %></span>
       </div>
       <div class="level">
         <div class="level-left">
-          <% if @pat.immunizations.present? %>
+          <% if @patient.immunizations.present? %>
             <div class="level-item">
               <p class="title">Immunizations</p>
             </div>
@@ -34,7 +34,7 @@
         </div>
       </div>
       <div class="tile is-ancestor">
-        <% @pat.immunizations.each do |i| %>
+        <% @patient.immunizations.each do |i| %>
           <div class="tile is-parent">
             <div class="tile is-child box">
               <div class="block">

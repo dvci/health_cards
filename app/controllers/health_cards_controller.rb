@@ -20,8 +20,8 @@ class HealthCardsController < ApplicationController
   def qr_contents
     contents = JSON.parse(params[:qr_contents])
     jws_payload = HealthCards::Chunking.get_payload_from_qr contents
-    @pat = helpers.create_patient_from_jws(jws_payload)
-    render json: JSON.pretty_generate(jws_payload) if @pat == nil
+    @patient = helpers.create_patient_from_jws(jws_payload)
+    render json: JSON.pretty_generate(jws_payload) if @patient == nil
   end
 
   private
