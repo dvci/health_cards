@@ -3,8 +3,10 @@
 module HealthCardsHelper
   def create_patient_from_jws(jws_payload)
     bundle = FHIR.from_contents(jws_payload['vc']['credentialSubject']['fhirBundle'].to_json)
-    patient_resource = bundle.entry.select { |e| e.resource.is_a?(FHIR::Patient) }[0].resource
-    pat = Patient.new(json: patient_resource)
+    patient_resources = bundle.entry.select { |e| e.resource.is_a?(FHIR::Patient) }
+    return nil unless patient_resources.length > 0
+
+    pat = Patient.new(json: patient_resources[0].resource)
     create_immunizations(pat, bundle)
     pat
   end
