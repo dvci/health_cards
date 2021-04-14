@@ -11,7 +11,7 @@
           <div class="is-grouped">
             <%= link_to 'Edit', edit_patient_path(@patient), class: 'button is-info is-light' %> 
             <%= link_to 'Download Health Card', patient_health_card_path(@patient, format: 'smart-health-card'), class: 'button is-info is-light' %>
-            <%= link_to 'Save Health Card As PDF', patient_pdf_path(@patient, format: 'smart-health-card'), class: 'button is-info is-light' %>
+            <%= link_to 'Save Health Card As PDF', patient_health_card_path(@patient, format: 'pdf'), class: 'button is-info is-light' %>
           </div>
         </div>
       </div>
