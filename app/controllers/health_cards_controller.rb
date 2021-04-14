@@ -20,15 +20,7 @@ class HealthCardsController < ApplicationController
   def qr_contents
     contents = JSON.parse(params[:qr_contents])
     jws_payload = HealthCards::Chunking.get_payload_from_qr contents
-    bundle = FHIR.from_contents(jws_payload['vc']['credentialSubject']['fhirBundle'].to_json)
-
-    patient_resource = bundle.entry.select { |e| e.resource.is_a?(FHIR::Patient) }[0].resource
-    @pat = Patient.new(json: patient_resource)
-    create_immunizations bundle
-
-    respond_to do |format|
-      format.html
-    end
+    @pat = helpers.create_patient_from_jws(jws_payload)
   end
 
   private
@@ -46,23 +38,5 @@ class HealthCardsController < ApplicationController
 
   def find_patient
     @patient = Patient.find(params[:patient_id])
-  end
-
-  def create_immunizations(bundle)
-    immunizations = bundle.entry.select { |e| e.resource.is_a?(FHIR::Immunization) }
-    vaccine_id_map = {
-      '207': 1,
-      '208': 2,
-      '212': 3
-    }
-
-    immunizations.each do |i|
-      immunization_resource = i.resource
-      @pat.immunizations.new({
-                               vaccine_id: vaccine_id_map[immunization_resource.vaccineCode.coding[0].code.to_sym],
-                               lot_number: immunization_resource.lotNumber,
-                               occurrence: immunization_resource.occurrenceDateTime
-                             })
-    end
   end
 end
