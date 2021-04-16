@@ -75,25 +75,26 @@ const showErrorNotification = () => {
 const handleScan = result => {
   console.log(result);
 
-  if(healthCardPattern.test(result)) {
+  if (healthCardPattern.test(result)) {
     const match = result.match(healthCardPattern);
-    if(match.groups.multipleChunks) {
+    if (match.groups.multipleChunks) {
       hideErrorNotification();
       const chunkCount = +match.groups.chunkCount;
       const currentChunkIndex = +match.groups.chunkIndex;
-      if(scannedCodes.length !== chunkCount) {
+      if (scannedCodes.length !== chunkCount) {
         scannedCodes = new Array(chunkCount);
         scannedCodes.fill(null, 0, chunkCount);
       }
       scannedCodes[currentChunkIndex - 1] = result;
-      multiStatusContainer.innerHTML =
-        scannedCodes
+      multiStatusContainer.innerHTML = scannedCodes
         .map((code, index) => {
-          return code ?
-            multiPresentElement(index + 1, chunkCount) : multiMissingElement(index + 1, chunkCount);
-        }).join('\n');
+          return code
+            ? multiPresentElement(index + 1, chunkCount)
+            : multiMissingElement(index + 1, chunkCount);
+        })
+        .join('\n');
 
-      if(scannedCodes.every(code => code)) {
+      if (scannedCodes.every(code => code)) {
         stopScanning();
 
         inputField.value = JSON.stringify(scannedCodes);
