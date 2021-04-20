@@ -26,10 +26,7 @@ module HealthCards
       # @param key [HealthCards::PrivateKey] the private key associated with the JWS
       # @return [HealthCards::HealthCard]
       def from_jws(jws, public_key: nil, key: nil)
-        # header, payload, signature = jws.split('.').map { |entry| decode(entry) }
-        # header = JSON.parse(header)
-        # HealthCard.new(header: header, payload: payload, signature: signature,
-        #                public_key: public_key, key: key)
+        HealthCard.new(jws: jws, public_key: public_key, key: key)
       end
     end
 
@@ -44,8 +41,8 @@ module HealthCards
       # A signature should only be provided when a Health Card is created from a JWS
       if jws
         @jws = JWS.from_jws(jws, key: key, public_key: public_key)
-        self.payload = jws.payload
-        self.header = jws.header
+        self.payload = @jws.payload
+        self.header = @jws.header
       else
         @jws = JWS.new(payload: payload, header: header, key: key, public_key: public_key)
         self.payload = payload

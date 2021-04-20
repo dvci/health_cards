@@ -46,7 +46,7 @@ class HealthCardTest < ActiveSupport::TestCase
   end
 
   test 'HealthCard allows private keys to be removed' do
-    health_card = HealthCards::Issuer.new(key: @private_key)
+    health_card = HealthCards::HealthCard.new(key: @private_key)
     assert health_card.key
     assert_equal health_card.key, @private_key
     health_card.key = nil
@@ -106,6 +106,7 @@ class HealthCardTest < ActiveSupport::TestCase
   ## Save as a QR Code
 
   test 'Health Card can be saved as a QR Code' do
+    skip('Save as QR Code not implemented')
     file_name = './example-qr.svg'
     health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key)
     health_card.save_as_qr_code('./example-qr.svg')
@@ -143,9 +144,17 @@ class HealthCardTest < ActiveSupport::TestCase
   ## Creating a HealthCard from a JWS
 
   test 'Health Cards can be created from a JWS' do
+    skip('Need to add Verifiable Credential compression/decompression')
     health_card = HealthCards::HealthCard.from_jws(@jws)
     assert health_card
     #TODO: Better checks here
+  end
+
+  test 'Health Card can be round tripped from Health Card to JWS and then back' do
+    health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key)
+    jws = health_card.to_jws
+    new_health_card = HealthCards::HealthCard.from_jws(jws)
+    assert new_health_card
   end
 
   ## Key Resolution
