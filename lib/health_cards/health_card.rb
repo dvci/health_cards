@@ -48,15 +48,30 @@ module HealthCards
       self.signature = signature
     end
 
-    # The signature component of the card
+    # Set the private key used for signing issued health cards
     #
-    # @return [String] the unencoded signature
-    delegate :signature, to: :jws
+    # @param public_key [HealthCards::PublicKey, nil] the private key used for signing issued health cards
+    def public_key=(public_key)
+      raise HealthCards::MissingPublicKey unless public_key.is_a?(PublicKey) || public_key.nil?
+
+      reset_header
+      @public_key = public_key
+    end
 
     # Set the private key used for signing issued health cards
     #
     # @param key [HealthCards::PrivateKey, nil] the private key used for signing issued health cards
-    delegate :key=, to: :jws
+    def key=(key)
+      raise HealthCards::MissingPrivateKey unless key.is_a?(PrivateKey) || key.nil?
+
+      @key = key
+      self.public_key = key&.public_key
+    end
+
+    # The signature component of the card
+    #
+    # @return [String] the unencoded signature
+    delegate :signature, to: :jws
 
     # Verify the digital signature on the card
     #
@@ -69,21 +84,11 @@ module HealthCards
     def payload=(payload)
       raise InvalidPayloadException unless fhir_bundle? payload
 
-      jws.payload = payload
+      jws.payload = payload.is_a?(String) ? payload : payload.to_json
     end
 
     def payload
       @payload
-    end
-
-    # Set the private key used for signing issued health cards
-    #
-    # @param public_key [HealthCards::PublicKey, nil] the private key used for signing issued health cards
-    def public_key=(public_key)
-      raise HealthCards::MissingPublicKey unless public_key.is_a?(PublicKey) || public_key.nil?
-
-      reset_header
-      @public_key = public_key
     end
 
     # Encode the HealthCard as a JWS
@@ -98,7 +103,7 @@ module HealthCards
     # @param file_name [String] the name of the file
     def save_to_file(file_name)
       file_data = {
-        verifiableCredential: [self.to_jws]
+        verifiableCredential: [to_jws]
       }
 
       File.open(file_name, 'w') do |file|
@@ -121,13 +126,13 @@ module HealthCards
 
       raise MissingPublicKey unless public_key
 
-      @header ||= { zip: 'DEF', alg: 'ES256', kid: @public_key.thumbprint }
+      @header ||= { zip: 'DEF', alg: 'ES256', kid: public_key.thumbprint }
     end
 
     private
 
     def jws
-      @jws ||= JWS.new(payload: payload, header: header, signature: signature, key: key, public_key: public_key)
+      @jws ||= JWS.new(payload: payload, header: header, key: key, public_key: public_key)
     end
 
     # Check if argument is a FHIR Bundle
@@ -135,7 +140,7 @@ module HealthCards
     # @param bundle [Object] the suspected FHIR Bundle
     # @return [Boolean]
     def fhir_bundle?(bundle)
-      bundle_obj = bundle.is_a? String ? FHIR.from_contents(bundle) : bundle
+      bundle_obj = bundle.is_a?(String) ? FHIR.from_contents(bundle) : bundle
       bundle_obj.is_a? FHIR::Bundle
     end
 

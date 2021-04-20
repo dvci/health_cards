@@ -111,10 +111,12 @@ class VerifierTest < ActiveSupport::TestCase
   ## Key Resolution
 
   test 'Verifier key resolution is active by default' do
+    skip('Key resolution not implemented')
     assert HealthCards::Verifier.new.globally_resolve_keys?
   end
 
   test 'Verifier key resolution can be disabled' do
+    skip('Key resolution not implemented')
     verifier = HealthCards::Verifier.new
     assert verifier.resolve_keys?
     verifier.resolve_keys = false
@@ -123,6 +125,7 @@ class VerifierTest < ActiveSupport::TestCase
   end
 
   test 'Verifier will not verify health cards when key is not resolvable' do
+    skip('Key resolution not implemented')
     stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
     verifier = HealthCards::Verifier.new
     verifier.resolve_keys = false
@@ -134,10 +137,12 @@ class VerifierTest < ActiveSupport::TestCase
   end
 
   test 'Verifier class key resolution is active by default' do
+    skip('Key resolution not implemented')
     assert HealthCards::Verifier.globally_resolve_keys?
   end
 
   test 'Verifier class key resolution can be disabled' do
+    skip('Key resolution not implemented')
     verifier = HealthCards::Verifier
     assert verifier.globally_resolve_keys?
     verifier.globally_resolve_keys = false
@@ -146,6 +151,7 @@ class VerifierTest < ActiveSupport::TestCase
   end
 
   test 'Verifier class will not verify health cards when key is not resolvable' do
+    skip('Key resolution not implemented')
     stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
     verifier = HealthCards::Verifier
     verifier.globally_resolve_keys = false

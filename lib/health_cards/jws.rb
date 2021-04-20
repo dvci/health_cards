@@ -40,7 +40,7 @@ module HealthCards
 
     def initialize(header: nil, payload: nil, signature: nil, public_key: nil, key: nil)
       self.key = key
-      self.public_key = public_key
+      self.public_key = public_key || key&.public_key
       self.payload = payload
       self.header = header
       self.signature = signature
