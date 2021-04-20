@@ -71,15 +71,15 @@ module HealthCards
     def signature
       return @signature if @signature
 
-      raise MissingPrivateKey unless private_key
+      raise MissingPrivateKey unless key
 
-      @signature ||= private_key.sign(encoded_payload)
+      @signature ||= key.sign(encoded_payload)
     end
 
     # Export the card to a JWS String
     # @return [String] the JWS
     def to_s
-      [header, payload, signature].map { |entry| JWS.encode(entry) }.join('.')
+      [JSON.generate(header), payload, signature].map { |entry| JWS.encode(entry) }.join('.')
     end
 
     # Verify the digital signature on the jws

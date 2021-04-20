@@ -4,6 +4,17 @@ module HealthCards
   # Verifiers can validate HealthCards using public keys
   class Verifier
 
+    class << self
+      # Verify the provided Health Card
+      #
+      # @param health_card [HealthCards::HealthCard] the health card to verify
+      # @return [Boolean] if the health card is valid
+      def verify(health_card)
+        # TODO: This needs better logic to make sure the public key is correct and check for key resolution
+        health_card.verify
+      end
+    end
+
     attr_reader :keys
 
     # Create a new Verifier
