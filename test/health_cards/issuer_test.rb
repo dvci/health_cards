@@ -80,7 +80,6 @@ class IssuerTest < ActiveSupport::TestCase
     issuer = HealthCards::Issuer.new(key: @private_key)
     health_card = issuer.create_health_card(@bundle)
     health_card.key = nil
-    # byebug
     assert_raises HealthCards::MissingPrivateKey do
       health_card.verify
     end

@@ -45,12 +45,38 @@ module HealthCards
       @keys.remove_keys(key)
     end
 
+    def key_for_card(card)
+      self.keys
+    end
+
     # Verify a HealthCard
     #
-    # @param health_card [HealthCards::HealthCard] the health card to verify
+    # @param health_card [HealthCards::HealthCard, HealthCards::JWS, String] the health card to verify
+    # @return [Boolean]
     def verify(health_card)
       # TODO: This needs better logic to make sure the public key is correct and check for key resolution
-      health_card.verify
+      card = case health_card
+      when HealthCard
+        health_card
+      when JWS
+        health_card
+      when String
+        card_from_jws_string(health_card)
+      else
+        raise ArgumentError.new("Expected either a HealthCards::HealthCard, HealthCards::JWS or String")
+      end
+      
+      card.verify
+    end
+
+    private
+
+    def card_from_jws_string(card)
+      new_card = HealthCard.from_jws(card)
+      key = keys.find_key(new_card.thumbprint)
+      raise MissingPublicKey.new unless key
+      new_card.public_key = key
+      new_card
     end
   end
 end

@@ -25,6 +25,14 @@ module HealthCards
       { keys: keys.map(&:to_jwk) }.to_json
     end
 
+    # Retrieves a key from the keyset with a thumbprint
+    # that matches the parameter
+    # @param thumbprint [String] a Base64 encoded thumbprint from a JWS or Key
+    # @return [HealthCard::Key] a key with a matching thumbprint or nil if not found
+    def find_key(thumbprint)
+      keys.find { |key| key.hash == thumbprint.hash }&.key
+    end
+
     # Add keys to KeySet
     #
     # Keys are added based on the key thumbprint

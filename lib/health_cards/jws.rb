@@ -46,6 +46,14 @@ module HealthCards
       self.signature = signature
     end
 
+    def matches_key?(key)
+      key.thumbprint == thumbprint
+    end
+
+    def thumbprint
+      header&[:kid]
+    end
+
     # Set the private key used for signing issued health cards
     #
     # @param key [HealthCards::PrivateKey, nil] the private key used for signing issued health cards

@@ -92,6 +92,8 @@ module HealthCards
     delegate :key, to: :jws
     delegate :public_key, to: :jws
 
+    delegate :thumbprint, to: :jws
+
     # Set the HealthCard payload
     #
     # @param payload [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
