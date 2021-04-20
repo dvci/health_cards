@@ -155,6 +155,8 @@ module HealthCards
     def fhir_bundle?(bundle)
       bundle_obj = bundle.is_a?(String) ? FHIR.from_contents(bundle) : bundle
       bundle_obj.is_a? FHIR::Bundle
+    rescue JSON::ParserError
+      false
     end
 
     # Resets the header
