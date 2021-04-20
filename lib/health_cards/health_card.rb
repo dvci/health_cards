@@ -34,18 +34,23 @@ module HealthCards
     end
 
     attr_reader :key, :public_key
-    attr_writer :signature, :header
+    attr_writer :header
     attr_accessor :resolve_keys
 
     # Create a HealthCard
     #
     # @param payload [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
-    def initialize(payload: nil, key: nil, public_key: nil, header: nil, signature: nil)
-      self.key = key
-      self.public_key = public_key || key.public_key
-      self.payload = payload
-      self.header = header
-      self.signature = signature
+    def initialize(payload: nil, key: nil, public_key: nil, header: nil, jws: nil)
+      # A signature should only be provided when a Health Card is created from a JWS
+      if jws
+        @jws = JWS.from_jws(jws, key: key, public_key: public_key)
+        self.payload = jws.payload
+        self.header = jws.header
+      else
+        @jws = JWS.new(payload: payload, header: header, key: key, public_key: public_key)
+        self.payload = payload
+        self.header = header
+      end
     end
 
     # Set the private key used for signing issued health cards
@@ -54,8 +59,8 @@ module HealthCards
     def public_key=(public_key)
       raise HealthCards::MissingPublicKey unless public_key.is_a?(PublicKey) || public_key.nil?
 
+      jws.public_key = public_key
       reset_header
-      @public_key = public_key
     end
 
     # Set the private key used for signing issued health cards
@@ -64,8 +69,9 @@ module HealthCards
     def key=(key)
       raise HealthCards::MissingPrivateKey unless key.is_a?(PrivateKey) || key.nil?
 
-      @key = key
-      self.public_key = key&.public_key
+      jws.key = key
+
+      self.public_key = jws&.public_key
     end
 
     # The signature component of the card
@@ -78,6 +84,17 @@ module HealthCards
     # @return [Boolean]
     delegate :verify, to: :jws
 
+    # The payload component of the card
+    #
+    # @return [String] the payload
+    delegate :payload, to: :jws
+
+    # The private key
+    #
+    # @return [HealthCards::Key] the private key
+    delegate :key, to: :jws
+    delegate :public_key, to: :jws
+
     # Set the HealthCard payload
     #
     # @param payload [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
@@ -85,10 +102,6 @@ module HealthCards
       raise InvalidPayloadException unless fhir_bundle? payload
 
       jws.payload = payload.is_a?(String) ? payload : payload.to_json
-    end
-
-    def payload
-      @payload
     end
 
     # Encode the HealthCard as a JWS
