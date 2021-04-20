@@ -4,13 +4,11 @@ require 'test_helper'
 
 class HealthCardTest < ActiveSupport::TestCase
   setup do
-    setup do
-      @bundle = bundle_payload
-      @private_key = private_key
-      @wrong_key = private_key
-      # from https://smarthealth.cards/examples/example-00-d-jws.txt
-      @example_jws = 'eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiIsImtpZCI6IjNLZmRnLVh3UC03Z1h5eXd0VWZVQUR3QnVtRE9QS01ReC1pRUxMMTFXOXMifQ.3VJNj9owEP0raPYKSRy2BXJqoVI_VFWVuu2l4mCcgbjyR2Q7AbrKf-_YwLaVFi69FXFx5s2b997MI0jvoYImhNZXee41d6FBrkKTCe5qn-OB61ahzwnYoYMxmM0WKvaSzeZsxu4X2Xw6HUMvoHqEV8KagIcA1fcnyv1-n-2nmXW7vCzYPBcOazRBcuXznsF6DOHYYuz4hk5uJd8oXD1haN5VbXenxyQ-buKk1p2RP3mQ1twECtvLmi2iqN8yv3SbHyhC9LdtpCOVPvJUcJ8VGSO--HXZmVphxDj0tnMCH5IrOBcuLkFYpYjtpIQGuCNZJ-ZOqa9OEeDSXxUEuDyeIf5Mdqg_LoRrPJFwLRXxwWtDGOfTjJ3s0cR4P9gmvpcZrAcyuENT0z4r0Dzp20gK4w0PkZstXrBJwSZlAcMwflYdu63u_d-R-8BD55P9eE0B48J6LoQ0uLJ1YhC2lmaXjPijD6jPd0mbatQsHVBMOveyzkV_IAKROqEsZjCshzG050iSnC06NFHbn4kSyArRuVSKZh-kPlGUyXARbSkbPnV6k8L5aMPorki_WKJUt9bpWCKZXATr4rRa-lbxlPxyNXqLBh1Xo3fWtzLQDQ-k7kqM5X8ZY7m4HuPs32Kk_zD8Ag.8GFVc4UsQoKJ1cqjUzT2ZS5vLpAiOx3-BZD6EgVkh1Cw8zoa1rhxYTm-swwqmeRYTjrnFgR_aG0z8CmJrk37_g'
-    end
+    @bundle = bundle_payload
+    @private_key = private_key
+    @wrong_key = private_key
+    # from https://smarthealth.cards/examples/example-00-d-jws.txt
+    @example_jws = 'eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiIsImtpZCI6IjNLZmRnLVh3UC03Z1h5eXd0VWZVQUR3QnVtRE9QS01ReC1pRUxMMTFXOXMifQ.3VJNj9owEP0raPYKSRy2BXJqoVI_VFWVuu2l4mCcgbjyR2Q7AbrKf-_YwLaVFi69FXFx5s2b997MI0jvoYImhNZXee41d6FBrkKTCe5qn-OB61ahzwnYoYMxmM0WKvaSzeZsxu4X2Xw6HUMvoHqEV8KagIcA1fcnyv1-n-2nmXW7vCzYPBcOazRBcuXznsF6DOHYYuz4hk5uJd8oXD1haN5VbXenxyQ-buKk1p2RP3mQ1twECtvLmi2iqN8yv3SbHyhC9LdtpCOVPvJUcJ8VGSO--HXZmVphxDj0tnMCH5IrOBcuLkFYpYjtpIQGuCNZJ-ZOqa9OEeDSXxUEuDyeIf5Mdqg_LoRrPJFwLRXxwWtDGOfTjJ3s0cR4P9gmvpcZrAcyuENT0z4r0Dzp20gK4w0PkZstXrBJwSZlAcMwflYdu63u_d-R-8BD55P9eE0B48J6LoQ0uLJ1YhC2lmaXjPijD6jPd0mbatQsHVBMOveyzkV_IAKROqEsZjCshzG050iSnC06NFHbn4kSyArRuVSKZh-kPlGUyXARbSkbPnV6k8L5aMPorki_WKJUt9bpWCKZXATr4rRa-lbxlPxyNXqLBh1Xo3fWtzLQDQ-k7kqM5X8ZY7m4HuPs32Kk_zD8Ag.8GFVc4UsQoKJ1cqjUzT2ZS5vLpAiOx3-BZD6EgVkh1Cw8zoa1rhxYTm-swwqmeRYTjrnFgR_aG0z8CmJrk37_g'
   end
 
   ## Constructor

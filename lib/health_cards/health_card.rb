@@ -98,10 +98,10 @@ module HealthCards
     # Set the HealthCard payload
     #
     # @param payload [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
-    def payload=(payload)
-      raise InvalidPayloadException unless fhir_bundle? payload
+    def payload=(new_payload)
+      raise InvalidPayloadException unless fhir_bundle?(payload)
 
-      jws.payload = payload.is_a?(String) ? payload : payload.to_json
+      jws.payload = new_payload.is_a?(String) ? new_payload : new_payload.to_json
     end
 
     # Encode the HealthCard as a JWS
