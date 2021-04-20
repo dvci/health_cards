@@ -27,7 +27,7 @@ module HealthCards
               when Key
                 KeySet.new(keys)
               else
-                raise ArgumentError
+                KeySet.new
               end
     end
 
