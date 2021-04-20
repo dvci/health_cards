@@ -52,8 +52,13 @@ module HealthCards
     def key=(key)
       raise HealthCards::MissingPrivateKey unless key.is_a?(PrivateKey) || key.nil?
 
-      reset_signature
       @key = key
+
+      # If its a new private key then the public key and signature should be updated
+      return if @key.nil?
+
+      reset_signature
+      self.public_key = @key.public_key
     end
 
     # Set the private key used for signing issued health cards

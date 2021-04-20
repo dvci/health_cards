@@ -121,7 +121,9 @@ class HealthCardTest < ActiveSupport::TestCase
   end
 
   test 'Health Cards can be verified when only a public key is loaded' do
-    health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key.public_key)
+    health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key)
+    health_card.to_jws # Call `to_jws` while the private key is around to generate the signature
+    health_card.key = nil # remove the private key
     assert health_card.verify
   end
 
