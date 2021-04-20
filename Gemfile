@@ -73,3 +73,5 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'json-jwt'
 gem 'json-minify'
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
