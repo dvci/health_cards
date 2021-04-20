@@ -32,7 +32,7 @@ class VerifierTest < ActiveSupport::TestCase
   test 'Verifier allows public keys to be added' do
     verifier = HealthCards::Verifier.new
     assert_empty verifier.keys
-    verifier.add_key @public_key
+    verifier.add_keys @public_key
     assert_not_empty verifier.keys
     assert_includes verifier.keys, @public_key
   end
@@ -41,14 +41,14 @@ class VerifierTest < ActiveSupport::TestCase
     verifier = HealthCards::Verifier.new(keys: @public_key)
     assert_not_empty verifier.keys
     assert_includes verifier.keys, @public_key
-    verifier.remove_key @public_key
+    verifier.remove_keys @public_key
     assert_empty verifier.keys
   end
 
   test 'Verifier allows private keys to be added' do
     verifier = HealthCards::Verifier.new
     assert_empty verifier.keys
-    verifier.add_key @private_key
+    verifier.add_keys @private_key
     assert_not_empty verifier.keys
     assert_includes verifier.keys, @private_key
   end
@@ -57,7 +57,7 @@ class VerifierTest < ActiveSupport::TestCase
     verifier = HealthCards::Verifier.new(keys: @private_key)
     assert_not_empty verifier.keys
     assert_includes verifier.keys, @private_key
-    verifier.remove_key @private_key
+    verifier.remove_keys @private_key
     assert_empty verifier.keys
   end
 

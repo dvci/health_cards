@@ -34,15 +34,15 @@ module HealthCards
     # Add a key to use when verifying
     #
     # @param key [HealthCards::Key] the key to add
-    def add_key(key)
-      @keys.add_key(key)
+    def add_keys(key)
+      @keys.add_keys(key)
     end
 
     # Remove a key to use when verifying
     #
     # @param key [HealthCards::Key] the key to remove
-    def remove_key(key)
-      @keys.remove_key(key)
+    def remove_keys(key)
+      @keys.remove_keys(key)
     end
 
     # Verify a HealthCard
