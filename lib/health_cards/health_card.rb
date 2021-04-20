@@ -127,7 +127,6 @@ module HealthCards
     private
 
     def jws
-      byebug
       @jws ||= JWS.new(payload: payload, header: header, signature: signature, key: key, public_key: public_key)
     end
 
@@ -138,14 +137,6 @@ module HealthCards
     def fhir_bundle?(bundle)
       bundle_obj = bundle.is_a? String ? FHIR.from_contents(bundle) : bundle
       bundle_obj.is_a? FHIR::Bundle
-    end
-
-    # Resets the signature
-    #
-    # This method is primarily used when an attribute that affects
-    # the signature is changed (e.g. the private key changes, the payload changes)
-    def reset_signature
-      @signature = nil
     end
 
     # Resets the header

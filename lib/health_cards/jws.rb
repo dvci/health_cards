@@ -96,5 +96,13 @@ module HealthCards
     def encoded_payload
       JWS.encode(payload)
     end
+
+    # Resets the signature
+    #
+    # This method is primarily used when an attribute that affects
+    # the signature is changed (e.g. the private key changes, the payload changes)
+    def reset_signature
+      @signature = nil
+    end
   end
 end
