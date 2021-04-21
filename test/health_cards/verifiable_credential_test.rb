@@ -21,18 +21,9 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     @verbose_vc = HealthCards::VerifiableCredential.new('http://example.com', @verbose_bundle)
   end
 
-  test 'with subject identified' do
-    @subject = 'foo'
-    @vc = HealthCards::VerifiableCredential.new('http://example.com', BUNDLE_SKELETON, @subject)
-
-    assert_equal @vc.fhir_bundle, BUNDLE_SKELETON
-    assert_equal @vc.credential.dig(:credentialSubject, :id), @subject
-  end
-
   test 'without subject identifier' do
     @vc = HealthCards::VerifiableCredential.new('http://example.com', BUNDLE_SKELETON)
     assert_equal @vc.fhir_bundle, BUNDLE_SKELETON
-    assert_nil @vc.credential.dig(:credentialSubject, :id)
   end
 
   test 'redefine_uris populates Bundle.entry.fullUrl elements with short resource-scheme URIs' do

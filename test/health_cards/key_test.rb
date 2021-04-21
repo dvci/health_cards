@@ -23,7 +23,7 @@ class KeyTest < ActiveSupport::TestCase
     assert_not_nil jwk[:x]
     assert_not_nil jwk[:x]
     assert_nil jwk[:d]
-    
+
     assert_equal 'sig', jwk[:use]
     assert_equal 'ES256', jwk[:alg]
   end

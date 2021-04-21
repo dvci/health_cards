@@ -3,7 +3,6 @@
 module HealthCards
   # Verifiers can validate HealthCards using public keys
   class Verifier
-
     class << self
       # Verify the provided Health Card
       #
@@ -45,29 +44,29 @@ module HealthCards
       @keys.remove_keys(key)
     end
 
-    def key_for_card(card)
-      self.keys
+    def key_for_card(_card)
+      keys
     end
 
     # Verify a HealthCard
     #
-    # @param verfiable [HealthCards::HealthCard, HealthCards::JWS, String] the health card to verify
+    # @param verifiable [HealthCards::HealthCard, HealthCards::JWS, String] the health card to verify
     # @return [Boolean]
     def verify(verifiable)
       # TODO: This needs better logic to make sure the public key is correct and check for key resolution
       jws = case verifiable
-      when HealthCard
-        verifiable.to_jws
-      when JWS
-        verifiable
-      when String
-        JWS.from_jws(verifiable)
-      else
-        raise ArgumentError.new("Expected either a HealthCards::HealthCard, HealthCards::JWS or String")
-      end
+            when HealthCard
+              verifiable.jws
+            when JWS
+              verifiable
+            when String
+              JWS.from_jws(verifiable)
+            else
+              raise ArgumentError, 'Expected either a HealthCards::HealthCard, HealthCards::JWS or String'
+            end
 
       key = keys.find_key(jws.thumbprint)
-      raise MissingPublicKey.new unless key
+      raise MissingPublicKey, 'Verifier does not contain public key that is able to verify this signature' unless key
 
       jws.public_key = key
       jws.verify

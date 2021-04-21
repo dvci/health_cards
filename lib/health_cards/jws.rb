@@ -3,7 +3,6 @@
 module HealthCards
   # Create JWS from a payload
   class JWS
-
     class << self
       # Encodes the provided data using url safe base64 without padding
       # @param data [String] the data to be encoded
@@ -28,22 +27,23 @@ module HealthCards
         header, payload, signature = jws.split('.').map { |entry| decode(entry) }
         header = JSON.parse(header)
         JWS.new(header: header, payload: payload, signature: signature,
-                       public_key: public_key, key: key)
+                public_key: public_key, key: key)
       end
     end
 
-    attr_reader :key, :public_key
+    attr_reader :key, :public_key, :payload
     attr_writer :signature
-    attr_accessor :header, :payload
+    attr_accessor :header
 
     # Create a new JWS
 
     def initialize(header: nil, payload: nil, signature: nil, public_key: nil, key: nil)
-      self.key = key
-      self.public_key = public_key || key&.public_key
-      self.payload = payload
-      self.header = header
-      self.signature = signature
+      # Not using accessors because they reset the signature which requires both a key and a payload
+      @key = key
+      @public_key = public_key || key&.public_key
+      @payload = payload
+      @header = header
+      self.signature = signature if signature
     end
 
     def matches_key?(key)
@@ -76,6 +76,11 @@ module HealthCards
       raise HealthCards::MissingPublicKey unless public_key.is_a?(PublicKey) || public_key.nil?
 
       @public_key = public_key
+    end
+
+    def payload=(new_payload)
+      @payload = new_payload
+      reset_signature
     end
 
     # The signature component of the card
@@ -116,6 +121,7 @@ module HealthCards
     # the signature is changed (e.g. the private key changes, the payload changes)
     def reset_signature
       @signature = nil
+      signature if key && payload
     end
   end
 end

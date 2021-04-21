@@ -116,6 +116,5 @@ module HealthCards
     def encoded_payload
       Card.encode(payload)
     end
-
   end
 end

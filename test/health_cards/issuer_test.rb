@@ -73,17 +73,12 @@ class IssuerTest < ActiveSupport::TestCase
   test 'Issuer issues Health Cards that can be exported as JWS' do
     issuer = HealthCards::Issuer.new(key: @private_key)
     health_card = issuer.create_health_card(@bundle)
-    health_card.to_jws
+    assert_not_nil health_card.jws
   end
 
   test 'Issuer signed Health Cards are signed with set private key' do
     issuer = HealthCards::Issuer.new(key: @private_key)
     health_card = issuer.create_health_card(@bundle)
-    health_card.key = nil
-    assert_raises HealthCards::MissingPublicKey do
-      health_card.verify
-    end
-    health_card.public_key = @private_key.public_key
-    assert health_card.verify
+    assert health_card.jws.verify
   end
 end

@@ -3,7 +3,6 @@
 require 'test_helper'
 
 class KeySetTest < ActiveSupport::TestCase
-
   setup do
     @keys = [private_key, private_key]
   end
@@ -15,7 +14,6 @@ class KeySetTest < ActiveSupport::TestCase
   end
 
   test 'KeySet can be initialized with a single private key' do
-
     HealthCards::KeySet.new(@keys[0])
   end
 

@@ -3,7 +3,6 @@
 module HealthCards
   # Issue Health Cards based on a stored private key
   class Issuer
-
     attr_reader :url, :key
 
     # Create an Issuer
@@ -17,10 +16,13 @@ module HealthCards
     # Create a HealthCard from the supplied FHIR bundle
     #
     # @param bundle [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
-    def create_health_card(bundle)
+    def create_health_card(bundle, credential_type: VerifiableCredential)
       raise HealthCards::MissingPrivateKey if key.nil?
-      vc = VerifiableCredential.new(@url, bundle)
-      HealthCards::HealthCard.new(verifiable_credential: vc, key: key)
+
+      vc = credential_type.new(@url, bundle)
+      # byebug
+      jws = JWS.new(header: jws_header, payload: vc.compress_credential, key: key)
+      HealthCards::HealthCard.new(verifiable_credential: vc, jws: jws)
     end
 
     # Set the private key used for signing issued health cards
@@ -30,6 +32,12 @@ module HealthCards
       raise HealthCards::MissingPrivateKey unless key.is_a?(PrivateKey) || key.nil?
 
       @key = key
+    end
+
+    private
+
+    def jws_header
+      { 'zip' => 'DEF', 'alg' => 'ES256', 'kid' => key.public_key.thumbprint }
     end
   end
 end

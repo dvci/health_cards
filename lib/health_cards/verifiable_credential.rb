@@ -23,21 +23,22 @@ module HealthCards
 
     # include DigitalSignature
 
-    attr_reader :issuer, :nbf, :fhir_bundle, :subject_id
+    attr_reader :issuer, :nbf, :fhir_bundle
 
-    def initialize(iss, fhir_bundle, subject_id = nil)
+    def initialize(iss, fhir_bundle)
       @issuer = iss
       @fhir_bundle = fhir_bundle
-      @subject_id = subject_id
     end
 
     def credential
       {
         iss: issuer,
         nbf: Time.now.to_i,
-        '@context': VC_CONTEXT,
-        type: VC_TYPE,
-        credentialSubject: credential_subject
+        vc: {
+          type: VC_TYPE,
+          credentialSubject: credential_subject
+        }
+
       }
     end
 
@@ -65,21 +66,18 @@ module HealthCards
       inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(vcr)
       json = JSON.parse(inf)
 
-      cs = json['credentialSubject']
+      bundle_hash = json.dig('vc', 'credentialSubject', 'fhirBundle')
 
-      raise InvalidPayloadException.new unless cs && cs['fhirBundle']
+      raise InvalidCredentialError unless bundle_hash
 
-      bundle = FHIR::Bundle.new(cs['fhirBundle'])
+      bundle = FHIR::Bundle.new(bundle_hash)
       VerifiableCredential.new(json['iss'], bundle)
     end
 
     private
 
     def credential_subject
-      {
-        fhirVersion: FHIR_VERSION,
-        fhirBundle: strip_fhir_bundle
-      }.tap { |subject| subject[:id] = subject_id if subject_id }
+      { fhirVersion: FHIR_VERSION, fhirBundle: strip_fhir_bundle }
     end
 
     # Helper methods for strip_fhir_bundle
@@ -129,7 +127,8 @@ module HealthCards
       hash
     end
 
-    class InvalidPayloadError < ArgumentError
+    # InvalidCredentialError is raised when unable to locate a fhirBundle in the parsed credential
+    class InvalidCredentialError < ArgumentError
       def initialize(msg = 'Payload must contain a credentialSubject and fhirBundle')
         super(msg)
       end

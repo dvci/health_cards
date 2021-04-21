@@ -39,6 +39,10 @@ module ActiveSupport
       Rails.application.config.hc_key.public_key
     end
 
+    def rails_issuer
+      Rails.application.config.issuer
+    end
+
     def assert_attributes_equal(record1, record2, attr_list = nil)
       (attr_list || record1.attributes.keys).each do |attr|
         unless attr == 'id'
@@ -54,7 +58,7 @@ module ActiveSupport
     end
 
     def vc
-      HealthCards::VerifiableCredential.new("http://example.com", bundle_payload)
+      HealthCards::VerifiableCredential.new('http://example.com', bundle_payload)
     end
 
     def bundle_payload

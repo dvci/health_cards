@@ -10,4 +10,5 @@ Rails.application.configure do
   kp = HealthCards::PrivateKey.from_file!(config.hc_key_path)
 
   config.hc_key = kp
+  config.issuer = HealthCards::Issuer.new(url: ENV['HOST'], key: config.hc_key)
 end

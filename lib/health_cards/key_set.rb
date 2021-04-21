@@ -3,7 +3,6 @@
 module HealthCards
   # A set of keys used for signing or verifying HealthCards
   class KeySet
-
     # Create a new KeySet
     #
     # @param keys [HealthCards::Key, Array<HealthCards::Key>, nil] the initial keys
@@ -64,7 +63,7 @@ module HealthCards
     # @param key [HealthCards::Key]
     # @return [Boolean]
     def include?(key)
-      keys.include?(SetKey.new(key))  
+      keys.include?(SetKey.new(key))
     end
 
     delegate :empty?, to: :keys
@@ -77,7 +76,6 @@ module HealthCards
     # https://ruby-doc.org/stdlib-2.7.2/libdoc/set/rdoc/Set.html
     # https://stackoverflow.com/questions/53399306/how-does-set-in-ruby-compare-elements
     class SetKey
-
       attr_reader :key
 
       delegate :to_jwk, to: :key
@@ -92,7 +90,7 @@ module HealthCards
       end
 
       def eql?(other)
-        self.hash == other.hash
+        hash == other.hash
       end
 
       # @see https://ruby-doc.org/core-2.7.2/Object.html#method-i-hash

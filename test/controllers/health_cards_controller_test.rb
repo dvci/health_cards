@@ -27,14 +27,13 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
 
     vc = HealthCards::VerifiableCredential.decompress_credential(card.payload.to_s)
 
-    bundle = FHIR::Bundle.new(vc.credential.dig(:credentialSubject, :fhirBundle))
+    bundle = FHIR::Bundle.new(vc.credential.dig(:vc, :credentialSubject, :fhirBundle))
 
     entries = bundle.entry
 
     patient = entries[0].resource
     assert patient.valid?
     assert_equal @patient.given, patient.name[0].given[0]
-
 
     imm = entries[1].resource
 

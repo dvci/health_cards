@@ -6,7 +6,8 @@ class VerifierTest < ActiveSupport::TestCase
   setup do
     @private_key = private_key
     @public_key = @private_key.public_key
-    @health_card = HealthCards::HealthCard.new(verifiable_credential: vc, key: @private_key)
+    @verifier = HealthCards::Verifier.new(keys: rails_public_key)
+    @health_card = rails_issuer.create_health_card(bundle_payload)
   end
 
   ## Constructors
@@ -64,17 +65,16 @@ class VerifierTest < ActiveSupport::TestCase
   ## Verification
 
   test 'Verifier can verify health cards' do
-    verifier = HealthCards::Verifier.new(keys: @public_key)
-    verifier.verify(@health_card)
+    @verifier.verify(@health_card)
+  end
+
+  test 'Verifier can verify JWS object' do
+    @verifier.verify(@health_card.jws)
   end
 
   test 'Verifier can verify JWS String' do
-    verifier = HealthCards::Verifier.new(keys: @public_key)
-    card = HealthCards::HealthCard.new(verifiable_credential: vc, key: @private_key)
-    # byebug
-    verifier.verify(card.to_jws.to_s)
+    @verifier.verify(@health_card.jws.to_s)
   end
-
 
   test 'Verifier throws exception when attempting to verify health card without an accessible public key' do
     verifier = HealthCards::Verifier.new
@@ -83,7 +83,7 @@ class VerifierTest < ActiveSupport::TestCase
     end
 
     assert_raises HealthCards::MissingPublicKey do
-      verifier.verify @health_card.to_jws
+      verifier.verify @health_card.jws
     end
   end
 
@@ -97,7 +97,7 @@ class VerifierTest < ActiveSupport::TestCase
     end
 
     assert_raises HealthCards::MissingPublicKey do
-      verifier.verify @health_card.to_jws
+      verifier.verify @health_card.jws
     end
   end
 
@@ -112,7 +112,7 @@ class VerifierTest < ActiveSupport::TestCase
     skip('Key resolution not implemented')
     stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
     verifier = HealthCards::Verifier.new
-    verifier.verify(@health_card.to_jws)
+    verifier.verify(@health_card.jws)
   end
 
   ## Key Resolution
@@ -169,4 +169,3 @@ class VerifierTest < ActiveSupport::TestCase
     assert verifier.verify(@health_card)
   end
 end
-
