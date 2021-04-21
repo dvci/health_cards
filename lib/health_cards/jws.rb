@@ -51,7 +51,7 @@ module HealthCards
     end
 
     def thumbprint
-      header&[:kid]
+      header['kid']
     end
 
     # Set the private key used for signing issued health cards

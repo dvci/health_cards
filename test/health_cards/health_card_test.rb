@@ -4,7 +4,7 @@ require 'test_helper'
 
 class HealthCardTest < ActiveSupport::TestCase
   setup do
-    @bundle = bundle_payload
+    @vc = vc
     @private_key = private_key
     @wrong_key = private_key
     # from https://smarthealth.cards/examples/example-00-d-jws.txt
@@ -14,24 +14,20 @@ class HealthCardTest < ActiveSupport::TestCase
   ## Constructor
 
   test 'HealthCard can be created from a FHIR Bundle model' do
-    HealthCards::HealthCard.new(payload: @bundle)
+    HealthCards::HealthCard.new(verifiable_credential: @vc)
   end
 
-  test 'HealthCard can be created from a FHIR Bundle as a JSON string' do
-    HealthCards::HealthCard.new(payload: @bundle.to_json)
-  end
-
-  test 'HealthCard throws an exception when the payload is not a FHIR Bundle' do
+  test 'HealthCard throws an exception when the payload is not a VerifiableCredential' do
     assert_raises HealthCards::HealthCard::InvalidPayloadException do
-      HealthCards::HealthCard.new(payload: FHIR::Patient.new)
+      HealthCards::HealthCard.new(verifiable_credential: FHIR::Patient.new)
     end
 
     assert_raises HealthCards::HealthCard::InvalidPayloadException do
-      HealthCards::HealthCard.new(payload: '{"foo": "bar"}')
+      HealthCards::HealthCard.new(verifiable_credential: '{"foo": "bar"}')
     end
 
     assert_raises HealthCards::HealthCard::InvalidPayloadException do
-      HealthCards::HealthCard.new(payload: 'foo')
+      HealthCards::HealthCard.new(verifiable_credential: 'foo')
     end
   end
 
@@ -72,23 +68,22 @@ class HealthCardTest < ActiveSupport::TestCase
   ## JWS Encoding
 
   test 'Health Card can be encoded as a JWS' do
-    health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key)
-    jws = health_card.to_jws
+    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, key: @private_key)
+    jws = health_card.to_jws.to_s
     assert_equal 3, jws.split('.').length
   end
 
   test 'Health Card throws an exception when attempting to encode as a JWS without private key' do
     assert_raises HealthCards::MissingPrivateKey do
-      health_card = HealthCards::HealthCard.new(payload: @bundle)
+      health_card = HealthCards::HealthCard.new(verifiable_credential: @vc)
       jws = health_card.to_jws
-      assert_equal 3, jws.split('.').length
     end
   end
 
   test 'HealthCard throws an exception when attempting to encode as a JWS with only a public key' do
     assert_raises HealthCards::MissingPrivateKey do
-      health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key.public_key)
-      jws = health_card.to_jws
+      health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, key: @private_key.public_key)
+      jws = health_card.to_jws.to_s
       assert_equal 3, jws.split('.').length
     end
   end
@@ -97,7 +92,7 @@ class HealthCardTest < ActiveSupport::TestCase
 
   test 'Health Card can be saved to a file' do
     file_name = './example.smart-health-card'
-    health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key)
+    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, key: @private_key)
     health_card.save_to_file(file_name)
     assert File.file?(file_name)
     File.delete(file_name)
@@ -108,7 +103,7 @@ class HealthCardTest < ActiveSupport::TestCase
   test 'Health Card can be saved as a QR Code' do
     skip('Save as QR Code not implemented')
     file_name = './example-qr.svg'
-    health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key)
+    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, key: @private_key)
     health_card.save_as_qr_code('./example-qr.svg')
     assert File.file?(file_name)
     File.delete(file_name)
@@ -117,20 +112,22 @@ class HealthCardTest < ActiveSupport::TestCase
   ## Health Card Verification
 
   test 'Health Cards can be verified when a private key is loaded' do
-    health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key)
+    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, key: @private_key)
     assert health_card.verify
   end
 
   test 'Health Cards can be verified when only a public key is loaded' do
-    health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key)
+    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, key: @private_key)
     health_card.to_jws # Call `to_jws` while the private key is around to generate the signature
     health_card.key = nil # remove the private key
-    assert health_card.verify
+    assert_raises HealthCards::MissingPublicKey do
+      assert health_card.verify
+    end
   end
 
   test 'Health Cards throws an exception when trying to verify without a key' do
     assert_raises HealthCards::MissingPublicKey do
-      health_card = HealthCards::HealthCard.new(payload: @bundle)
+      health_card = HealthCards::HealthCard.new(verifiable_credential: @vc)
       assert health_card.verify
     end
   end
@@ -138,7 +135,7 @@ class HealthCardTest < ActiveSupport::TestCase
   test 'HealthCard can verify JWS when key is resolvable' do
     skip('Key resolution not implemented')
     stub_request(:get, /jwks.json/).to_return(body: @private_key.public_key.to_jwk)
-    health_card = HealthCards::HealthCard.new(payload: @bundle)
+    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc)
     assert health_card.verify
   end
 
@@ -152,9 +149,9 @@ class HealthCardTest < ActiveSupport::TestCase
   end
 
   test 'Health Card can be round tripped from Health Card to JWS and then back' do
-    health_card = HealthCards::HealthCard.new(payload: @bundle, key: @private_key)
+    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, key: @private_key)
     jws = health_card.to_jws
-    new_health_card = HealthCards::HealthCard.from_jws(jws)
+    new_health_card = HealthCards::HealthCard.from_jws(jws.to_s)
     assert new_health_card
   end
 
@@ -177,7 +174,7 @@ class HealthCardTest < ActiveSupport::TestCase
   test 'Health Cards will not verify health cards when key is not resolvable' do
     skip('Key resolution not implemented')
     stub_request(:get, /jwks.json/).to_return(body: @private_key.public_key.to_jwk)
-    health_card = HealthCards::HealthCard.new(payload: @bundle)
+    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc)
     health_card.resolve_keys = false
     assert_raises HealthCards::MissingPublicKey do
       health_card.verify
@@ -203,7 +200,7 @@ class HealthCardTest < ActiveSupport::TestCase
   test 'Health Cards class will not verify health cards when key is not resolvable with global resolution off' do
     skip('Key resolution not implemented')
     stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
-    health_card = HealthCards::HealthCard.new(payload: @bundle)
+    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc)
     health_card.globally_resolve_keys = false
     assert_raises HealthCards::MissingPublicKey do
       health_card.verify

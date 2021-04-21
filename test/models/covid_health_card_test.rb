@@ -27,14 +27,13 @@ class CovidHealthCardTest < ActiveSupport::TestCase
   test 'verifiable credential' do
     vc = HealthCards::VerifiableCredential.decompress_credential(@card.vc)
 
-    entries = vc.dig('credentialSubject', 'fhirBundle', 'entry')
+    entries = vc.fhir_bundle.entry
 
-    assert_not_nil entries
-    name = entries[0].dig('resource', 'name')
+    name = entries[0].resource.name
     assert_not_nil name
-    assert_equal @pat.given, name.first['given'].first
+    assert_equal @pat.given, name.first.given.first
 
-    vax_code = entries[1].dig('resource', 'vaccineCode', 'coding').first['code']
+    vax_code = entries[1].resource.vaccineCode.coding.first.code
     assert_equal @vax.code, vax_code
   end
 

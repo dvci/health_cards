@@ -80,7 +80,7 @@ class IssuerTest < ActiveSupport::TestCase
     issuer = HealthCards::Issuer.new(key: @private_key)
     health_card = issuer.create_health_card(@bundle)
     health_card.key = nil
-    assert_raises HealthCards::MissingPrivateKey do
+    assert_raises HealthCards::MissingPublicKey do
       health_card.verify
     end
     health_card.public_key = @private_key.public_key

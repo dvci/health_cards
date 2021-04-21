@@ -13,7 +13,7 @@ MOCK_JSON = { key1: 'value1', key2: 'value2' }.freeze
 
 class VerifiableCredentialTest < ActiveSupport::TestCase
   FILEPATH_JWS_PAYLOAD = 'test/fixtures/files/example-verbose-jws-payload.json'
-  BUNDLE_SKELETON = { resourceType: 'Bundle', entries: [] }.freeze
+  BUNDLE_SKELETON = FHIR::Bundle.new.freeze
 
   setup do
     file = File.read(FILEPATH_JWS_PAYLOAD)
@@ -25,13 +25,13 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     @subject = 'foo'
     @vc = HealthCards::VerifiableCredential.new('http://example.com', BUNDLE_SKELETON, @subject)
 
-    assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), BUNDLE_SKELETON
+    assert_equal @vc.fhir_bundle, BUNDLE_SKELETON
     assert_equal @vc.credential.dig(:credentialSubject, :id), @subject
   end
 
   test 'without subject identifier' do
     @vc = HealthCards::VerifiableCredential.new('http://example.com', BUNDLE_SKELETON)
-    assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), BUNDLE_SKELETON
+    assert_equal @vc.fhir_bundle, BUNDLE_SKELETON
     assert_nil @vc.credential.dig(:credentialSubject, :id)
   end
 
@@ -90,9 +90,10 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     compressed_vc = @vc.compress_credential
 
     new_vc = HealthCards::VerifiableCredential.decompress_credential(compressed_vc)
+    new_cs = new_vc.credential.deep_stringify_keys
 
     original_vc.each_pair do |k, v|
-      assert_equal v, new_vc[k]
+      assert_equal v, new_cs[k]
     end
   end
 end

@@ -42,8 +42,8 @@ module HealthCards
     end
 
     def strip_fhir_bundle
-      stripped_bundle = @fhir_bundle.dup
-      if stripped_bundle.key?('entry') && stripped_bundle['entry'].length.positive?
+      stripped_bundle = @fhir_bundle.to_hash
+      if stripped_bundle.key?('entry') && !stripped_bundle['entry'].empty?
         entries = stripped_bundle['entry']
         entries, @url_map = redefine_uris(entries)
         update_elements(entries)
@@ -63,7 +63,14 @@ module HealthCards
 
     def self.decompress_credential(vcr)
       inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(vcr)
-      JSON.parse(inf)
+      json = JSON.parse(inf)
+
+      cs = json['credentialSubject']
+
+      raise InvalidPayloadException.new unless cs && cs['fhirBundle']
+
+      bundle = FHIR::Bundle.new(cs['fhirBundle'])
+      VerifiableCredential.new(json['iss'], bundle)
     end
 
     private
@@ -120,6 +127,12 @@ module HealthCards
         end
       end
       hash
+    end
+
+    class InvalidPayloadError < ArgumentError
+      def initialize(msg = 'Payload must contain a credentialSubject and fhirBundle')
+        super(msg)
+      end
     end
   end
 end

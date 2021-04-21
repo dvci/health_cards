@@ -36,17 +36,9 @@ class KeyTest < ActiveSupport::TestCase
     assert_equal original_jwks, new_jwks
   end
 
-  test 'create a signed jws' do
-    card = HealthCards::Card.new(private_key: @key, public_key: @key.public_key, payload: 'asdfasdf')
-    header, payload, sigg = card.to_jws.split('.')
-    assert card.verify
-    assert @key.public_key.verify(payload, Base64.urlsafe_decode64(sigg))
-    assert_not @key.public_key.verify('asdf', Base64.urlsafe_decode64(sigg))
-    assert_equal 'asdfasdf', Base64.urlsafe_decode64(payload)
-
-    decoded_header = JSON.parse(Base64.urlsafe_decode64(header))
-    assert_equal 'DEF', decoded_header['zip']
-    assert_equal 'ES256', decoded_header['alg']
-    assert decoded_header['kid']
+  test 'verify payload' do
+    payload = 'foo'
+    sigg = @key.sign('foo')
+    assert @key.public_key.verify(payload, sigg)
   end
 end

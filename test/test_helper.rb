@@ -53,9 +53,13 @@ module ActiveSupport
       HealthCards::PrivateKey.generate_key
     end
 
+    def vc
+      HealthCards::VerifiableCredential.new("http://example.com", bundle_payload)
+    end
+
     def bundle_payload
       bundle = FHIR::Bundle.new
-      bundle.entry << FHIR::Patient.new
+      bundle.entry << FHIR::Bundle::Entry.new(resource: FHIR::Patient.new)
       bundle
     end
   end

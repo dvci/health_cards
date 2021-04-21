@@ -25,19 +25,18 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
       card = HealthCards::Card.from_jws(vc.first, public_key: @key)
     end
 
-    json = HealthCards::VerifiableCredential.decompress_credential(card.payload)
+    vc = HealthCards::VerifiableCredential.decompress_credential(card.payload.to_s)
 
-    assert_not_nil json
+    bundle = FHIR::Bundle.new(vc.credential.dig(:credentialSubject, :fhirBundle))
 
-    entries = json.dig('credentialSubject', 'fhirBundle', 'entry')
+    entries = bundle.entry
 
-    assert_not_nil entries
-
-    patient = FHIR.from_contents(entries[0]['resource'].to_json)
+    patient = entries[0].resource
     assert patient.valid?
     assert_equal @patient.given, patient.name[0].given[0]
 
-    imm = FHIR.from_contents(entries[1]['resource'].to_json)
+
+    imm = entries[1].resource
 
     # Deactivated until spec or FHIR validator is updated
     # assert imm.valid?

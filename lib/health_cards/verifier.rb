@@ -51,32 +51,26 @@ module HealthCards
 
     # Verify a HealthCard
     #
-    # @param health_card [HealthCards::HealthCard, HealthCards::JWS, String] the health card to verify
+    # @param verfiable [HealthCards::HealthCard, HealthCards::JWS, String] the health card to verify
     # @return [Boolean]
-    def verify(health_card)
+    def verify(verifiable)
       # TODO: This needs better logic to make sure the public key is correct and check for key resolution
-      card = case health_card
+      jws = case verifiable
       when HealthCard
-        health_card
+        verifiable.to_jws
       when JWS
-        health_card
+        verifiable
       when String
-        card_from_jws_string(health_card)
+        JWS.from_jws(verifiable)
       else
         raise ArgumentError.new("Expected either a HealthCards::HealthCard, HealthCards::JWS or String")
       end
-      
-      card.verify
-    end
 
-    private
-
-    def card_from_jws_string(card)
-      new_card = HealthCard.from_jws(card)
-      key = keys.find_key(new_card.thumbprint)
+      key = keys.find_key(jws.thumbprint)
       raise MissingPublicKey.new unless key
-      new_card.public_key = key
-      new_card
+
+      jws.public_key = key
+      jws.verify
     end
   end
 end

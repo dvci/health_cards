@@ -6,7 +6,7 @@ class VerifierTest < ActiveSupport::TestCase
   setup do
     @private_key = private_key
     @public_key = @private_key.public_key
-    @health_card = HealthCards::HealthCard.new(payload: bundle_payload, key: @private_key)
+    @health_card = HealthCards::HealthCard.new(verifiable_credential: vc, key: @private_key)
   end
 
   ## Constructors
@@ -70,8 +70,9 @@ class VerifierTest < ActiveSupport::TestCase
 
   test 'Verifier can verify JWS String' do
     verifier = HealthCards::Verifier.new(keys: @public_key)
-    card = HealthCards::HealthCard.new(payload: bundle_payload, key: @private_key)
-    verifier.verify(card.to_jws)
+    card = HealthCards::HealthCard.new(verifiable_credential: vc, key: @private_key)
+    # byebug
+    verifier.verify(card.to_jws.to_s)
   end
 
 

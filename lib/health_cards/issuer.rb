@@ -4,12 +4,13 @@ module HealthCards
   # Issue Health Cards based on a stored private key
   class Issuer
 
-    attr_reader :key
+    attr_reader :url, :key
 
     # Create an Issuer
     #
     # @param key [HealthCards::PrivateKey] the private key used for signing issued health cards
-    def initialize(key: nil)
+    def initialize(url: nil, key: nil)
+      @url = url
       self.key = key
     end
 
@@ -18,8 +19,8 @@ module HealthCards
     # @param bundle [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
     def create_health_card(bundle)
       raise HealthCards::MissingPrivateKey if key.nil?
-
-      HealthCards::HealthCard.new(payload: bundle, key: key)
+      vc = VerifiableCredential.new(@url, bundle)
+      HealthCards::HealthCard.new(verifiable_credential: vc, key: key)
     end
 
     # Set the private key used for signing issued health cards
