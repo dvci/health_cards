@@ -7,7 +7,7 @@ Rails.application.configure do
 
   config.hc_key_path = ENV['KEY_PATH']
   FileUtils.mkdir_p(File.dirname(ENV['KEY_PATH']))
-  kp = HealthCards::PrivateKey.from_file!(config.hc_key_path)
+  kp = HealthCards::PrivateKey.load_for_create_from_file(config.hc_key_path)
 
   config.hc_key = kp
   config.issuer = HealthCards::Issuer.new(url: ENV['HOST'], key: config.hc_key)

@@ -6,7 +6,7 @@ require 'fileutils'
 class KeyTest < ActiveSupport::TestCase
   setup do
     @key_path = rails_key_path
-    @key = HealthCards::PrivateKey.from_file!(@key_path)
+    @key = HealthCards::PrivateKey.load_for_create_from_file(@key_path)
   end
 
   teardown do
@@ -31,7 +31,7 @@ class KeyTest < ActiveSupport::TestCase
   test 'Use existing keys if they exist' do
     original_jwks = @key.public_key.to_json
 
-    new_jwks = HealthCards::PrivateKey.from_file!(@key_path).public_key.to_json
+    new_jwks = HealthCards::PrivateKey.load_for_create_from_file(@key_path).public_key.to_json
 
     assert_equal original_jwks, new_jwks
   end
