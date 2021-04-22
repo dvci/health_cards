@@ -16,7 +16,7 @@ class CovidHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'bundle creation' do
-    bundle = @card.bundle
+    bundle = @card.verifiable_credential.fhir_bundle
     assert_equal 2, bundle.entry.size
     assert bundle.valid?
     assert_equal FHIR::Patient, bundle.entry[0].resource.class
@@ -24,8 +24,8 @@ class CovidHealthCardTest < ActiveSupport::TestCase
     assert_equal 'collection', bundle.type
   end
 
-  test 'verifiable credential' do
-    vc = HealthCards::VerifiableCredential.decompress_credential(@card.vc)
+  test 'decompression' do
+    vc = HealthCards::VerifiableCredential.decompress_credential(@card.verifiable_credential.compress_credential)
 
     entries = vc.fhir_bundle.entry
 
@@ -38,7 +38,7 @@ class CovidHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'minified entries' do
-    bundle = @card.bundle
+    bundle = @card.verifiable_credential.fhir_bundle
     assert_equal 2, bundle.entry.size
     patient = bundle.entry[0].resource
     imm = bundle.entry[1].resource

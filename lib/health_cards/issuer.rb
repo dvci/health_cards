@@ -20,9 +20,16 @@ module HealthCards
       raise HealthCards::MissingPrivateKey if key.nil?
 
       vc = credential_type.new(@url, bundle)
-      # byebug
-      jws = JWS.new(header: jws_header, payload: vc.compress_credential, key: key)
+
+      jws = issue_jws(vc.compress_credential)
       HealthCards::HealthCard.new(verifiable_credential: vc, jws: jws)
+    end
+
+    # Create a JWS for a given payload
+    #
+    # @param payload [Object] any object that supports to_s
+    def issue_jws(payload)
+      JWS.new(header: jws_header, payload: payload.to_s, key: key)
     end
 
     # Set the private key used for signing issued health cards

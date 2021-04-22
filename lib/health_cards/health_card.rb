@@ -57,7 +57,7 @@ module HealthCards
     end
 
     def chunks
-      HealthCards::Chunking.generate_qr_chunks payload.to_s
+      HealthCards::Chunking.generate_qr_chunks verifiable_credential.compress_credential
     end
 
     # Exception thrown when an invalid payload is provided

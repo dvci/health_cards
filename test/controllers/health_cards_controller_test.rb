@@ -22,10 +22,10 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     card = nil
 
     assert_nothing_raised do
-      card = HealthCards::Card.from_jws(vc.first, public_key: @key)
+      card = HealthCards::HealthCard.from_jws(vc.first, public_key: @key)
     end
 
-    vc = HealthCards::VerifiableCredential.decompress_credential(card.payload.to_s)
+    vc = card.verifiable_credential
 
     bundle = FHIR::Bundle.new(vc.credential.dig(:vc, :credentialSubject, :fhirBundle))
 
