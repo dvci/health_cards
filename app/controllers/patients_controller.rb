@@ -19,7 +19,7 @@ class PatientsController < ApplicationController
 
   # GET /patients/new
   def new
-    @patient = Patient.new
+    @patient = Patient.new(new_patient_params)
   end
 
   # GET /patients/1/edit
@@ -28,7 +28,6 @@ class PatientsController < ApplicationController
   # POST /patients or /patients.json
   def create
     @patient = Patient.new(patient_params)
-
     respond_to do |format|
       if @patient.save
         format.html { redirect_to @patient, notice: 'Patient was successfully created.' }
@@ -73,5 +72,9 @@ class PatientsController < ApplicationController
   def patient_params
     params.require(:patient).permit(:given, :family, :gender, :birth_date, :phone, :email, :street_line1,
                                     :street_line2, :city, :state, :zip_code)
+  end
+
+  def new_patient_params
+    params[:patient] ? patient_params : {}
   end
 end

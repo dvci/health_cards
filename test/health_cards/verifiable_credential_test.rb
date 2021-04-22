@@ -43,13 +43,16 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   end
 
   test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
-    stripped_bundle = @verbose_vc.strip_fhir_bundle
-    stripped_resources = stripped_bundle['entry']
+    @vc = HealthCards::VerifiableCredential.new('http://www.example.com', @verbose_bundle)
 
-    stripped_resources.each do |resource|
+    stripped_bundle = @vc.strip_fhir_bundle
+    stripped_entries = stripped_bundle['entry']
+
+    stripped_entries.each do |entry|
+      resource = entry['resource']
       assert_not(resource.key?('id'))
-      assert_not(resource.key?('meta'))
       assert_not(resource.key?('text'))
+      assert(!resource.key?('meta') || (resource.key?('meta') && (resource['meta'].keys == ['security'])))
     end
   end
 

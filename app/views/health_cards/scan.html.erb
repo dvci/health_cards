@@ -1,0 +1,63 @@
+<%= javascript_pack_tag 'qr_code_scan' %>
+
+<section class="hero is-small is-success">
+  <div class="hero-body">
+    <p class="title">Scan a QR Code</p>
+  </div>
+</section>
+<% flash.each do |type, msg| %>
+  <div class="notification is-warning is-light">
+    <p><%= msg %></p>
+  </div>
+<% end %>
+<div class="section">
+  <div class="container">
+    <div class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <button id="start" class="button is-info">Start</button>
+        </div>
+        <div class="level-item">
+          <button id="stop" class="button is-info" disabled>Stop</button>
+        </div>
+      </div>
+      <div class="level-right" id="multi-status-container">
+      </div>
+    </div>
+    <video id="preview"></video>
+
+    <div class="notification is-success is-light" hidden id="success-notification">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <span class="icon is-large">
+              <i class="fa fa-check-circle fa-2x"></i>
+            </span>
+            <span class="is-size-4">QR code scanned successfully.</span>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <%= form_with url: '/health_cards/qr_contents', method: :post do |f| %>
+              <%= f.hidden_field :qr_contents, id: 'qr-contents' %>
+              <%= f.submit 'View Contents', class: 'button is-info' %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notification is-danger is-light" hidden id="error-notification">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <span class="icon is-large">
+              <i class="fa fa-times-circle fa-2x"></i>
+            </span>
+            <span class="is-size-4">QR code does not contain a SMART Health Card.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
