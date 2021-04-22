@@ -56,18 +56,6 @@ module HealthCards
       resolve_keys
     end
 
-    # The header component of the card
-    #
-    # @return [Hash] the header
-    def header
-      return @header if @header
-
-      raise MissingPublicKey unless public_key
-
-      # Use strings as keys here for consistency with parsed JSON
-      @header ||= { 'zip' => 'DEF', 'alg' => 'ES256', 'kid' => public_key.thumbprint }
-    end
-
     def chunks
       HealthCards::Chunking.generate_qr_chunks payload.to_s
     end
