@@ -21,7 +21,7 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     @verbose_vc = HealthCards::VerifiableCredential.new('http://example.com', @verbose_bundle)
   end
 
-  test 'without subject identifier' do
+  test 'fhir bundle can be created' do
     @vc = HealthCards::VerifiableCredential.new('http://example.com', BUNDLE_SKELETON)
     assert_equal @vc.fhir_bundle, BUNDLE_SKELETON
   end
@@ -84,10 +84,10 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
     compressed_vc = @vc.compress_credential
 
     new_vc = HealthCards::VerifiableCredential.decompress_credential(compressed_vc)
-    new_cs = new_vc.credential.deep_stringify_keys
+    credential_subject = new_vc.credential.deep_stringify_keys
 
     original_vc.each_pair do |k, v|
-      assert_equal v, new_cs[k]
+      assert_equal v, credential_subject[k]
     end
   end
 end

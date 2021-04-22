@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module HealthCards
-  # a HealthCard which can be encoded as a JWS
+  # A HealthCard which can be encoded as a JWS
   class HealthCard
     class << self
       # Creates a Card from a JWS
@@ -20,7 +20,8 @@ module HealthCards
 
     # Create a HealthCard
     #
-    # @param payload [HealthCards::VerifiableCredential, String] the FHIR bundle used as the Health Card payload
+    # @param verifiable_credential [HealthCards::VerifiableCredential] VerifiableCredential containing a fhir bundle
+    # @param jws [HealthCards::JWS] JWS which should have a payload generated from the verifiable_credential
     def initialize(verifiable_credential: nil, jws: nil)
       self.verifiable_credential = verifiable_credential
       @jws = jws
@@ -28,7 +29,7 @@ module HealthCards
 
     # Set the HealthCard payload
     #
-    # @param payload [HealthCards::VerifiableCredential, String] the FHIR bundle used as the Health Card payload
+    # @param new_payload [HealthCards::VerifiableCredential, String] the FHIR bundle used as the Health Card payload
     def verifiable_credential=(new_payload)
       raise InvalidPayloadException unless new_payload.nil? || new_payload.is_a?(HealthCards::VerifiableCredential)
 
@@ -58,13 +59,6 @@ module HealthCards
 
     def chunks
       HealthCards::Chunking.generate_qr_chunks verifiable_credential.compress_credential
-    end
-
-    # Exception thrown when an invalid payload is provided
-    class InvalidPayloadException < ArgumentError
-      def initialize(msg = 'Payload must be a HealthCards::VerifiableCredential')
-        super(msg)
-      end
     end
   end
 end

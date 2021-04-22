@@ -32,15 +32,15 @@ class HealthCardTest < ActiveSupport::TestCase
   end
 
   test 'HealthCard throws an exception when the payload is not a VerifiableCredential' do
-    assert_raises HealthCards::HealthCard::InvalidPayloadException do
+    assert_raises HealthCards::InvalidPayloadException do
       HealthCards::HealthCard.new(verifiable_credential: FHIR::Patient.new)
     end
 
-    assert_raises HealthCards::HealthCard::InvalidPayloadException do
+    assert_raises HealthCards::InvalidPayloadException do
       HealthCards::HealthCard.new(verifiable_credential: '{"foo": "bar"}')
     end
 
-    assert_raises HealthCards::HealthCard::InvalidPayloadException do
+    assert_raises HealthCards::InvalidPayloadException do
       HealthCards::HealthCard.new(verifiable_credential: 'foo')
     end
   end

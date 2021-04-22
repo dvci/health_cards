@@ -19,7 +19,7 @@ module HealthCards
     def create_health_card(bundle, credential_type: VerifiableCredential)
       raise HealthCards::MissingPrivateKey if key.nil?
 
-      vc = credential_type.new(@url, bundle)
+      vc = credential_type.new(url, bundle)
 
       jws = issue_jws(vc.compress_credential)
       HealthCards::HealthCard.new(verifiable_credential: vc, jws: jws)

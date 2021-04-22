@@ -65,15 +65,15 @@ class VerifierTest < ActiveSupport::TestCase
   ## Verification
 
   test 'Verifier can verify health cards' do
-    @verifier.verify(@health_card)
+    assert @verifier.verify(@health_card)
   end
 
   test 'Verifier can verify JWS object' do
-    @verifier.verify(@health_card.jws)
+    assert @verifier.verify(@health_card.jws)
   end
 
   test 'Verifier can verify JWS String' do
-    @verifier.verify(@health_card.jws.to_s)
+    assert @verifier.verify(@health_card.jws.to_s)
   end
 
   test 'Verifier throws exception when attempting to verify health card without an accessible public key' do
