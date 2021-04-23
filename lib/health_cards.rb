@@ -3,8 +3,15 @@
 require 'health_cards/version'
 require 'health_cards/verifiable_credential'
 require 'health_cards/issuer'
-require 'health_cards/file_key_store'
+require 'health_cards/key'
+require 'health_cards/jws'
+require 'health_cards/key_set'
+require 'health_cards/private_key'
+require 'health_cards/public_key'
+require 'health_cards/health_card'
 require 'health_cards/chunking'
+require 'health_cards/exceptions'
+require 'health_cards/verifier'
 
 module HealthCards
   class Error < StandardError; end

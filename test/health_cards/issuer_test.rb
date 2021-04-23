@@ -1,50 +1,70 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'fileutils'
-require 'health_cards/issuer'
 
 class IssuerTest < ActiveSupport::TestCase
   setup do
-    @key_path = Rails.application.config.well_known.jwk[:key_path]
-    @file_store = HealthCards::FileKeyStore.new(@key_path)
-    @issuer = HealthCards::Issuer.new(@file_store)
+    @bundle = bundle_payload
+    @private_key = private_key
   end
 
-  teardown do
-    FileUtils.rm File.join(@key_path, HealthCards::FileKeyStore::FILE_NAME)
-    FileUtils.rmdir @key_path
+  ## Constructors
+
+  test 'Create a new Issuer' do
+    HealthCards::Issuer.new(key: @private_key)
   end
 
-  test 'creates keys' do
-    jwks = @issuer.jwks
-
-    assert_path_exists(@file_store.key_path)
-    assert_equal 1, jwks[:keys].length
-    jwks[:keys].one? do |key|
-      assert_equal 'sig', key['use']
-      assert_equal 'ES256', key['alg']
+  test 'Issuer raises exception when initializing with public key' do
+    assert_raises HealthCards::InvalidKeyException do
+      HealthCards::Issuer.new(key: @private_key.public_key)
     end
   end
 
-  test 'created signed jwt' do
-    vc = HealthCards::VerifiableCredential.new({})
-    signed_jwt = @issuer.sign(vc, 'http://example.com')
-    assert_instance_of String, signed_jwt
-    jwt = {}
-    assert_nothing_raised do
-      jwt = JSON::JWT.decode(signed_jwt, @issuer.public_key)
-    end
-    assert_not_nil jwt['iss']
-    assert_not_nil jwt['nbf']
+  ## Creating Health Cards
+
+  test 'Generate a health card from an Issuer' do
+    issuer = HealthCards::Issuer.new(key: @private_key)
+    health_card = issuer.create_health_card(@bundle)
+    assert health_card.is_a?(HealthCards::HealthCard) # Should be a HealthCard or subclass of HealthCard
   end
 
-  test 'Use existing keys if they exist' do
-    original_jwks = @issuer.jwks
+  ## Key Export
 
-    new_issuer = HealthCards::Issuer.new @file_store
-    new_jwks = new_issuer.jwks
+  test 'Issuer exports public key as JWK' do
+    issuer = HealthCards::Issuer.new(key: @private_key)
+    key = JSON.parse(issuer.to_jwk)
+    # TODO: Add more checks once we can ingest external public keys
+    assert issuer.key.public_key.kid, key['kid']
+  end
 
-    assert_equal original_jwks, new_jwks
+  ## Adding and Changing Keys
+
+  test 'Issuer allows private keys to be changed' do
+    issuer = HealthCards::Issuer.new(key: @private_key)
+    key2 = HealthCards::PrivateKey.generate_key
+    issuer.key = key2
+    assert_not_nil issuer.key
+    assert_not_equal issuer.key, @private_key
+  end
+
+  test 'Issuer does not allow public key to be added' do
+    issuer = HealthCards::Issuer.new(key: @private_key)
+    assert_raises HealthCards::InvalidKeyException do
+      issuer.key = @private_key.public_key
+    end
+  end
+
+  ## Integration Tests
+
+  test 'Issuer issues Health Cards that can be exported as JWS' do
+    issuer = HealthCards::Issuer.new(key: @private_key)
+    health_card = issuer.create_health_card(@bundle)
+    assert_not_nil health_card.jws
+  end
+
+  test 'Issuer signed Health Cards are signed with set private key' do
+    issuer = HealthCards::Issuer.new(key: @private_key)
+    health_card = issuer.create_health_card(@bundle)
+    assert health_card.jws.verify
   end
 end

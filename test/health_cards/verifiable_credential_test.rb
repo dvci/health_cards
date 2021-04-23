@@ -13,30 +13,21 @@ MOCK_JSON = { key1: 'value1', key2: 'value2' }.freeze
 
 class VerifiableCredentialTest < ActiveSupport::TestCase
   FILEPATH_JWS_PAYLOAD = 'test/fixtures/files/example-verbose-jws-payload.json'
-  BUNDLE_SKELETON = { resourceType: 'Bundle', entries: [] }.freeze
+  BUNDLE_SKELETON = FHIR::Bundle.new.freeze
 
   setup do
     file = File.read(FILEPATH_JWS_PAYLOAD)
     @verbose_bundle = JSON.parse(file)
+    @verbose_vc = HealthCards::VerifiableCredential.new('http://example.com', @verbose_bundle)
   end
 
-  test 'with subject identified' do
-    @subject = 'foo'
-    @vc = HealthCards::VerifiableCredential.new(BUNDLE_SKELETON, @subject)
-
-    assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), BUNDLE_SKELETON
-    assert_equal @vc.credential.dig(:credentialSubject, :id), @subject
-  end
-
-  test 'without subject identifier' do
-    @vc = HealthCards::VerifiableCredential.new(BUNDLE_SKELETON)
-    assert_equal @vc.credential.dig(:credentialSubject, :fhirBundle), BUNDLE_SKELETON
-    assert_nil @vc.credential.dig(:credentialSubject, :id)
+  test 'fhir bundle can be created' do
+    @vc = HealthCards::VerifiableCredential.new('http://example.com', BUNDLE_SKELETON)
+    assert_equal @vc.fhir_bundle, BUNDLE_SKELETON
   end
 
   test 'redefine_uris populates Bundle.entry.fullUrl elements with short resource-scheme URIs' do
-    @vc = HealthCards::VerifiableCredential.new(@verbose_bundle)
-    stripped_bundle = @vc.strip_fhir_bundle
+    stripped_bundle = @verbose_vc.strip_fhir_bundle
 
     resource_nums = []
     new_entries = stripped_bundle['entry']
@@ -52,7 +43,7 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   end
 
   test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
-    @vc = HealthCards::VerifiableCredential.new(@verbose_bundle)
+    @vc = HealthCards::VerifiableCredential.new('http://www.example.com', @verbose_bundle)
 
     stripped_bundle = @vc.strip_fhir_bundle
     stripped_entries = stripped_bundle['entry']
@@ -66,8 +57,7 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   end
 
   test 'update_nested_elements strips any "CodeableConcept.text" and "Coding.display" elements from the FHIR Bundle' do
-    @vc = HealthCards::VerifiableCredential.new(@verbose_bundle)
-    stripped_bundle = @vc.strip_fhir_bundle
+    stripped_bundle = @verbose_vc.strip_fhir_bundle
     stripped_resources = stripped_bundle['entry']
 
     resource_with_codeable_concept = stripped_resources[2]
@@ -79,8 +69,7 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   end
 
   test 'update_nested_elements populates Reference.reference elements with short resource-scheme URIs' do
-    @vc = HealthCards::VerifiableCredential.new(@verbose_bundle)
-    stripped_bundle = @vc.strip_fhir_bundle
+    stripped_bundle = @verbose_vc.strip_fhir_bundle
     stripped_resources = stripped_bundle['entry']
     resource_with_reference = stripped_resources[2]
 
@@ -89,17 +78,16 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   end
 
   test 'compress_payload applies a raw deflate compression and allows for the original JWS payload to be restored' do
-    @vc = HealthCards::VerifiableCredential.new(BUNDLE_SKELETON)
+    @vc = HealthCards::VerifiableCredential.new('http://example.com', BUNDLE_SKELETON)
     original_vc = JSON.parse(@vc.minify_payload)
 
     compressed_vc = @vc.compress_credential
 
-    decoded = Base64.decode64(compressed_vc)
-    reinflated_vc = JSON.parse(Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(decoded))
+    new_vc = HealthCards::VerifiableCredential.decompress_credential(compressed_vc)
+    credential_subject = new_vc.credential.deep_stringify_keys
 
-    reinflated_vc.delete('proof')
-    original_vc.delete('proof')
-
-    assert_equal(reinflated_vc, original_vc)
+    original_vc.each_pair do |k, v|
+      assert_equal v, credential_subject[k]
+    end
   end
 end

@@ -13,12 +13,10 @@ class CovidHealthCardTest < ActiveSupport::TestCase
       url = "#{url}/example.com/#{record.class.name}/#{record.id}" if record
       url
     end
-
-    @issuer = Rails.application.config.issuer
   end
 
   test 'bundle creation' do
-    bundle = @card.bundle
+    bundle = @card.verifiable_credential.fhir_bundle
     assert_equal 2, bundle.entry.size
     assert bundle.valid?
     assert_equal FHIR::Patient, bundle.entry[0].resource.class
@@ -26,22 +24,21 @@ class CovidHealthCardTest < ActiveSupport::TestCase
     assert_equal 'collection', bundle.type
   end
 
-  test 'verifiable credential' do
-    vc = @card.vc
+  test 'decompression' do
+    vc = HealthCards::VerifiableCredential.decompress_credential(@card.verifiable_credential.compress_credential)
 
-    jwt = JSON::JWT.decode(vc, @issuer.public_key)
-    entries = jwt.dig('credentialSubject', 'fhirBundle', 'entry')
-    assert_not_nil entries
-    name = entries[0].dig('resource', 'name')
+    entries = vc.fhir_bundle.entry
+
+    name = entries[0].resource.name
     assert_not_nil name
-    assert_equal @pat.given, name.first['given'].first
+    assert_equal @pat.given, name.first.given.first
 
-    vax_code = entries[1].dig('resource', 'vaccineCode', 'coding').first['code']
+    vax_code = entries[1].resource.vaccineCode.coding.first.code
     assert_equal @vax.code, vax_code
   end
 
   test 'minified entries' do
-    bundle = @card.bundle
+    bundle = @card.verifiable_credential.fhir_bundle
     assert_equal 2, bundle.entry.size
     patient = bundle.entry[0].resource
     imm = bundle.entry[1].resource

@@ -23,25 +23,28 @@ module HealthCards
 
     # include DigitalSignature
 
-    attr_reader :fhir_bundle, :subject_id
+    attr_reader :issuer, :nbf, :fhir_bundle
 
-    def initialize(fhir_bundle, subject_id = nil)
+    def initialize(iss, fhir_bundle)
+      @issuer = iss
       @fhir_bundle = fhir_bundle
-      @subject_id = subject_id
     end
 
     def credential
       {
-        '@context': VC_CONTEXT,
-        type: VC_TYPE,
-        credentialSubject: credential_subject # ,
-        # proof: proof(credential_subject)
+        iss: issuer,
+        nbf: Time.now.to_i,
+        vc: {
+          type: VC_TYPE,
+          credentialSubject: credential_subject
+        }
+
       }
     end
 
     def strip_fhir_bundle
-      stripped_bundle = @fhir_bundle.dup
-      if stripped_bundle.key?('entry') && stripped_bundle['entry'].length.positive?
+      stripped_bundle = @fhir_bundle.to_hash
+      if stripped_bundle.key?('entry') && !stripped_bundle['entry'].empty?
         entries = stripped_bundle['entry']
         entries, @url_map = redefine_uris(entries)
         update_elements(entries)
@@ -56,17 +59,25 @@ module HealthCards
     # According to  https://gist.github.com/alazarchuk/8223772181741c4b7a7c
     # Also references https://agileweboperations.com/2008/09/15/how-inflate-and-deflate-data-ruby-and-php/
     def compress_credential
-      deflated = Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(minify_payload.to_s, Zlib::FINISH)
-      Base64.encode64(deflated)
+      Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(minify_payload.to_s, Zlib::FINISH)
+    end
+
+    def self.decompress_credential(vcr)
+      inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(vcr)
+      json = JSON.parse(inf)
+
+      bundle_hash = json.dig('vc', 'credentialSubject', 'fhirBundle')
+
+      raise InvalidCredentialError unless bundle_hash
+
+      bundle = FHIR::Bundle.new(bundle_hash)
+      VerifiableCredential.new(json['iss'], bundle)
     end
 
     private
 
     def credential_subject
-      {
-        fhirVersion: FHIR_VERSION,
-        fhirBundle: strip_fhir_bundle
-      }.tap { |subject| subject[:id] = subject_id if subject_id }
+      { fhirVersion: FHIR_VERSION, fhirBundle: strip_fhir_bundle }
     end
 
     # Helper methods for strip_fhir_bundle
@@ -107,7 +118,7 @@ module HealthCards
             coding.delete('display')
           end
         elsif k == 'reference' && v.is_a?(String)
-          v.replace @url_map[v] if @url_map.key?(v)
+          hash[k] = @url_map[v] if @url_map.key?(v)
         end
 
         case v
@@ -118,6 +129,13 @@ module HealthCards
         end
       end
       hash
+    end
+
+    # InvalidCredentialError is raised when unable to locate a fhirBundle in the parsed credential
+    class InvalidCredentialError < ArgumentError
+      def initialize(msg = 'Payload must contain a credentialSubject and fhirBundle')
+        super(msg)
+      end
     end
   end
 end
