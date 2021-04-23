@@ -8,8 +8,9 @@ module HealthCards
     # Create an Issuer
     #
     # @param key [HealthCards::PrivateKey] the private key used for signing issued health cards
-    def initialize(url: nil, key: nil)
+    def initialize(key:, url: nil)
       @url = url
+      PrivateKey.enforce_valid_key_type!(key)
       self.key = key
     end
 
@@ -36,15 +37,22 @@ module HealthCards
     #
     # @param key [HealthCards::PrivateKey, nil] the private key used for signing issued health cards
     def key=(key)
-      raise HealthCards::MissingPrivateKey unless key.is_a?(PrivateKey) || key.nil?
+      PrivateKey.enforce_valid_key_type!(key)
 
       @key = key
+    end
+
+    # Returns the public key matching this issuer's
+    # private key as a JWK KeySet JSON string useful for .well-known endpoints
+    # @return [String] JSON string in JWK standard
+    def to_jwk
+      KeySet.new(key.public_key).to_jwk
     end
 
     private
 
     def jws_header
-      { 'zip' => 'DEF', 'alg' => 'ES256', 'kid' => key.public_key.thumbprint }
+      { 'zip' => 'DEF', 'alg' => 'ES256', 'kid' => key.public_key.kid }
     end
   end
 end

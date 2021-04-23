@@ -23,14 +23,14 @@ class KeySetTest < ActiveSupport::TestCase
 
   test 'KeySet can be initialized with an array of private keys' do
     key_set = HealthCards::KeySet.new(@keys)
-    key_set.include? @keys[0]
-    key_set.include? @keys[1]
+    assert_includes key_set, @keys[0]
+    assert_includes key_set, @keys[1]
   end
 
   test 'KeySet can be initialized with an array of public keys' do
     key_set = HealthCards::KeySet.new(@keys.map(&:public_key))
-    key_set.include? @keys[0].public_key
-    key_set.include? @keys[1].public_key
+    assert_includes key_set, @keys[0].public_key
+    assert_includes key_set, @keys[1].public_key
   end
 
   ## Adding and Removing Keys

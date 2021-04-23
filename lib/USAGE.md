@@ -27,7 +27,7 @@ health_card.save_to_file('./example.smart-health-card')
 
 verifier = HealthCards::Verifier.new
 
-# Keys can also be removed. (internally this is done through matching JWK thumbprints)
+# Keys can also be removed. (internally this is done through matching JWK kids)
 # verifier.remove_key(key)
 jws = 'foofoofoo.barbarbar.bazbazbaz'
 

@@ -21,4 +21,11 @@ module HealthCards
       super(msg)
     end
   end
+
+  # Exception thrown when an invalid key (public or private) is provided
+  class InvalidKeyException < ArgumentError
+    def initialize(expected_class, actual_obj)
+      super("Expected an instance of #{expected_class} but was #{actual_obj.class}")
+    end
+  end
 end

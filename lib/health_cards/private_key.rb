@@ -8,7 +8,7 @@ module HealthCards
       PrivateKey.new(pem)
     end
 
-    def self.load_for_create_from_file(path)
+    def self.load_from_or_create_from_file(path)
       if File.exist?(path)
         from_file(path)
       else

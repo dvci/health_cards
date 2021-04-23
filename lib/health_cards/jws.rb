@@ -37,20 +37,20 @@ module HealthCards
 
     # Create a new JWS
 
-    def initialize(header: nil, payload: nil, signature: nil, public_key: nil, key: nil)
+    def initialize(header: nil, payload: nil, signature: nil, key: nil, public_key: nil)
       # Not using accessors because they reset the signature which requires both a key and a payload
+      @header = header
+      @payload = payload
+      self.signature = signature if signature
       @key = key
       @public_key = public_key || key&.public_key
-      @payload = payload
-      @header = header
-      self.signature = signature if signature
     end
 
     def matches_key?(key)
-      key.thumbprint == thumbprint
+      key.kid == kid
     end
 
-    def thumbprint
+    def kid
       header['kid']
     end
 
@@ -58,22 +58,22 @@ module HealthCards
     #
     # @param key [HealthCards::PrivateKey, nil] the private key used for signing issued health cards
     def key=(key)
-      raise HealthCards::MissingPrivateKey unless key.is_a?(PrivateKey) || key.nil?
+      PrivateKey.enforce_valid_key_type!(key, allow_nil: true)
 
       @key = key
 
-      # If its a new private key then the public key and signature should be updated
+      # If it's a new private key then the public key and signature should be updated
       return if @key.nil?
 
       reset_signature
       self.public_key = @key.public_key
     end
 
-    # Set the private key used for signing issued health cards
+    # Set the public key used for signing issued health cards
     #
     # @param public_key [HealthCards::PublicKey, nil] the private key used for signing issued health cards
     def public_key=(public_key)
-      raise HealthCards::MissingPublicKey unless public_key.is_a?(PublicKey) || public_key.nil?
+      PublicKey.enforce_valid_key_type!(public_key, allow_nil: true)
 
       @public_key = public_key
     end

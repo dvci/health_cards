@@ -90,7 +90,7 @@
 - `::from_json`
 - `#to_json`
 - `#to_jwk`
-- `#thumbprint`
+- `#kid`
 - `#public_key`
 
 ## HealthCards::PrivateKey < Key

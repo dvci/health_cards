@@ -65,7 +65,7 @@ module HealthCards
               raise ArgumentError, 'Expected either a HealthCards::HealthCard, HealthCards::JWS or String'
             end
 
-      key = keys.find_key(jws.thumbprint)
+      key = keys.find_key(jws.kid)
       raise MissingPublicKey, 'Verifier does not contain public key that is able to verify this signature' unless key
 
       jws.public_key = key

@@ -15,7 +15,7 @@ class IssuerTest < ActiveSupport::TestCase
   end
 
   test 'Issuer raises exception when initializing with public key' do
-    assert_raises HealthCards::MissingPrivateKey do
+    assert_raises HealthCards::InvalidKeyException do
       HealthCards::Issuer.new(key: @private_key.public_key)
     end
   end
@@ -28,42 +28,28 @@ class IssuerTest < ActiveSupport::TestCase
     assert health_card.is_a?(HealthCards::HealthCard) # Should be a HealthCard or subclass of HealthCard
   end
 
-  test 'Issuer throws exception when attempting to generate health card without a private key' do
-    issuer = HealthCards::Issuer.new
-    assert_raises HealthCards::MissingPrivateKey do
-      issuer.create_health_card @bundle
-    end
-  end
-
   ## Key Export
 
-  test 'Issuer exports public keys as JWK' do
+  test 'Issuer exports public key as JWK' do
     issuer = HealthCards::Issuer.new(key: @private_key)
-    key = issuer.key
-    assert key.is_a? HealthCards::PrivateKey
+    key = JSON.parse(issuer.to_jwk)
+    # TODO: Add more checks once we can ingest external public keys
+    assert issuer.key.public_key.kid, key['kid']
   end
 
-  ## Adding and Removing Keys
+  ## Adding and Changing Keys
 
-  test 'Issuer allows private keys to be added' do
-    issuer = HealthCards::Issuer.new
-    assert_nil issuer.key
-    issuer.key = @private_key
-    assert_not_nil issuer.key
-    assert_equal issuer.key, @private_key
-  end
-
-  test 'Issuer allows private keys to be removed' do
+  test 'Issuer allows private keys to be changed' do
     issuer = HealthCards::Issuer.new(key: @private_key)
+    key2 = HealthCards::PrivateKey.generate_key
+    issuer.key = key2
     assert_not_nil issuer.key
-    assert_equal issuer.key, @private_key
-    issuer.key = nil
-    assert_nil issuer.key
+    assert_not_equal issuer.key, @private_key
   end
 
   test 'Issuer does not allow public key to be added' do
-    issuer = HealthCards::Issuer.new
-    assert_raises HealthCards::MissingPrivateKey do
+    issuer = HealthCards::Issuer.new(key: @private_key)
+    assert_raises HealthCards::InvalidKeyException do
       issuer.key = @private_key.public_key
     end
   end

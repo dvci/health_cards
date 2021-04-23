@@ -58,7 +58,7 @@ module ActiveSupport
     end
 
     def vc
-      HealthCards::VerifiableCredential.new('http://example.com', bundle_payload)
+      HealthCards::VerifiableCredential.new(ENV['HOST'], bundle_payload)
     end
 
     def bundle_payload

@@ -18,17 +18,23 @@ class HealthCardTest < ActiveSupport::TestCase
     'bPnV6k8L5aMPorki_WKJUt9bpWCKZXATr4rRa-lbxlPxyNXqLBh1Xo3fWtzLQDQ-k7kqM5X8ZY7m4HuPs32Kk_zD8Ag.8GFVc4UsQoKJ1cqjUzT2'\
     'ZS5vLpAiOx3-BZD6EgVkh1Cw8zoa1rhxYTm-swwqmeRYTjrnFgR_aG0z8CmJrk37_g'
 
-    @jws = HealthCards::JWS.from_jws(@jws_string, key: rails_private_key)
+    @jws = HealthCards::JWS.from_jws(@jws_string)
   end
 
   ## Constructor
 
   test 'HealthCard can be created from a VerifiableCredential' do
-    HealthCards::HealthCard.new(verifiable_credential: @vc)
+    card = HealthCards::HealthCard.new(verifiable_credential: @vc)
+
+    assert_not_nil card.verifiable_credential
+    assert_not_nil card.verifiable_credential.fhir_bundle
+    assert card.verifiable_credential.fhir_bundle.is_a?(FHIR::Bundle)
   end
 
   test 'HealthCard can be created from a VerifiableCredential and JWS' do
-    HealthCards::HealthCard.new(verifiable_credential: @vc, jws: @jws)
+    card = HealthCards::HealthCard.new(verifiable_credential: @vc, jws: @jws)
+    assert_not_nil card.jws
+    assert card.jws.is_a?(HealthCards::JWS)
   end
 
   test 'HealthCard throws an exception when the payload is not a VerifiableCredential' do
@@ -69,16 +75,19 @@ class HealthCardTest < ActiveSupport::TestCase
   ## Creating a HealthCard from a JWS
 
   test 'Health Cards can be created from a JWS' do
-    health_card = HealthCards::HealthCard.from_jws(@jws_string)
-    assert_not_nil health_card.verifiable_credential
-    # TODO: Better checks here
+    card = HealthCards::HealthCard.from_jws(@jws_string)
+    assert_not_nil card.verifiable_credential
+    assert_not_nil card.verifiable_credential.fhir_bundle
+    assert card.verifiable_credential.fhir_bundle.is_a?(FHIR::Bundle)
   end
 
   test 'Health Card can be round tripped from Health Card to JWS and then back' do
-    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, jws: @jws)
-    jws = health_card.jws
-    new_health_card = HealthCards::HealthCard.from_jws(jws.to_s)
-    assert_not_nil new_health_card.verifiable_credential
-    # TODO: Better checks here
+    health_card = rails_issuer.create_health_card(@vc.fhir_bundle)
+    new_health_card = HealthCards::HealthCard.from_jws(health_card.jws.to_s)
+
+    new_vc = new_health_card.verifiable_credential
+
+    assert_equal @vc.issuer, new_health_card.verifiable_credential.issuer
+    assert_equal @vc.fhir_bundle.entry.length, new_vc.fhir_bundle.entry.length
   end
 end

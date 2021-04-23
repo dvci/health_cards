@@ -8,6 +8,13 @@ module HealthCards
     BASE = { kty: 'EC', crv: 'P-256' }.freeze
     DIGEST = OpenSSL::Digest.new('SHA256')
 
+    # Checks if obj is the the correct key type or nil
+    # @param obj Object that should be of same type as caller or nil
+    # @param allow_nil Allow/Disallow key to be nil
+    def self.enforce_valid_key_type!(obj, allow_nil:  false)
+      raise InvalidKeyException.new(self, obj) unless obj.is_a?(self) || (allow_nil && obj.nil?)
+    end
+
     def initialize(ec_key)
       @key = ec_key
     end
@@ -17,10 +24,10 @@ module HealthCards
     end
 
     def to_jwk
-      coordinates.merge(thumbprint: thumbprint, use: 'sig', alg: 'ES256')
+      coordinates.merge(kid: kid, use: 'sig', alg: 'ES256')
     end
 
-    def thumbprint
+    def kid
       Base64.urlsafe_encode64(DIGEST.digest(coordinates.except(:d).to_json), padding: false)
     end
 
