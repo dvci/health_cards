@@ -25,11 +25,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
       card = HealthCards::HealthCard.from_jws(vc.first, public_key: @key)
     end
 
-    vc = card.verifiable_credential
-
-    bundle = FHIR::Bundle.new(vc.credential.dig(:vc, :credentialSubject, :fhirBundle))
-
-    entries = bundle.entry
+    entries = card.bundle.entry
 
     patient = entries[0].resource
     assert patient.valid?

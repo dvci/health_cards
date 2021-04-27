@@ -3,6 +3,12 @@
 module HealthCards
   # A HealthCard which can be encoded as a JWS
   class HealthCard
+    VC_TYPE = [
+      'https://healthwallet.cards#health-card'
+    ].freeze
+
+    attr_reader :issuer, :nbf, :bundle
+
     class << self
       # Creates a Card from a JWS
       # @param jws [String] the JWS string
@@ -11,43 +17,87 @@ module HealthCards
       # @return [HealthCards::HealthCard]
       def from_jws(jws, public_key: nil, key: nil)
         jws = JWS.from_jws(jws, public_key: public_key, key: key)
-        vc = VerifiableCredential.decompress_credential(jws.payload)
-        HealthCard.new(verifiable_credential: vc, jws: jws)
+        from_payload(jws.payload)
+      end
+
+      def from_payload(payload)
+        inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(payload)
+        json = JSON.parse(inf)
+
+        bundle_hash = json.dig('vc', 'credentialSubject', 'fhirBundle')
+
+        raise InvalidCredentialError unless bundle_hash
+
+        bundle = FHIR::Bundle.new(bundle_hash)
+        new(issuer: json['iss'], bundle: bundle)
+      end
+
+      def allow(klass, attributes)
+        @allowable ||= {}
+        resource_type = klass.name.split('::').last
+        @allowable[resource_type] = attributes
+      end
+
+      def allowable
+        @allowable ||= {}
+      end
+
+      def fhir_version(ver = nil)
+        @fhir_version ||= ver unless ver.nil?
+        @fhir_version
+      end
+
+      def additional_types(*types)
+        @types ||= VC_TYPE
+        @types += types
+      end
+
+      def types
+        @types ||= VC_TYPE
       end
     end
-
-    attr_reader :verifiable_credential, :jws
 
     # Create a HealthCard
     #
     # @param verifiable_credential [HealthCards::VerifiableCredential] VerifiableCredential containing a fhir bundle
     # @param jws [HealthCards::JWS] JWS which should have a payload generated from the verifiable_credential
-    def initialize(verifiable_credential: nil, jws: nil)
-      self.verifiable_credential = verifiable_credential
-      @jws = jws
+    def initialize(bundle:, issuer: nil)
+      raise InvalidPayloadException unless bundle.is_a?(FHIR::Bundle)
+
+      @issuer = issuer
+      @bundle = bundle
     end
 
-    # Set the HealthCard payload
-    #
-    # @param new_payload [HealthCards::VerifiableCredential, String] the FHIR bundle used as the Health Card payload
-    def verifiable_credential=(new_payload)
-      raise InvalidPayloadException unless new_payload.nil? || new_payload.is_a?(HealthCards::VerifiableCredential)
+    def to_hash
+      {
+        iss: issuer,
+        nbf: Time.now.to_i,
+        vc: {
+          type: self.class.types,
+          credentialSubject: {
+            fhirVersion: self.class.fhir_version,
+            fhirBundle: strip_fhir_bundle
+          }
+        }
 
-      @jws.payload = new_payload&.compress_credential if @jws
-      @verifiable_credential = new_payload
+      }
     end
 
-    # Save the HealthCard as a file
-    #
-    # @param file_name [String] the name of the file
-    def save_to_file(file_name)
-      File.open(file_name, 'w') do |file|
-        file.write(to_json)
-      end
+    def to_s
+      Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(minify_payload, Zlib::FINISH)
     end
 
-    def to_json(*_args)
-      { verifiableCredential: [jws.to_s] }.to_json
+    # # Save the HealthCard as a file
+    # #
+    # # @param file_name [String] the name of the file
+    # def save_to_file(file_name)
+    #   File.open(file_name, 'w') do |file|
+    #     file.write(to_json)
+    #   end
+    # end
+
+    def to_json(*args)
+      bundle.to_json(*args)
     end
 
     # Whether the instance is configured to resolve public keys
@@ -58,7 +108,82 @@ module HealthCards
     end
 
     def chunks
-      HealthCards::Chunking.generate_qr_chunks verifiable_credential.compress_credential
+      HealthCards::Chunking.generate_qr_chunks to_s
+    end
+
+    def minify_payload
+      JSON.minify(to_hash.to_json)
+    end
+
+    def strip_fhir_bundle
+      stripped_bundle = @bundle.to_hash
+      if stripped_bundle.key?('entry') && !stripped_bundle['entry'].empty?
+        entries = stripped_bundle['entry']
+        entries, @url_map = redefine_uris(entries)
+        update_elements(entries)
+      end
+      stripped_bundle
+    end
+
+    private
+
+    def redefine_uris(entries)
+      url_map = {}
+      resource_count = 0
+      entries.each do |entry|
+        old_url = entry['fullUrl']
+        new_url = "resource:#{resource_count}"
+        url_map[old_url] = new_url
+        entry['fullUrl'] = new_url
+        resource_count += 1
+      end
+      [entries, url_map]
+    end
+
+    def update_elements(entries)
+      entries.each do |entry|
+        resource = entry['resource']
+
+        resource.delete('id')
+        resource.delete('text')
+        if resource.dig('meta', 'security')
+          resource['meta'] = resource['meta'].slice('security')
+        else
+          resource.delete('meta')
+        end
+        handle_allowable(resource)
+        update_nested_elements(resource)
+      end
+    end
+
+    def handle_allowable(resource)
+      allowable = self.class.allowable[resource['resourceType']]
+      return resource unless allowable
+
+      allow = allowable + ['resourceType']
+      resource.select! { |att| allow.include?(att) }
+    end
+
+    def update_nested_elements(hash) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      hash.each do |k, v|
+        if v.is_a?(Hash) && (k.include?('CodeableConcept') || v.key?('coding'))
+          v.delete('text')
+        elsif k == 'coding'
+          v.each do |coding|
+            coding.delete('display')
+          end
+        elsif k == 'reference' && v.is_a?(String)
+          hash[k] = @url_map[v] if @url_map.key?(v)
+        end
+
+        case v
+        when Hash
+          update_nested_elements(v)
+        when Array
+          v.flatten.each { |x| update_nested_elements(x) if x.is_a?(Hash) }
+        end
+      end
+      hash
     end
   end
 end

@@ -2,6 +2,7 @@
 
 require 'simplecov'
 require 'webmock/minitest'
+require 'json'
 
 SimpleCov.start do
   enable_coverage :branch
@@ -52,13 +53,13 @@ module ActiveSupport
       end
     end
 
+    def load_json_fixture(file_name)
+      JSON.decode(File.read("test/fixtures/files/#{file_name}.json"))
+    end
+
     ## Refactor test-helpers
     def private_key
       HealthCards::PrivateKey.generate_key
-    end
-
-    def vc
-      HealthCards::VerifiableCredential.new(ENV['HOST'], bundle_payload)
     end
 
     def bundle_payload

@@ -46,10 +46,6 @@ module HealthCards
       @public_key = public_key || key&.public_key
     end
 
-    def matches_key?(key)
-      key.kid == kid
-    end
-
     def kid
       header['kid']
     end

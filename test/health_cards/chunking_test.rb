@@ -7,11 +7,10 @@ JWS_SMALL = 's' * 1195
 JWS_LARGE = 'l' * 1196
 JWS_3 = "#{'t' * 1191 * 2}t"
 
-FILEPATH_NUMERIC_QR_CODE = 'test/fixtures/files/example-numeric-qr-code.json'
-FILEPATH_NUMERIC_QR_CODE_MULTIPLE = 'test/fixtures/files/example-numeric-qr-code-multiple.json'
-FILEPATH_JWS = 'test/fixtures/files/example-jws.json'
-FILEPATH_JWS_MULTIPLE = 'test/fixtures/files/example-jws-multiple.json'
-FILEPATH_PAYLOAD_MINIFIED = 'test/fixtures/files/example-jws-payload-minified.json'
+FILEPATH_NUMERIC_QR_CODE = 'example-numeric-qr-code'
+FILEPATH_NUMERIC_QR_CODE_MULTIPLE = 'example-numeric-qr-code-multiple'
+FILEPATH_JWS = 'example-jws'
+FILEPATH_JWS_MULTIPLE = 'example-jws-multiple'
 
 class ChunkingTest < ActiveSupport::TestCase
   setup do
@@ -55,31 +54,24 @@ class ChunkingTest < ActiveSupport::TestCase
     assert_equal(expected_result, qr_chunks)
   end
 
-  test 'A single numeric QR code returns correctly assembled JWS' do
-    qr_file = File.read(FILEPATH_NUMERIC_QR_CODE)
-    qr_chunks = JSON.parse(qr_file)
-    jws_file = File.read(FILEPATH_JWS)
-    expected_jws = JSON.parse(jws_file)
-
+  test 'A single numeric QR coderake test returns correctly assembled JWS' do
+    qr_chunks = load_json_fixture(FILEPATH_NUMERIC_QR_CODE)
+    expected_jws = load_json_fixture(FILEPATH_JWS)
     assembled_jws = @dummy_class.assemble_jws qr_chunks
     assert_equal expected_jws, assembled_jws
   end
 
   test 'Multiple QR codes return correctly assembled JWS' do
-    qr_file = File.read(FILEPATH_NUMERIC_QR_CODE_MULTIPLE)
-    qr_chunks = JSON.parse(qr_file)
-    jws_file = File.read(FILEPATH_JWS_MULTIPLE)
-    expected_jws = JSON.parse(jws_file)
+    qr_chunks = load_json_fixture(FILEPATH_NUMERIC_QR_CODE_MULTIPLE)
+    expected_jws = load_json_fixture(FILEPATH_JWS_MULTIPLE)
 
     assembled_jws = @dummy_class.assemble_jws qr_chunks
     assert_equal expected_jws, assembled_jws
   end
 
   test 'VC should get returned from QR code' do
-    qr_file = File.read(FILEPATH_NUMERIC_QR_CODE)
-    qr_chunks = JSON.parse(qr_file)
-    jws_payload = File.read(FILEPATH_PAYLOAD_MINIFIED)
-    payload = JSON.parse(jws_payload)
+    qr_chunks = load_json_fixture(FILEPATH_NUMERIC_QR_CODE)
+    payload = load_json_fixture(FILEPATH_PAYLOAD_MINIFIED)
     decoded_payload = @dummy_class.get_payload_from_qr qr_chunks
 
     assert_equal payload['vc'], decoded_payload['vc']

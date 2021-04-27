@@ -17,21 +17,21 @@ module HealthCards
     # Create a HealthCard from the supplied FHIR bundle
     #
     # @param bundle [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
-    def create_health_card(bundle, credential_type: VerifiableCredential)
-      raise HealthCards::MissingPrivateKey if key.nil?
-
-      vc = credential_type.new(url, bundle)
-
-      jws = issue_jws(vc.compress_credential)
-      HealthCards::HealthCard.new(verifiable_credential: vc, jws: jws)
+    def create_health_card(bundle, type: HealthCard)
+      type.new(issuer: url, bundle: bundle)
     end
 
     # Create a JWS for a given payload
     #
     # @param payload [Object] any object that supports to_s
-    def issue_jws(payload)
-      JWS.new(header: jws_header, payload: payload.to_s, key: key)
+    def issue_jws(bundle, type: HealthCard)
+      raise HealthCards::MissingPrivateKey if key.nil?
+
+      card = create_health_card(bundle, type: type)
+      JWS.new(header: jws_header, payload: card.to_s, key: key)
     end
+
+    def issue(bundle, for: nil, credential_type: VerifiableCredential); end
 
     # Set the private key used for signing issued health cards
     #

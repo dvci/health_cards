@@ -7,7 +7,7 @@ class HealthCardsController < ApplicationController
 
   def show
     respond_to do |format|
-      format.healthcard { render json: health_card.to_json }
+      format.healthcard { render json: { verifiableCredential: [jws.to_s] } }
     end
   end
 
@@ -25,18 +25,30 @@ class HealthCardsController < ApplicationController
 
   private
 
+  def jws
+    issuer.issue_jws(bundle)
+  end
+
   def health_card
-    @health_card ||= CovidHealthCard.new(@patient) do |record|
-      case record
-      when Patient
-        fhir_patient_url(record)
-      when Immunization
-        fhir_immunization_url(record)
-      end
+    issuer.create_health_card(bundle)
+  end
+
+  def bundle
+    bundle = FHIR::Bundle.new
+    bundle.entry << FHIR::Bundle::Entry.new(fullUrl: fhir_patient_url(@patient), resource: @patient.json)
+    @patient.immunizations.each_with_object(bundle) do |imm, bun|
+      json = imm.json
+      json.patient.reference = fhir_immunization_url(imm)
+      entry = FHIR::Bundle::Entry.new(fullUrl: fhir_immunization_url(imm), resource: json)
+      bun.entry << entry
     end
   end
 
   def find_patient
     @patient = Patient.find(params[:patient_id])
+  end
+
+  def issuer
+    Rails.application.config.issuer
   end
 end

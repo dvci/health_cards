@@ -17,7 +17,7 @@ module HealthCards
 
   # Exception thrown when an invalid payload is provided
   class InvalidPayloadException < ArgumentError
-    def initialize(msg = 'Payload must be a HealthCards::VerifiableCredential')
+    def initialize(msg = 'Bundle must be a FHIR::Bundle')
       super(msg)
     end
   end

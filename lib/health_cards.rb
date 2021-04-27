@@ -12,6 +12,7 @@ require 'health_cards/health_card'
 require 'health_cards/chunking'
 require 'health_cards/exceptions'
 require 'health_cards/verifier'
+require 'health_cards/covid_health_card'
 
 module HealthCards
   class Error < StandardError; end

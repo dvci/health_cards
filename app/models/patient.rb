@@ -123,6 +123,13 @@ class Patient < FHIRRecord
     super(ema)
   end
 
+  # def to_bundle
+  #   bundle = FHIR::Bundle.new
+  #   bundle.entry[0] = FHIR::Bundle::Entry.new(fullUrl: , resource: self.json)
+  #   self.immunizations.each { |imm| bundle.entry << FHIR::Bundle::Entry.new(imm.json) }
+  #   bundle
+  # end
+
   private
 
   def phone_contact

@@ -55,14 +55,12 @@ module HealthCards
     def verify(verifiable)
       # TODO: This needs better logic to make sure the public key is correct and check for key resolution
       jws = case verifiable
-            when HealthCard
-              verifiable.jws
             when JWS
               verifiable
             when String
               JWS.from_jws(verifiable)
             else
-              raise ArgumentError, 'Expected either a HealthCards::HealthCard, HealthCards::JWS or String'
+              raise ArgumentError, 'Expected either a HealthCards::JWS or String'
             end
 
       key = keys.find_key(jws.kid)

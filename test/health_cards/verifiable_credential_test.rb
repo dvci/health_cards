@@ -16,7 +16,7 @@ class VerifiableCredentialTest < ActiveSupport::TestCase
   BUNDLE_SKELETON = FHIR::Bundle.new.freeze
 
   setup do
-    file = File.read(FILEPATH_JWS_PAYLOAD)
+    file = File.read('test/fixtures/files/example-verbose-jws-payload.json')
     @verbose_bundle = JSON.parse(file)
     @verbose_vc = HealthCards::VerifiableCredential.new('http://example.com', @verbose_bundle)
   end
