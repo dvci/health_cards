@@ -21,6 +21,13 @@ class HealthCardTest < ActiveSupport::TestCase
     assert @health_card.bundle.is_a?(FHIR::Bundle)
   end
 
+  test 'HealthCard handles empty payloads' do
+    assert_raises HealthCards::InvalidCredentialException do
+      jws = HealthCards::JWS.new(header: {}, payload: HealthCards::HealthCard.compress_payload(FHIR::Bundle.new.to_json), key: rails_private_key)
+      HealthCards::HealthCard.from_jws(jws.to_s)
+    end
+  end
+
   ## Creating a HealthCard from a JWS
 
   test 'HealthCard can be created from a JWS' do
@@ -41,6 +48,23 @@ class HealthCardTest < ActiveSupport::TestCase
 
     assert_raises HealthCards::InvalidPayloadException do
       HealthCards::HealthCard.new(issuer: @issuer, bundle: 'foo')
+    end
+  end
+
+  test 'includes required credential attributes in json' do
+    hash = JSON.parse(@health_card.to_json)
+
+    assert_equal @issuer, hash['iss']
+    assert hash['nbf'] >= Time.now.to_i
+
+    type = hash.dig('vc', 'type')
+    assert_not_nil type
+    assert_includes type, HealthCards::HealthCard::VC_TYPE[0]
+    bundle = hash.dig('vc', 'credentialSubject', 'fhirBundle')
+
+    assert_not_nil bundle
+    assert_nothing_raised do
+      FHIR::Bundle.new(bundle)
     end
   end
 

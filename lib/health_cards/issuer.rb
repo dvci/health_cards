@@ -25,8 +25,6 @@ module HealthCards
     #
     # @param payload [Object] any object that supports to_s
     def issue_jws(bundle, type: HealthCard)
-      raise HealthCards::MissingPrivateKey if key.nil?
-
       card = create_health_card(bundle, type: type)
       JWS.new(header: jws_header, payload: card.to_s, key: key)
     end

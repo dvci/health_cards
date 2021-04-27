@@ -20,6 +20,11 @@ class VerifierTest < ActiveSupport::TestCase
     HealthCards::Verifier.new(keys: @private_key)
   end
 
+  test 'Create a new Verifier with a KeySet' do
+    key_set = HealthCards::KeySet.new(@public_key)
+    HealthCards::Verifier.new(keys: key_set)
+  end
+
   ## Key Export
 
   test 'Verifier exports public keys as JWK' do
@@ -70,6 +75,12 @@ class VerifierTest < ActiveSupport::TestCase
 
   test 'Verifier can verify JWS String' do
     assert @verifier.verify(@jws.to_s)
+  end
+
+  test 'Verifier doesn\'t verify none JWS-able object' do
+    assert_raises ArgumentError do
+      @verifier.verify(OpenStruct.new(foo: 'bar'))
+    end
   end
 
   test 'Verifier throws exception when attempting to verify health card without an accessible public key' do

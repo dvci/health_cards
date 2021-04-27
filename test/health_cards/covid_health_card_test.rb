@@ -12,6 +12,23 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert @card.is_a?(HealthCards::COVIDHealthCard)
   end
 
+  test 'includes correct types' do
+    HealthCards::COVIDHealthCard.types.include?(HealthCards::HealthCard::VC_TYPE[0])
+    HealthCards::COVIDHealthCard.types.include?('https://healthwallet.cards#covid19')
+  end
+
+  test 'includes required credential attributes in hash' do
+    hash = @card.to_hash
+    type = hash.dig(:vc, :type)
+    assert_not_nil type
+    assert_includes type, HealthCards::HealthCard::VC_TYPE[0]
+    assert_includes type, 'https://healthwallet.cards#covid19'
+
+    fhir_version = hash.dig(:vc, :credentialSubject, :fhirVersion)
+    assert_not_nil fhir_version
+    assert_equal HealthCards::COVIDHealthCard.fhir_version, fhir_version
+  end
+
   test 'bundle creation' do
     @card = rails_issuer.create_health_card(@bundle, type: HealthCards::COVIDHealthCard)
     bundle = @card.bundle
@@ -27,6 +44,12 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
       # FHIR Validator thinks references are invalid so can't validate Immunization
     end
   end
+
+  # test 'bundle json' do
+  #   assert_nothing_raised do
+  #     FHIR.from_contents(@card.to_json)
+  #   end
+  # end
 
   test 'minified entries' do
     bundle = @card.strip_fhir_bundle

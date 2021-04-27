@@ -22,6 +22,13 @@ module HealthCards
     end
   end
 
+  # Exception thrown when verifiable credential JSON does not include a locatable FHIR Bundle
+  class InvalidCredentialException < ArgumentError
+    def initialize(msg = 'Unable to locate FHIR Bundle in credential')
+      super(msg)
+    end
+  end
+
   # Exception thrown when an invalid key (public or private) is provided
   class InvalidKeyException < ArgumentError
     def initialize(expected_class, actual_obj)

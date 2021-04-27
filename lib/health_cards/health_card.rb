@@ -26,10 +26,14 @@ module HealthCards
 
         bundle_hash = json.dig('vc', 'credentialSubject', 'fhirBundle')
 
-        raise InvalidCredentialError unless bundle_hash
+        raise HealthCards::InvalidCredentialException unless bundle_hash
 
         bundle = FHIR::Bundle.new(bundle_hash)
         new(issuer: json['iss'], bundle: bundle)
+      end
+
+      def compress_payload(payload)
+        Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(payload.to_s, Zlib::FINISH)
       end
 
       def allow(klass, attributes)
@@ -84,20 +88,11 @@ module HealthCards
     end
 
     def to_s
-      Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(minify_payload, Zlib::FINISH)
+      HealthCard.compress_payload(minify_payload)
     end
 
-    # # Save the HealthCard as a file
-    # #
-    # # @param file_name [String] the name of the file
-    # def save_to_file(file_name)
-    #   File.open(file_name, 'w') do |file|
-    #     file.write(to_json)
-    #   end
-    # end
-
     def to_json(*args)
-      bundle.to_json(*args)
+      to_hash.to_json(*args)
     end
 
     # Whether the instance is configured to resolve public keys
