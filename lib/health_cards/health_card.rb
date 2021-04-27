@@ -47,7 +47,7 @@ module HealthCards
       # @param attributes [Array] An array of string with the attribute names that will be passed through
       #  when data is minimized
       def allow(klass, attributes)
-        @allowable ||= {}
+        allowable
         resource_type = klass.name.split('::').last
         @allowable[resource_type] = attributes
       end
@@ -71,9 +71,9 @@ module HealthCards
 
       # Additional type claims this HealthCard class supports
       # @param types [String, Array] A string or array of string representing the additional type claims
-      def additional_types(*types)
-        @types ||= VC_TYPE
-        @types += types
+      def additional_types(*add_types)
+        types
+        @types += add_types
       end
 
       # Type claims supported by this HealthCard subclass
