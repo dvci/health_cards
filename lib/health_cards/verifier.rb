@@ -3,7 +3,6 @@
 module HealthCards
   # Verifiers can validate HealthCards using public keys
   class Verifier
-
     attr_reader :keys
 
     # Create a new Verifier

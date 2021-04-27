@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module HealthCards
-  # A HealthCard which can be encoded as a JWS
+  # A HealthCard which implements the credential claims specified by https://smarthealth.cards/
   class HealthCard
     VC_TYPE = [
       'https://healthwallet.cards#health-card'
@@ -10,7 +10,7 @@ module HealthCards
     attr_reader :issuer, :nbf, :bundle
 
     class << self
-      # Creates a Card from a JWS
+      # Creates a HealthCard from a JWS
       # @param jws [String] the JWS string
       # @param public_key [HealthCards::PublicKey] the public key associated with the JWS
       # @param key [HealthCards::PrivateKey] the private key associated with the JWS
@@ -20,6 +20,9 @@ module HealthCards
         from_payload(jws.payload)
       end
 
+      # Create a HealthCard from a compressed payload
+      # @param payload [String]
+      # @return [HealthCards::HealthCard]
       def from_payload(payload)
         inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(payload)
         json = JSON.parse(inf)
@@ -32,30 +35,49 @@ module HealthCards
         new(issuer: json['iss'], bundle: bundle)
       end
 
+      # Compress an arbitrary payload, useful for debugging
+      # @param payload [Object] Any object that responds to to_s
+      # @return A compressed version of that payload parameter
       def compress_payload(payload)
         Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(payload.to_s, Zlib::FINISH)
       end
 
+      # Define allowed attributes for this HealthCard class
+      # @param klass [Class] Scopes the attributes to a spefic class. Must be a subclass of FHIR::Model
+      # @param attributes [Array] An array of string with the attribute names that will be passed through
+      #  when data is minimized
       def allow(klass, attributes)
         @allowable ||= {}
         resource_type = klass.name.split('::').last
         @allowable[resource_type] = attributes
       end
 
+      # Define allowed attributes for this HealthCard class
+      # @return [Hash] A hash of FHIR::Model subclasses adn attributes that will pass through minimization
       def allowable
         @allowable ||= {}
       end
 
+      # Sets/Gets the fhir version that will be passed through to the credential created by an instnace of
+      # this HealthCard (sub)class
+      # @param ver [String] FHIR Version supported by this HealthCard (sub)class. Leaving this param out
+      # will only return the current value
+      # value (used as a getter)
+      # @return [String] Current FHIR version supported
       def fhir_version(ver = nil)
         @fhir_version ||= ver unless ver.nil?
         @fhir_version
       end
 
+      # Additional type claims this HealthCard class supports
+      # @param types [String, Array] A string or array of string representing the additional type claims
       def additional_types(*types)
         @types ||= VC_TYPE
         @types += types
       end
 
+      # Type claims supported by this HealthCard subclass
+      # @return [Array] an array of Strings with all the supported type claims
       def types
         @types ||= VC_TYPE
       end
@@ -72,6 +94,8 @@ module HealthCards
       @bundle = bundle
     end
 
+    # A Hash matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
+    # @return [Hash]
     def to_hash
       {
         iss: issuer,
@@ -87,29 +111,29 @@ module HealthCards
       }
     end
 
+    # A compressed version of the FHIR::Bundle based on the SMART Health Cards frame work and any other constraints
+    # defined by a subclass
+    # @return String compressed payload
     def to_s
-      HealthCard.compress_payload(minify_payload)
+      HealthCard.compress_payload(to_json)
     end
 
-    def to_json(*args)
-      to_hash.to_json(*args)
-    end
-
-    # Whether the instance is configured to resolve public keys
-    #
-    # @return [Boolean]
-    def resolves_keys?
-      resolve_keys
-    end
-
+    # Chunks the compress payload for us in generating QR codes
+    # @return [Array] An array of strings used to create QR codes
     def chunks
       HealthCards::Chunking.generate_qr_chunks to_s
     end
 
-    def minify_payload
+    # A minified JSON string matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
+    # @return [String] JSON string
+    def to_json(*_args)
       JSON.minify(to_hash.to_json)
     end
 
+    # Processes the bundle according to https://smarthealth.cards/#health-cards-are-small and returns
+    # a Hash with equivalent values
+    # @return [Hash] A hash with the same content as the FHIR::Bundle, processed accoding
+    # to SMART Health Cards framework and any constraints created by subclasses
     def strip_fhir_bundle
       stripped_bundle = @bundle.to_hash
       if stripped_bundle.key?('entry') && !stripped_bundle['entry'].empty?
@@ -167,8 +191,8 @@ module HealthCards
           v.each do |coding|
             coding.delete('display')
           end
-        elsif k == 'reference' && v.is_a?(String)
-          hash[k] = @url_map[v] if @url_map.key?(v)
+        elsif k == 'reference' && v.is_a?(String) && @url_map.key?(v)
+          hash[k] = @url_map[v]
         end
 
         case v

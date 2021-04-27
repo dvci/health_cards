@@ -11,14 +11,13 @@ issuer = HealthCards::Issuer.new(key: key)
 
 # Create Health Cards with the Issuer
 
-health_card = issuer.create_health_card(FHIR::Patient.new)
-health_card_2 = issuer.create_health_card('{"resourceType": "Patient"}')
+health_card = issuer.create_health_card(FHIR::Bundle.new)
+covid_health_card = issuer.create_health_card(FHIR::Bundle.new, type: COVIDHealthCard)
 
-# These health cards can be converted to a JWS or downloaded as a file
+# Create JWS with the Issuer. The Bundle will be converted into a HealthCad and used as 
+# a payload for the JWS
 
-health_card.to_jws
-health_card.save_to_file('./example.smart-health-card')
-```
+jws = issuer.issue_jws(FHIR::Bundle.new)
 
 ## Verifying SMART Health Cards
 
@@ -47,27 +46,24 @@ Health Cards can also be manually created and verified if more control is needed
 key = HealthCards::Key.generate_key # or `key = HealthCards::Key.from_file`
 
 # Create the Health Card
-health_card = HealthCards::HealthCard.new(payload: FHIR::Patient.new, key: key)
-health_card.to_jws
+health_card = HealthCards::HealthCard.new(issuer: "http://example-issuer.com", bundle: FHIR::Bundle.new)
 
-# By default a HealthCard will attempt to resolve keys to verify the payload
-health_card.verify
 ```
 
-### Manually Verifying a HealthCard
+### Manually Verifying a JWS
 JWS representing a Health Card can also be manually verified
 
 ```ruby
 jws = 'foofoofoo.barbarbar.bazbazbaz'
 
-# Create Health Card from JWS
-health_card = HealthCards::HealthCard.from_jws(jws)
+# Create JWS from JWS string
+JWS = HealthCards::JWS.from_jws(jws)
 
 # A key can be manually added to verify if needed
-health_card.public_key = public_key
+jws.public_key = public_key
 
-# By default a HealthCard will attempt to resolve keys to verify the payload
-health_card.verify
+# JWS will verify using the included public_key
+jws.verify
 ```
 
 ## Configuration
@@ -80,20 +76,12 @@ Custom `HealthCard` or `Issuer` class can be created to customize their behavior
 
 ```ruby
 
-# Subclass the base `HealthCard` class to add specific behavior
+# Subclass the base `HealthCard` class to add specific behavior and/or set IG specific requirements
 class CustomHealthCard < HealthCards::HealthCard
-  def preprocess_bundle(bundle)
-    bundle.id = "customprefix-#{bundle.id}"
-  end
+  fhir_version '4.0.1' # Sets FHIR version
+  additional_types 'https://my.custom.cards#type' #Adds additional claim types to those required by SMART Health Cards
+  allow FHIR::Patient, %w[name] #Specify allowed attributes for FHIR resources
 end
-
-# Create an Issuer that creates `CustomHealthCard` instances
-custom_issuer = HealthCards::Issuer.new(key: private_key, health_card_type: CustomHealthCard)
-```
-
-Currently, only one hook exists:
-
-- `#preprocess_bundle_hook`
 
 ### Disable Public Key Resolution
 

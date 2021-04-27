@@ -22,8 +22,9 @@ class HealthCardTest < ActiveSupport::TestCase
   end
 
   test 'HealthCard handles empty payloads' do
+    compressed_payload = HealthCards::HealthCard.compress_payload(FHIR::Bundle.new.to_json)
+    jws = HealthCards::JWS.new(header: {}, payload: compressed_payload, key: rails_private_key)
     assert_raises HealthCards::InvalidCredentialException do
-      jws = HealthCards::JWS.new(header: {}, payload: HealthCards::HealthCard.compress_payload(FHIR::Bundle.new.to_json), key: rails_private_key)
       HealthCards::HealthCard.from_jws(jws.to_s)
     end
   end
