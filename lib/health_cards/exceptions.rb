@@ -17,7 +17,14 @@ module HealthCards
 
   # Exception thrown when an invalid payload is provided
   class InvalidPayloadException < ArgumentError
-    def initialize(msg = 'Payload must be a HealthCards::VerifiableCredential')
+    def initialize(msg = 'Bundle must be a FHIR::Bundle')
+      super(msg)
+    end
+  end
+
+  # Exception thrown when verifiable credential JSON does not include a locatable FHIR Bundle
+  class InvalidCredentialException < ArgumentError
+    def initialize(msg = 'Unable to locate FHIR Bundle in credential')
       super(msg)
     end
   end

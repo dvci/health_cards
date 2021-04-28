@@ -123,6 +123,17 @@ class Patient < FHIRRecord
     super(ema)
   end
 
+  def to_bundle(base_url)
+    bundle = FHIR::Bundle.new
+    patient_url = "#{base_url}/Patient/#{id}"
+    bundle.entry[0] = FHIR::Bundle::Entry.new(fullUrl: patient_url, resource: json)
+    immunizations.each do |imm|
+      imm.json.patient.reference = patient_url
+      bundle.entry << FHIR::Bundle::Entry.new(fullUrl: "#{base_url}/Immunization/#{imm.id}", resource: imm.json)
+    end
+    bundle
+  end
+
   private
 
   def phone_contact

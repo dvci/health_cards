@@ -46,10 +46,8 @@ module HealthCards
       @public_key = public_key || key&.public_key
     end
 
-    def matches_key?(key)
-      key.kid == kid
-    end
-
+    # The kid value from the JWS header, used to identify the key to use to verify
+    # @return [String]
     def kid
       header['kid']
     end
@@ -78,6 +76,8 @@ module HealthCards
       @public_key = public_key
     end
 
+    # Set the JWS payload. Setting a new payload will result in the a new signature
+    # @param new_payload [Object]
     def payload=(new_payload)
       @payload = new_payload
       reset_signature

@@ -7,18 +7,23 @@
 **API**
 - `::new`
 - `::from_jws`
-- `::globally_resolve_keys=`
-- `::globally_resolves_keys?`
-- `#to_jws`
-- `#save_to_file`
-- `#save_as_qr_code`
+- `::from_payload`
+- `::compress_payload`
+- `#to_hash`
+- `#to_json`
+- `#to_s`
+
+## HealthCards::JWS
+> Takes a payload and signs it as a JWS
+
+**API**
+- `::new`
+- `::from_jws`
 - `#verify`
-- `#resolve_keys=`
-- `#resolves_keys?`
-- `#key=`
-- `#key`
-- `#public_key=`
-- `#public_key`
+- `#kid`
+- `#header`
+- `#signature`
+- `#payload`
 
 ## HealthCards::Issuer
 > Issues health cards based on a stored private key
@@ -27,8 +32,10 @@
 **API**
 - `::new`
 - `#create_health_card`
+- `#issue_jws`
 - `#key` // Returns HealthCards::PrivateKey
 - `#key=`
+- `#to_jwk` // Returns HealthCard::KeySet as JWK
 
 ## HealthCards::Verifier
 > Verify health cards based on a stored public key
@@ -37,44 +44,21 @@
 **API**
 - `::new`
 - `#keys_as_jwk`
-- `#add_key`
-- `#remove_key`
+- `#add_keys`
+- `#remove_keys`
 - `#verify`
 - `#resolve_keys=`
 - `#resolves_keys?`
-- `::verify`
-
 
 # Other Classes/ Helper classes
-
-## HealthCards::VerifiableCredential
-> Represents the FHIR Payload as a Verifiable Credential Object responsible
-> for minifying & compressing bundle
-
-**API**
-- `::new`
-- `#credential`
-
-
-## HealthCards::JWS
-> Takes a payload and signs it as a JWS provides JWS functionality to HealthCard
-
-**API**
-- `::new`
-- `::from_jws`
-- `#to_jws`
-- `#verify`
-- `#header`
-- `#signature`
-- `#payload`
 
 ## HealthCards::KeySet
 > Represents a set of keys
 
 **API**
 - `::new`
-- `#add_key`
-- `#remove_key`
+- `#add_keys`
+- `#remove_keys`
 - `#keys`
 - `#to_jwk` // Option `include_private_keys` off by default
 - `#include?`

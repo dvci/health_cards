@@ -4,61 +4,69 @@ require 'test_helper'
 
 class HealthCardTest < ActiveSupport::TestCase
   setup do
-    @vc = vc
-    @private_key = private_key
-    @wrong_key = private_key
     # from https://smarthealth.cards/examples/example-00-d-jws.txt
 
-    @jws_string = 'eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiIsImtpZCI6IjNLZmRnLVh3UC03Z1h5eXd0VWZVQUR3QnVtRE9QS01ReC1pRUxMMT'\
-    'FXOXMifQ.3VJNj9owEP0raPYKSRy2BXJqoVI_VFWVuu2l4mCcgbjyR2Q7AbrKf-_YwLaVFi69FXFx5s2b997MI0jvoYImhNZXee41d6FBrkKTCe5'\
-    'qn-OB61ahzwnYoYMxmM0WKvaSzeZsxu4X2Xw6HUMvoHqEV8KagIcA1fcnyv1-n-2nmXW7vCzYPBcOazRBcuXznsF6DOHYYuz4hk5uJd8oXD1haN5'\
-    'VbXenxyQ-buKk1p2RP3mQ1twECtvLmi2iqN8yv3SbHyhC9LdtpCOVPvJUcJ8VGSO--HXZmVphxDj0tnMCH5IrOBcuLkFYpYjtpIQGuCNZJ-ZOqa9'\
-    'OEeDSXxUEuDyeIf5Mdqg_LoRrPJFwLRXxwWtDGOfTjJ3s0cR4P9gmvpcZrAcyuENT0z4r0Dzp20gK4w0PkZstXrBJwSZlAcMwflYdu63u_d-R-8B'\
-    'D55P9eE0B48J6LoQ0uLJ1YhC2lmaXjPijD6jPd0mbatQsHVBMOveyzkV_IAKROqEsZjCshzG050iSnC06NFHbn4kSyArRuVSKZh-kPlGUyXARbSk'\
-    'bPnV6k8L5aMPorki_WKJUt9bpWCKZXATr4rRa-lbxlPxyNXqLBh1Xo3fWtzLQDQ-k7kqM5X8ZY7m4HuPs32Kk_zD8Ag.8GFVc4UsQoKJ1cqjUzT2'\
-    'ZS5vLpAiOx3-BZD6EgVkh1Cw8zoa1rhxYTm-swwqmeRYTjrnFgR_aG0z8CmJrk37_g'
+    @issuer = 'https://smarthealth.cards/examples/issuer'
+    @bundle = bundle_payload
 
-    @jws = HealthCards::JWS.from_jws(@jws_string)
+    file = File.read('test/fixtures/files/example-verbose-jws-payload.json')
+    @bundle = FHIR.from_contents(file)
+    @health_card = HealthCards::HealthCard.new(issuer: @issuer, bundle: @bundle)
   end
 
   ## Constructor
 
-  test 'HealthCard can be created from a VerifiableCredential' do
-    card = HealthCards::HealthCard.new(verifiable_credential: @vc)
-
-    assert_not_nil card.verifiable_credential
-    assert_not_nil card.verifiable_credential.fhir_bundle
-    assert card.verifiable_credential.fhir_bundle.is_a?(FHIR::Bundle)
+  test 'HealthCard can be created from a Bundle' do
+    assert_not_nil @health_card.bundle
+    assert @health_card.bundle.is_a?(FHIR::Bundle)
   end
 
-  test 'HealthCard can be created from a VerifiableCredential and JWS' do
-    card = HealthCards::HealthCard.new(verifiable_credential: @vc, jws: @jws)
-    assert_not_nil card.jws
-    assert card.jws.is_a?(HealthCards::JWS)
-  end
-
-  test 'HealthCard throws an exception when the payload is not a VerifiableCredential' do
-    assert_raises HealthCards::InvalidPayloadException do
-      HealthCards::HealthCard.new(verifiable_credential: FHIR::Patient.new)
-    end
-
-    assert_raises HealthCards::InvalidPayloadException do
-      HealthCards::HealthCard.new(verifiable_credential: '{"foo": "bar"}')
-    end
-
-    assert_raises HealthCards::InvalidPayloadException do
-      HealthCards::HealthCard.new(verifiable_credential: 'foo')
+  test 'HealthCard handles empty payloads' do
+    compressed_payload = HealthCards::HealthCard.compress_payload(FHIR::Bundle.new.to_json)
+    jws = HealthCards::JWS.new(header: {}, payload: compressed_payload, key: rails_private_key)
+    assert_raises HealthCards::InvalidCredentialException do
+      HealthCards::HealthCard.from_jws(jws.to_s)
     end
   end
 
-  ## Saving as a file
+  ## Creating a HealthCard from a JWS
 
-  test 'Health Card can be saved to a file' do
-    file_name = './example.smart-health-card'
-    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, jws: @jws)
-    health_card.save_to_file(file_name)
-    assert File.file?(file_name)
-    File.delete(file_name)
+  test 'HealthCard can be created from a JWS' do
+    jws_string = load_json_fixture('example-jws')
+    card = HealthCards::HealthCard.from_jws(jws_string)
+    assert_not_nil card.bundle
+    assert card.bundle.is_a?(FHIR::Bundle)
+  end
+
+  test 'HealthCard throws an exception when the payload is not a FHIR Bundle' do
+    assert_raises HealthCards::InvalidPayloadException do
+      HealthCards::HealthCard.new(issuer: @issuer, bundle: FHIR::Patient.new)
+    end
+
+    assert_raises HealthCards::InvalidPayloadException do
+      HealthCards::HealthCard.new(issuer: @issuer, bundle: '{"foo": "bar"}')
+    end
+
+    assert_raises HealthCards::InvalidPayloadException do
+      HealthCards::HealthCard.new(issuer: @issuer, bundle: 'foo')
+    end
+  end
+
+  test 'includes required credential attributes in json' do
+    hash = JSON.parse(@health_card.to_json)
+
+    assert_equal @issuer, hash['iss']
+    assert hash['nbf'] >= Time.now.to_i
+
+    type = hash.dig('vc', 'type')
+    assert_not_nil type
+    assert_includes type, HealthCards::HealthCard::VC_TYPE[0]
+    bundle = hash.dig('vc', 'credentialSubject', 'fhirBundle')
+
+    assert_not_nil bundle
+    assert_nothing_raised do
+      FHIR::Bundle.new(bundle)
+    end
   end
 
   ## Save as a QR Code
@@ -66,28 +74,63 @@ class HealthCardTest < ActiveSupport::TestCase
   test 'Health Card can be saved as a QR Code' do
     skip('Save as QR Code not implemented')
     file_name = './example-qr.svg'
-    health_card = HealthCards::HealthCard.new(verifiable_credential: @vc, key: @private_key)
-    health_card.save_as_qr_code('./example-qr.svg')
+    @health_card.save_as_qr_code('./example-qr.svg')
     assert File.file?(file_name)
     File.delete(file_name)
   end
 
-  ## Creating a HealthCard from a JWS
+  test 'redefine_uris populates Bundle.entry.fullUrl elements with short resource-scheme URIs' do
+    stripped_bundle = @health_card.strip_fhir_bundle
 
-  test 'Health Cards can be created from a JWS' do
-    card = HealthCards::HealthCard.from_jws(@jws_string)
-    assert_not_nil card.verifiable_credential
-    assert_not_nil card.verifiable_credential.fhir_bundle
-    assert card.verifiable_credential.fhir_bundle.is_a?(FHIR::Bundle)
+    resource_nums = []
+    new_entries = stripped_bundle['entry']
+    new_entries.each do |resource|
+      url = resource['fullUrl']
+      resource, num = url.split(':')
+      assert_equal('resource', resource)
+      resource_nums.push(num)
+    end
+
+    inc_array = Array.new(new_entries.length, &:to_s)
+    assert_equal(resource_nums, inc_array)
   end
 
-  test 'Health Card can be round tripped from Health Card to JWS and then back' do
-    health_card = rails_issuer.create_health_card(@vc.fhir_bundle)
-    new_health_card = HealthCards::HealthCard.from_jws(health_card.jws.to_s)
+  test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
+    stripped_bundle = @health_card.strip_fhir_bundle
+    stripped_entries = stripped_bundle['entry']
 
-    new_vc = new_health_card.verifiable_credential
+    stripped_entries.each do |entry|
+      resource = entry['resource']
+      assert_not(resource.key?('id'))
+      assert_not(resource.key?('text'))
+      assert(!resource.key?('meta') || (resource.key?('meta') && (resource['meta'].keys == ['security'])))
+    end
+  end
 
-    assert_equal @vc.issuer, new_health_card.verifiable_credential.issuer
-    assert_equal @vc.fhir_bundle.entry.length, new_vc.fhir_bundle.entry.length
+  test 'update_nested_elements strips any "CodeableConcept.text" and "Coding.display" elements from the FHIR Bundle' do
+    stripped_bundle = @health_card.strip_fhir_bundle
+    stripped_resources = stripped_bundle['entry']
+
+    resource_with_codeable_concept = stripped_resources[2]
+    codeable_concept = resource_with_codeable_concept['resource']['valueCodeableConcept']
+    coding = codeable_concept['coding'][0]
+
+    assert_not(codeable_concept.key?('text'))
+    assert_not(coding.key?('display'))
+  end
+
+  test 'update_nested_elements populates Reference.reference elements with short resource-scheme URIs' do
+    stripped_bundle = @health_card.strip_fhir_bundle
+    stripped_resources = stripped_bundle['entry']
+    resource_with_reference = stripped_resources[2]
+
+    reference = resource_with_reference['resource']['subject']['reference']
+    assert(reference.start_with?('resource:') && (reference.length <= 12))
+  end
+
+  test 'compress_payload applies a raw deflate compression and allows for the original payload to be restored' do
+    original_hc = HealthCards::HealthCard.new(issuer: @issuer, bundle: FHIR::Bundle.new)
+    new_hc = HealthCards::HealthCard.from_payload(original_hc.to_s)
+    assert_equal original_hc.to_hash, new_hc.to_hash
   end
 end

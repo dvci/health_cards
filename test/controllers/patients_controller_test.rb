@@ -19,6 +19,11 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'should get new with demo data' do
+    get new_patient_url, params: { patient: @attributes }
+    assert_response :success
+  end
+
   test 'should create patient' do
     assert_difference('Patient.count') do
       post patients_url, params: { patient: @attributes }

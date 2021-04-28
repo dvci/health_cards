@@ -1,64 +1,206 @@
 # frozen_string_literal: true
 
 module HealthCards
-  # A HealthCard which can be encoded as a JWS
+  # A HealthCard which implements the credential claims specified by https://smarthealth.cards/
   class HealthCard
+    VC_TYPE = [
+      'https://healthwallet.cards#health-card'
+    ].freeze
+
+    attr_reader :issuer, :nbf, :bundle
+
     class << self
-      # Creates a Card from a JWS
+      # Creates a HealthCard from a JWS
       # @param jws [String] the JWS string
       # @param public_key [HealthCards::PublicKey] the public key associated with the JWS
       # @param key [HealthCards::PrivateKey] the private key associated with the JWS
       # @return [HealthCards::HealthCard]
       def from_jws(jws, public_key: nil, key: nil)
         jws = JWS.from_jws(jws, public_key: public_key, key: key)
-        vc = VerifiableCredential.decompress_credential(jws.payload)
-        HealthCard.new(verifiable_credential: vc, jws: jws)
+        from_payload(jws.payload)
+      end
+
+      # Create a HealthCard from a compressed payload
+      # @param payload [String]
+      # @return [HealthCards::HealthCard]
+      def from_payload(payload)
+        inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(payload)
+        json = JSON.parse(inf)
+
+        bundle_hash = json.dig('vc', 'credentialSubject', 'fhirBundle')
+
+        raise HealthCards::InvalidCredentialException unless bundle_hash
+
+        bundle = FHIR::Bundle.new(bundle_hash)
+        new(issuer: json['iss'], bundle: bundle)
+      end
+
+      # Compress an arbitrary payload, useful for debugging
+      # @param payload [Object] Any object that responds to to_s
+      # @return A compressed version of that payload parameter
+      def compress_payload(payload)
+        Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(payload.to_s, Zlib::FINISH)
+      end
+
+      # Define allowed attributes for this HealthCard class
+      # @param klass [Class] Scopes the attributes to a spefic class. Must be a subclass of FHIR::Model
+      # @param attributes [Array] An array of string with the attribute names that will be passed through
+      #  when data is minimized
+      def allow(klass, attributes)
+        resource_type = klass.name.split('::').last
+        allowable[resource_type] = attributes
+      end
+
+      # Define allowed attributes for this HealthCard class
+      # @return [Hash] A hash of FHIR::Model subclasses adn attributes that will pass through minimization
+      def allowable
+        @allowable ||= {}
+      end
+
+      # Sets/Gets the fhir version that will be passed through to the credential created by an instnace of
+      # this HealthCard (sub)class
+      # @param ver [String] FHIR Version supported by this HealthCard (sub)class. Leaving this param out
+      # will only return the current value
+      # value (used as a getter)
+      # @return [String] Current FHIR version supported
+      def fhir_version(ver = nil)
+        @fhir_version ||= ver unless ver.nil?
+        @fhir_version
+      end
+
+      # Additional type claims this HealthCard class supports
+      # @param types [String, Array] A string or array of string representing the additional type claims
+      def additional_types(*add_types)
+        types.concat(add_types)
+      end
+
+      # Type claims supported by this HealthCard subclass
+      # @return [Array] an array of Strings with all the supported type claims
+      def types
+        @types ||= VC_TYPE.dup
       end
     end
-
-    attr_reader :verifiable_credential, :jws
 
     # Create a HealthCard
     #
     # @param verifiable_credential [HealthCards::VerifiableCredential] VerifiableCredential containing a fhir bundle
     # @param jws [HealthCards::JWS] JWS which should have a payload generated from the verifiable_credential
-    def initialize(verifiable_credential: nil, jws: nil)
-      self.verifiable_credential = verifiable_credential
-      @jws = jws
+    def initialize(bundle:, issuer: nil)
+      raise InvalidPayloadException unless bundle.is_a?(FHIR::Bundle)
+
+      @issuer = issuer
+      @bundle = bundle
     end
 
-    # Set the HealthCard payload
-    #
-    # @param new_payload [HealthCards::VerifiableCredential, String] the FHIR bundle used as the Health Card payload
-    def verifiable_credential=(new_payload)
-      raise InvalidPayloadException unless new_payload.nil? || new_payload.is_a?(HealthCards::VerifiableCredential)
+    # A Hash matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
+    # @return [Hash]
+    def to_hash
+      {
+        iss: issuer,
+        nbf: Time.now.to_i,
+        vc: {
+          type: self.class.types,
+          credentialSubject: {
+            fhirVersion: self.class.fhir_version,
+            fhirBundle: strip_fhir_bundle
+          }
+        }
 
-      @jws.payload = new_payload&.compress_credential if @jws
-      @verifiable_credential = new_payload
+      }
     end
 
-    # Save the HealthCard as a file
-    #
-    # @param file_name [String] the name of the file
-    def save_to_file(file_name)
-      File.open(file_name, 'w') do |file|
-        file.write(to_json)
+    # A compressed version of the FHIR::Bundle based on the SMART Health Cards frame work and any other constraints
+    # defined by a subclass
+    # @return String compressed payload
+    def to_s
+      HealthCard.compress_payload(to_json)
+    end
+
+    # Chunks the compress payload for us in generating QR codes
+    # @return [Array] An array of strings used to create QR codes
+    def chunks
+      HealthCards::Chunking.generate_qr_chunks to_s
+    end
+
+    # A minified JSON string matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
+    # @return [String] JSON string
+    def to_json(*_args)
+      JSON.minify(to_hash.to_json)
+    end
+
+    # Processes the bundle according to https://smarthealth.cards/#health-cards-are-small and returns
+    # a Hash with equivalent values
+    # @return [Hash] A hash with the same content as the FHIR::Bundle, processed accoding
+    # to SMART Health Cards framework and any constraints created by subclasses
+    def strip_fhir_bundle
+      stripped_bundle = @bundle.to_hash
+      if stripped_bundle.key?('entry') && !stripped_bundle['entry'].empty?
+        entries = stripped_bundle['entry']
+        entries, @url_map = redefine_uris(entries)
+        update_elements(entries)
+      end
+      stripped_bundle
+    end
+
+    private
+
+    def redefine_uris(entries)
+      url_map = {}
+      resource_count = 0
+      entries.each do |entry|
+        old_url = entry['fullUrl']
+        new_url = "resource:#{resource_count}"
+        url_map[old_url] = new_url
+        entry['fullUrl'] = new_url
+        resource_count += 1
+      end
+      [entries, url_map]
+    end
+
+    def update_elements(entries)
+      entries.each do |entry|
+        resource = entry['resource']
+
+        resource.delete('id')
+        resource.delete('text')
+        if resource.dig('meta', 'security')
+          resource['meta'] = resource['meta'].slice('security')
+        else
+          resource.delete('meta')
+        end
+        handle_allowable(resource)
+        update_nested_elements(resource)
       end
     end
 
-    def to_json(*_args)
-      { verifiableCredential: [jws.to_s] }.to_json
+    def handle_allowable(resource)
+      allowable = self.class.allowable[resource['resourceType']]
+      return resource unless allowable
+
+      allow = allowable + ['resourceType']
+      resource.select! { |att| allow.include?(att) }
     end
 
-    # Whether the instance is configured to resolve public keys
-    #
-    # @return [Boolean]
-    def resolves_keys?
-      resolve_keys
-    end
+    def update_nested_elements(hash) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      hash.each do |k, v|
+        if v.is_a?(Hash) && (k.include?('CodeableConcept') || v.key?('coding'))
+          v.delete('text')
+        elsif k == 'coding'
+          v.each do |coding|
+            coding.delete('display')
+          end
+        elsif k == 'reference' && v.is_a?(String) && @url_map.key?(v)
+          hash[k] = @url_map[v]
+        end
 
-    def chunks
-      HealthCards::Chunking.generate_qr_chunks verifiable_credential.compress_credential
+        case v
+        when Hash
+          update_nested_elements(v)
+        when Array
+          v.flatten.each { |x| update_nested_elements(x) if x.is_a?(Hash) }
+        end
+      end
+      hash
     end
   end
 end

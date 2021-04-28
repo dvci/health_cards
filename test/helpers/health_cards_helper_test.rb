@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-FILEPATH_PAYLOAD_MINIFIED = 'test/fixtures/files/example-jws-payload-minified.json'
+FILEPATH_PAYLOAD_MINIFIED = 'example-jws-payload-minified'
 
 class HealthCardsHelperTest < ActiveSupport::TestCase
   include HealthCardsHelper
 
   setup do
     Vaccine.create(code: '207')
-    @jws_payload = JSON.parse(File.read(FILEPATH_PAYLOAD_MINIFIED))
+    @jws_payload = load_json_fixture(FILEPATH_PAYLOAD_MINIFIED)
   end
 
   test 'Patient is not created when Patient resource is not in bundle' do
