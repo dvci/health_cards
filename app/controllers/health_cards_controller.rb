@@ -25,23 +25,16 @@ class HealthCardsController < ApplicationController
 
   private
 
-  def jws
-    issuer.issue_jws(bundle)
-  end
-
   def health_card
     issuer.create_health_card(bundle)
   end
 
+  def jws
+    issuer.issue_jws(bundle)
+  end
+
   def bundle
-    bundle = FHIR::Bundle.new
-    bundle.entry << FHIR::Bundle::Entry.new(fullUrl: fhir_patient_url(@patient), resource: @patient.json)
-    @patient.immunizations.each_with_object(bundle) do |imm, bun|
-      json = imm.json
-      json.patient.reference = fhir_immunization_url(imm)
-      entry = FHIR::Bundle::Entry.new(fullUrl: fhir_immunization_url(imm), resource: json)
-      bun.entry << entry
-    end
+    @patient.to_bundle(issuer.url)
   end
 
   def find_patient
