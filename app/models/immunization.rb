@@ -41,12 +41,13 @@ class Immunization < FHIRRecord
   end
 
   def patient_id=(pid)
-    update_patient_reference(pid)
+    pat = Patient.find(pid) if pid
+    update_patient_reference(pat)
     super(pid)
   end
 
   def patient=(pat)
-    update_patient_reference(pat.id)
+    update_patient_reference(pat)
     super(pat)
   end
 
@@ -68,8 +69,12 @@ class Immunization < FHIRRecord
     json.vaccineCode.coding[0] = FHIR::Coding.new(system: 'http://hl7.org/fhir/sid/cvx', code: code)
   end
 
-  def update_patient_reference(pid)
-    json.patient ||= FHIR::Reference.new
-    json.patient.reference = "Patient/#{pid}"
+  def update_patient_reference(pat)
+    if pat
+      json.patient ||= FHIR::Reference.new
+      json.patient.reference = "Patient/#{pat.json.id}"
+    else
+      json.patient = nil
+    end
   end
 end

@@ -67,5 +67,13 @@ module ActiveSupport
       bundle.entry << FHIR::Bundle::Entry.new(resource: FHIR::Patient.new)
       bundle
     end
+
+    def assert_entry_references_match(patient_entry, reference_element)
+      patient_url = patient_entry.fullUrl
+      ref_url = reference_element.reference
+
+      assert_not_nil patient_url
+      assert_equal patient_url, ref_url
+    end
   end
 end

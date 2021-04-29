@@ -128,6 +128,18 @@ class HealthCardTest < ActiveSupport::TestCase
     assert(reference.start_with?('resource:') && (reference.length <= 12))
   end
 
+  test 'all reference types are replaced with short resource-scheme URIs' do
+    bundle = FHIR::Bundle.new(load_json_fixture('example-logical-link-bundle'))
+    card = HealthCards::HealthCard.new(issuer: 'http://example.org/fhir', bundle: bundle)
+    assert_nothing_raised do
+      new_bundle = FHIR::Bundle.new(card.strip_fhir_bundle)
+
+      assert_entry_references_match(new_bundle.entry[0], new_bundle.entry[2].resource.subject) # logical ref
+      assert_entry_references_match(new_bundle.entry[0], new_bundle.entry[3].resource.subject) # full url ref
+      assert_entry_references_match(new_bundle.entry[1], new_bundle.entry[4].resource.subject) # uuid ref
+    end
+  end
+
   test 'compress_payload applies a raw deflate compression and allows for the original payload to be restored' do
     original_hc = HealthCards::HealthCard.new(issuer: @issuer, bundle: FHIR::Bundle.new)
     new_hc = HealthCards::HealthCard.from_payload(original_hc.to_s)
