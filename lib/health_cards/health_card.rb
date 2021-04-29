@@ -183,32 +183,28 @@ module HealthCards
 
     def process_url(url)
       new_url = @url_map.key?(url) ? @url_map[url] : @url_map["#{issuer}/#{url}"]
-      raise InvalidBundleReferenceException, url unless new_url
+      raise InvalidBundleReferenceException(url) unless new_url
 
       new_url
     end
 
-    def update_nested_elements(hash) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      hash.each do |k, v|
-        if v.is_a?(Hash) && (k.include?('CodeableConcept') || v.key?('coding'))
-          v.delete('text')
-        elsif k == 'coding'
-          # byebug
-          v.each do |coding|
-            coding.delete('display')
-          end
-        elsif k == 'reference'
-          hash[k] = process_url(v)
-        end
+    def update_nested_elements(hash)
+      hash.map { |k, v| update_nested_element(hash, k, v) }
+    end
 
-        case v
-        when Hash
-          update_nested_elements(v)
-        when Array
-          v.each { |x| update_nested_elements(x) if x.is_a?(Hash) }
+    def update_nested_element(hash, attribute_name, value) # rubocop:disable Metrics/CyclomaticComplexity
+      case value
+      when String
+        hash[attribute_name] = process_url(value) if attribute_name == 'reference'
+      when Hash
+        value.delete('text') if attribute_name.include?('CodeableConcept') || value.key?('coding')
+        update_nested_elements(value)
+      when Array
+        value.each do |member_element|
+          member_element.delete('display') if attribute_name == 'coding'
+          update_nested_elements(member_element) if member_element.is_a?(Hash)
         end
       end
-      hash
     end
   end
 end
