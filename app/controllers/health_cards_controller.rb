@@ -37,7 +37,6 @@ class HealthCardsController < ApplicationController
   def upload
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
-    @upload_result = HealthCards::Importer.upload(file)
   end
 
   private
@@ -46,4 +45,5 @@ class HealthCardsController < ApplicationController
     patient = Patient.find(params[:patient_id])
     @exporter = COVIDHealthCardExporter.new(patient)
   end
+
 end
