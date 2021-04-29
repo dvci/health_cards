@@ -34,12 +34,11 @@ class HealthCardsController < ApplicationController
     @patient = helpers.create_patient_from_jws(@jws_payload)
   end
 
-<<<<<<< HEAD
   def upload
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
     @payload_array = HealthCards::Importer.upload(file)
-=======
+
   def detail_patient
     
   end 
@@ -52,7 +51,6 @@ class HealthCardsController < ApplicationController
 
   def jws
     issuer.issue_jws(bundle)
->>>>>>> b8ff491 (a button leading to details page but the detail page linking is broken)
   end
 
   private
@@ -62,4 +60,7 @@ class HealthCardsController < ApplicationController
     @exporter = COVIDHealthCardExporter.new(patient)
   end
 
+  def issuer
+    Rails.application.config.issuer
+  end
 end
