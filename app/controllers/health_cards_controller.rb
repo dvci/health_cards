@@ -11,14 +11,14 @@ class HealthCardsController < ApplicationController
   def show
     respond_to do |format|
       format.healthcard { render json: @exporter.download }
+    end
+  end
+
+  def create
+    respond_to do |format|
       format.fhir_json do
         fhir_params = FHIR.from_contents(request.raw_post)
         render json: @exporter.issue(fhir_params)
-      end
-      format.html do
-        @jws_encoded_details = @exporter.jws
-        @health_card = HealthCards::HealthCard.from_jws @jws_encoded_details.to_s
-        @qr_code_payload = @exporter.chunks
       end
     end
   end
@@ -33,34 +33,20 @@ class HealthCardsController < ApplicationController
     contents = JSON.parse(params[:qr_contents])
     @scan_result = HealthCards::Importer.scan(contents)
   end
+
   def upload
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
-<<<<<<< HEAD
-=======
-    @payload_array = HealthCards::Importer.upload(file)
-<<<<<<< HEAD
-
-  def detail_patient
-    
-  end 
-  private
-
-  def health_card
-    issuer.create_health_card(bundle)
-  end
-
-  def jws
-    issuer.issue_jws(bundle)
->>>>>>> f778dc0 (a button leading to details page but the detail page linking is broken)
-=======
->>>>>>> 58fb950 (not able to obtain the decoded_jws)
   end
 
   private
 
   def create_exporter
-    @patient = Patient.find(params[:patient_id])
-    @exporter = COVIDHealthCardExporter.new(@patient)
+    patient = Patient.find(params[:patient_id])
+    @exporter = COVIDHealthCardExporter.new(patient)
+  end
+
+  def issuer
+    Rails.application.config.issuer
   end
 end
