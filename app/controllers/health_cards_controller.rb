@@ -39,6 +39,10 @@ class HealthCardsController < ApplicationController
     file = params.require(:health_card).read
   end
 
+  def detail_patient
+    
+  end 
+
   private
 
   def create_exporter
