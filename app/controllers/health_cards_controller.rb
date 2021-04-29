@@ -34,6 +34,10 @@ class HealthCardsController < ApplicationController
     @patient = helpers.create_patient_from_jws(@jws_payload)
   end
 
+  def detail_patient
+    
+  end 
+
   private
 
   def create_exporter
