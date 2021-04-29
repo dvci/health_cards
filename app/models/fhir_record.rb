@@ -34,6 +34,6 @@ class FHIRRecord < ApplicationRecord
 
   def set_fhir_id
     json.id = id
-    save
+    save!
   end
 end
