@@ -1,0 +1,31 @@
+<%= javascript_pack_tag 'qrcode' %>
+<section class="hero is-link">
+  <div class="hero-body">
+    <p class="title">Details Page</p>
+  </div>
+</section>
+
+<p id="notice"><%= notice %></p>
+<section class="section">
+  <div class="container">
+
+    <div id="qr-code"></div>
+
+    <p class="title">Decoded JWS </p>
+    <%= @jws_header %>
+    <%= @jws_payload %>
+    <%= @jws_signature %>
+    <%= @jws_decoded_details %>
+
+
+    <p class="title">Encoded JWS</p>
+    <%= @jws_encoded_details %>
+
+    <p class="title">Bundle</p>
+    <%= @bundle_details %>
+
+    <p class="title">QR Details</p>
+    <%= @qr_contents_detail %>
+
+  </div>
+</section>  
