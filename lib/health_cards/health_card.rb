@@ -181,23 +181,31 @@ module HealthCards
       resource.select! { |att| allow.include?(att) }
     end
 
+    def process_url(url)
+      new_url = @url_map.key?(url) ? @url_map[url] : @url_map["#{issuer}/#{url}"]
+      raise InvalidBundleReferenceException, url unless new_url
+
+      new_url
+    end
+
     def update_nested_elements(hash) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       hash.each do |k, v|
         if v.is_a?(Hash) && (k.include?('CodeableConcept') || v.key?('coding'))
           v.delete('text')
         elsif k == 'coding'
+          # byebug
           v.each do |coding|
             coding.delete('display')
           end
-        elsif k == 'reference' && v.is_a?(String) && @url_map.key?(v)
-          hash[k] = @url_map[v]
+        elsif k == 'reference'
+          hash[k] = process_url(v)
         end
 
         case v
         when Hash
           update_nested_elements(v)
         when Array
-          v.flatten.each { |x| update_nested_elements(x) if x.is_a?(Hash) }
+          v.each { |x| update_nested_elements(x) if x.is_a?(Hash) }
         end
       end
       hash
