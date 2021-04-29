@@ -37,6 +37,23 @@ class HealthCardsController < ApplicationController
   def upload
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
+<<<<<<< HEAD
+=======
+    @payload_array = HealthCards::Importer.upload(file)
+
+  def detail_patient
+    
+  end 
+
+  private
+
+  def health_card
+    issuer.create_health_card(bundle)
+  end
+
+  def jws
+    issuer.issue_jws(bundle)
+>>>>>>> f778dc0 (a button leading to details page but the detail page linking is broken)
   end
 
   private
@@ -46,4 +63,7 @@ class HealthCardsController < ApplicationController
     @exporter = COVIDHealthCardExporter.new(patient)
   end
 
+  def issuer
+    Rails.application.config.issuer
+  end
 end
