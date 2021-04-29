@@ -9,7 +9,7 @@ class HealthCardsController < ApplicationController
     respond_to do |format|
       format.healthcard { render json: { verifiableCredential: [jws.to_s] } }
       format.pdf do #{ render json: { verifiableCredential: [jws.to_s] } }
-        render pdf: "show"
+        render pdf: "show", layout: 'pdf.html'
       end
     end
   end
@@ -32,7 +32,7 @@ class HealthCardsController < ApplicationController
   # end
 
 
-  
+
 
   def chunks
     render json: health_card.chunks.to_json
