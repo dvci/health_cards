@@ -7,16 +7,20 @@ class AddIdToFHIRJson < ActiveRecord::Migration[6.1]
 
   class MigrationPatient < ActiveRecord::Base
     self.table_name = :patients
+    serialize :json, JSON
+
     def set_fhir_id
-      json.id = id
+      json['id'] = id
       save!
     end
   end
 
   class MigrationImmunization < ActiveRecord::Base
     self.table_name = :immunizations
+    serialize :json, JSON
+
     def set_fhir_id
-      json.id = id
+      json['id'] = id
       save!
     end
   end
