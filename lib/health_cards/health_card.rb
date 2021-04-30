@@ -116,12 +116,6 @@ module HealthCards
       HealthCard.compress_payload(to_json)
     end
 
-    # Chunks the compress payload for us in generating QR codes
-    # @return [Array] An array of strings used to create QR codes
-    def chunks
-      HealthCards::Chunking.generate_qr_chunks to_s
-    end
-
     # A minified JSON string matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
     # @return [String] JSON string
     def to_json(*_args)

@@ -12,7 +12,7 @@ class HealthCardsController < ApplicationController
   end
 
   def chunks
-    render json: health_card.chunks.to_json
+    render json: HealthCards::Chunking.generate_qr_chunks(jws.to_s)
   end
 
   def scan; end
