@@ -18,7 +18,7 @@ class AddIdToFHIRJson < ActiveRecord::Migration[6.1]
     end
   end
 
-  class MigrateFHIRRecord
+  class MigrateFHIRRecord < ActiveRecord::Base
     serialize :json, MigrationFHIRSerializer
 
     def set_fhir_id
