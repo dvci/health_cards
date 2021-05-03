@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'health_cards'
+
+key = HealthCards::PrivateKey.generate_key
+issuer = Issuer.new(key, url: 'http://example.com')
