@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'forwardable'
 
 module HealthCards
@@ -71,7 +72,5 @@ module HealthCards
     def include?(key)
       !@key_map[key.kid].nil?
     end
-
-
   end
 end

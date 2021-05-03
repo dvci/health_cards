@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'health_cards'
 
@@ -14,4 +15,7 @@ ver = HealthCards::Verifier.new(keys: key.public_key)
 ver.verify(jws)
 
 card1 = HealthCards::HealthCard.from_jws(jws.to_s)
+card1.to_json
+
 card2 = HealthCards::COVIDHealthCard.from_jws(jws.to_s)
+card2.to_json

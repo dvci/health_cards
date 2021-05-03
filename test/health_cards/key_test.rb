@@ -28,6 +28,12 @@ class KeyTest < ActiveSupport::TestCase
     assert_equal 'ES256', jwk[:alg]
   end
 
+  test 'public coordinates doesn\'t include d' do
+    pk = @key.public_key
+    assert_nil pk.public_coordinates[:d]
+    assert_equal @key.public_coordinates, pk.coordinates
+  end
+
   test 'Use existing keys if they exist' do
     original_jwks = @key.public_key.to_json
 

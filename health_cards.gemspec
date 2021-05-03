@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require_relative 'lib/health_cards/version'
 require 'rake'
 Gem::Specification.new do |spec|
