@@ -45,7 +45,10 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     get(chunks_patient_health_card_url(@patient))
     assert_response :success
 
-    json = JSON.parse(response.body)
-    assert_equal 1, json.size
+    chunks = JSON.parse(response.body)
+    # Check that each string in the array is a numeric string
+    chunks.each do |s|
+      assert_empty(s.scan(/\D/))
+    end
   end
 end
