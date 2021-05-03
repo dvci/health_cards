@@ -75,5 +75,26 @@ module ActiveSupport
       assert_not_nil patient_url
       assert_equal patient_url, ref_url
     end
+
+    def assert_jws_bundle_match(jws, key, patient_entry, vax_entry)
+      card = nil
+
+      assert_nothing_raised do
+        card = HealthCards::HealthCard.from_jws(jws, public_key: key)
+      end
+
+      entries = card.bundle.entry
+
+      patient = entries[0].resource
+      assert patient.valid?
+      assert_equal patient_entry.given, patient.name[0].given[0]
+
+      imm = entries[1].resource
+
+      # Deactivated until spec or FHIR validator is updated
+      # assert imm.valid?
+
+      assert_equal vax_entry.code, imm.vaccineCode.coding[0].code
+    end
   end
 end
