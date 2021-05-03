@@ -18,26 +18,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
 
     assert_not_nil vc
     assert_equal 1, vc.size
-
-    card = nil
-
-    assert_nothing_raised do
-      card = HealthCards::HealthCard.from_jws(vc.first, public_key: @key)
-    end
-
-    entries = card.bundle.entry
-
-    patient = entries[0].resource
-    assert patient.valid?
-    assert_equal @patient.given, patient.name[0].given[0]
-
-    imm = entries[1].resource
-
-    # Deactivated until spec or FHIR validator is updated
-    # assert imm.valid?
-
-    assert_equal @vax.code, imm.vaccineCode.coding[0].code
-
+    assert_jws_bundle_match(vc.first, @key, @patient, @vax)
     assert_response :success
   end
 
@@ -45,7 +26,8 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     get(chunks_patient_health_card_url(@patient))
     assert_response :success
 
-    json = JSON.parse(response.body)
-    assert_equal 1, json.size
+    chunks = JSON.parse(response.body)
+    jws = HealthCards::Chunking.assemble_jws chunks
+    assert_jws_bundle_match(jws, @key, @patient, @vax)
   end
 end
