@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'fhir_models'
 
 module HealthCards
   # Issue Health Cards based on a stored private key
