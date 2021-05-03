@@ -1,8 +1,13 @@
 # frozen_string_literal: true
+require 'forwardable'
 
 module HealthCards
   # A set of keys used for signing or verifying HealthCards
   class KeySet
+    extend Forwardable
+
+    def_delegator :keys, :empty?
+
     # Create a new KeySet
     #
     # @param keys [HealthCards::Key, Array<HealthCards::Key>, nil] the initial keys
@@ -67,6 +72,6 @@ module HealthCards
       !@key_map[key.kid].nil?
     end
 
-    delegate :empty?, to: :keys
+
   end
 end

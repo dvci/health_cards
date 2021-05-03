@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'fhir_models'
 
 module HealthCards
   # Implements HealthCard for use with COVID Vaccination IG
