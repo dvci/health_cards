@@ -55,7 +55,7 @@ module HealthCards
       end
 
       # Define allowed attributes for this HealthCard class
-      # @return [Hash] A hash of FHIR::Model subclasses adn attributes that will pass through minimization
+      # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
       def allowable
         @allowable ||= {}
       end
@@ -87,7 +87,7 @@ module HealthCards
       end
 
       # Check if this class supports the given type
-      # @param type [String] A type as defined by the SMART Health Cards framework
+      # @param type [Array, String] A type as defined by the SMART Health Cards framework
       # @return [Array] All additional types supported by this HealthCard (sub)class
       def supports_type?(*type)
         !types.intersection(type).empty?

@@ -1,45 +1,23 @@
 # frozen_string_literal: true
 
-# HealthCardsController is the endpoint for download of health cards
-# In the future issue endpoint will use this controller as well
+# require 'app/lib/covid_health_card_reporter'
+
+# HealthCardsController is the endpoint for download and issue of health cards
 class HealthCardsController < ApplicationController
-  before_action :find_patient, except: [:scan, :qr_contents]
+  before_action :create_exporter, except: [:scan, :qr_contents]
 
   def show
     respond_to do |format|
-      vc = jws.to_s
-      format.healthcard { render json: { verifiableCredential: [vc] } }
+      format.healthcard { render json: @exporter.download }
       format.fhir_json do
         fhir_params = FHIR.from_contents(request.raw_post)
-        types = nil
-        err_msg = nil
-
-        if fhir_params.nil?
-          err_msg = 'Unable to find FHIR::Parameter JSON'
-        elsif !fhir_params.valid?
-          err_msg = fhir_params.validate.to_s
-        else
-          types = fhir_params.parameter.map(&:valueUri).compact
-          err_msg = 'Invalid Parameter: Expected valueUri' if types.empty?
-        end
-
-        if err_msg
-          render json: FHIR::OperationOutcome.new(severity: 'error', code: 'invalid',
-                                                  diagnostics: err_msg).to_json and return
-        end
-
-        out_params = FHIR::Parameters.new(parameter: [])
-        if HealthCards::COVIDHealthCard.supports_type?(*types)
-          out_params.parameter << FHIR::Parameters::Parameter.new(name: 'verifiableCredential', valueString: vc)
-        end
-
-        render json: out_params.to_json
+        render json: @exporter.issue(fhir_params)
       end
     end
   end
 
   def chunks
-    render json: jws.chunks
+    render json: @exporter.chunks
   end
 
   def scan; end
@@ -52,24 +30,9 @@ class HealthCardsController < ApplicationController
 
   private
 
-  def health_card
-    issuer.create_health_card(bundle)
+  def create_exporter
+    patient = Patient.find(params[:patient_id])
+    @exporter = COVIDHealthCardExporter.new(patient)
   end
 
-  def jws
-    issuer.issue_jws(bundle)
-  end
-
-  def bundle
-    @patient.to_bundle(issuer.url)
-  end
-
-  def find_patient
-    @patient = Patient.find(params[:patient_id])
-  end
-
-  def issuer
-    Rails.application.config.issuer
-  end
-  
 end

@@ -47,9 +47,10 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     jws = HealthCards::JWS.from_jws(cred.valueString)
     jws.public_key = rails_issuer.key.public_key
     assert jws.verify
+    
     # TODO: The spec currently requires references that are invalid
-    # and violate the FHIR validator. Turn this back on when we can
-    # update the code
+    # according to the FHIR validator
+    # Turn this back on when we can update the code/validator
     # assert imm.valid?, imm.validate
 
     card = HealthCards::COVIDHealthCard.from_payload(jws.payload)
@@ -62,6 +63,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
 
     output = FHIR.from_contents(response.body)
     assert output.is_a?(FHIR::OperationOutcome)
+    assert output.valid?
   end
 
   test 'invalid parameter' do
@@ -71,6 +73,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
 
     output = FHIR.from_contents(response.body)
     assert output.is_a?(FHIR::OperationOutcome)
+    assert output.valid?
   end
 
   test 'unsupported card type' do
