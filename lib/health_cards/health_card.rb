@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'json/minify'
+require 'zlib'
+
 module HealthCards
   # A HealthCard which implements the credential claims specified by https://smarthealth.cards/
   class HealthCard

@@ -71,8 +71,5 @@ class HealthCardsController < ApplicationController
   def issuer
     Rails.application.config.issuer
   end
-
-  def health_card_params
-    params.require([:resourceType, :parameter])
-  end
+  
 end
