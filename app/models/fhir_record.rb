@@ -6,6 +6,8 @@ class FHIRRecord < ApplicationRecord
 
   validate :valid_fhir_json
 
+  after_create :set_fhir_id
+
   def to_json(*_args)
     json.to_hash
   end
@@ -28,5 +30,10 @@ class FHIRRecord < ApplicationRecord
 
     err_msg = errs.map { |name, value| "#{name}: #{value}" }.join(', ')
     errors.add(:base, err_msg)
+  end
+
+  def set_fhir_id
+    json.id = id
+    save!
   end
 end

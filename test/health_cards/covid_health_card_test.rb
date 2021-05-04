@@ -45,11 +45,11 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     end
   end
 
-  # test 'bundle json' do
-  #   assert_nothing_raised do
-  #     FHIR.from_contents(@card.to_json)
-  #   end
-  # end
+  test 'valid bundle json' do
+    assert_nothing_raised do
+      FHIR.from_contents(@card.to_json)
+    end
+  end
 
   test 'minified entries' do
     bundle = @card.strip_fhir_bundle

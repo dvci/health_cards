@@ -116,12 +116,6 @@ module HealthCards
       HealthCard.compress_payload(to_json)
     end
 
-    # Chunks the compress payload for us in generating QR codes
-    # @return [Array] An array of strings used to create QR codes
-    def chunks
-      HealthCards::Chunking.generate_qr_chunks to_s
-    end
-
     # A minified JSON string matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
     # @return [String] JSON string
     def to_json(*_args)
@@ -181,26 +175,30 @@ module HealthCards
       resource.select! { |att| allow.include?(att) }
     end
 
-    def update_nested_elements(hash) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      hash.each do |k, v|
-        if v.is_a?(Hash) && (k.include?('CodeableConcept') || v.key?('coding'))
-          v.delete('text')
-        elsif k == 'coding'
-          v.each do |coding|
-            coding.delete('display')
-          end
-        elsif k == 'reference' && v.is_a?(String) && @url_map.key?(v)
-          hash[k] = @url_map[v]
-        end
+    def process_url(url)
+      new_url = @url_map.key?(url) ? @url_map[url] : @url_map["#{issuer}/#{url}"]
+      raise InvalidBundleReferenceException(url) unless new_url
 
-        case v
-        when Hash
-          update_nested_elements(v)
-        when Array
-          v.flatten.each { |x| update_nested_elements(x) if x.is_a?(Hash) }
+      new_url
+    end
+
+    def update_nested_elements(hash)
+      hash.map { |k, v| update_nested_element(hash, k, v) }
+    end
+
+    def update_nested_element(hash, attribute_name, value) # rubocop:disable Metrics/CyclomaticComplexity
+      case value
+      when String
+        hash[attribute_name] = process_url(value) if attribute_name == 'reference'
+      when Hash
+        value.delete('text') if attribute_name.include?('CodeableConcept') || value.key?('coding')
+        update_nested_elements(value)
+      when Array
+        value.each do |member_element|
+          member_element.delete('display') if attribute_name == 'coding'
+          update_nested_elements(member_element) if member_element.is_a?(Hash)
         end
       end
-      hash
     end
   end
 end

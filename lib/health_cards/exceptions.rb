@@ -35,4 +35,11 @@ module HealthCards
       super("Expected an instance of #{expected_class} but was #{actual_obj.class}")
     end
   end
+
+  # Exception thrown when a reference in a bundle in unresolvable
+  class InvalidBundleReferenceException < ArgumentError
+    def initialize(url)
+      super("Unable to resolve url (#{url}) within bundle")
+    end
+  end
 end

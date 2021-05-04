@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_15_205132) do
+ActiveRecord::Schema.define(version: 2021_04_28_145300) do
 
   create_table "immunizations", force: :cascade do |t|
     t.integer "patient_id"

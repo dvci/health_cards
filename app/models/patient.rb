@@ -125,11 +125,10 @@ class Patient < FHIRRecord
 
   def to_bundle(base_url)
     bundle = FHIR::Bundle.new
-    patient_url = "#{base_url}/Patient/#{id}"
+    patient_url = "#{base_url}/Patient/#{json.id}"
     bundle.entry[0] = FHIR::Bundle::Entry.new(fullUrl: patient_url, resource: json)
     immunizations.each do |imm|
-      imm.json.patient.reference = patient_url
-      bundle.entry << FHIR::Bundle::Entry.new(fullUrl: "#{base_url}/Immunization/#{imm.id}", resource: imm.json)
+      bundle.entry << FHIR::Bundle::Entry.new(fullUrl: "#{base_url}/Immunization/#{imm.json.id}", resource: imm.json)
     end
     bundle
   end
