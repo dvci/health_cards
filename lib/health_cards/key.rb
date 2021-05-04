@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'openssl'
+require 'base64'
 
 module HealthCards
   # Methods to generate signing keys and jwk
@@ -28,7 +29,11 @@ module HealthCards
     end
 
     def kid
-      Base64.urlsafe_encode64(DIGEST.digest(coordinates.except(:d).to_json), padding: false)
+      Base64.urlsafe_encode64(DIGEST.digest(public_coordinates.to_json), padding: false)
+    end
+
+    def public_coordinates
+      coordinates.dup.tap { |coor| coor.delete(:d) }
     end
 
     def coordinates

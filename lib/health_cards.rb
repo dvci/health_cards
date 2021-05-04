@@ -13,6 +13,9 @@ require 'health_cards/exceptions'
 require 'health_cards/verifier'
 require 'health_cards/covid_health_card'
 
+require 'base64'
+require 'fhir_models'
+
 module HealthCards
   class Error < StandardError; end
   # Your code goes here...
