@@ -66,32 +66,7 @@
         <div class="tile is-child box notification">
           <p class="title">Upload a file</p>
           <p class="subtitle">Manually upload a downloaded credential.</p>
-          <%= form_tag new_patient_path, id: "health-card-upload" do %>
-          <div class="field is-grouped">
-            <p class="control">
-            <div class="file has-name">
-              <label class="file-label">
-                <%= file_field_tag :health_card, class: 'file-input' %>
-                <span class="file-cta">
-                  <span class="file-icon">
-                    <i class="fas fa-upload"></i>
-                  </span>
-                  <span class="file-label">
-                    Choose a file…
-                  </span>
-                </span>
-                <span class="file-name">
-                  No file uploaded
-                </span>
-              </label>
-            </div>
-            </p>
-            <p class="control">
-              <%= submit_tag 'Upload', class: 'button is-success', style: 'margin-left:5px' %>
-            </p>
-          </div>
-
-          <% end %>
+          <span class="button is-success" disabled>TODO</span>
         </div>
       </div>
 
@@ -105,13 +80,3 @@
     </div>
   </div>
 </section>
-
-<script>
-  const fileInput = document.querySelector('#health-card-upload input[type=file]');
-  fileInput.onchange = () => {
-    if (fileInput.files.length > 0) {
-      const fileName = document.querySelector('#health-card-upload .file-name');
-      fileName.textContent = fileInput.files[0].name;
-    }
-  }
-</script>
