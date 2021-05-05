@@ -8,7 +8,17 @@ class HealthCardsController < ApplicationController
   def show
     respond_to do |format|
       format.healthcard { render json: { verifiableCredential: [jws.to_s] } }
+      format.html do
+        details
+      end
     end
+
+  end
+
+  def details
+    # This is broken (it changes every time)
+    @jws_details = jws
+    ## TODO: Add other things to render
   end
 
   def chunks
