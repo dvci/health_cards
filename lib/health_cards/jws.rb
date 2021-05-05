@@ -109,12 +109,6 @@ module HealthCards
       public_key.verify(encoded_payload, signature)
     end
 
-    # # Splits jws into chunks and converts to numeric
-    # # @return [Array] numeric chunks
-    # def chunks
-    #   Chunking.generate_qr_chunks(to_s)
-    # end
-
     private
 
     def encoded_payload

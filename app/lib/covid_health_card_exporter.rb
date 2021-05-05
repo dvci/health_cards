@@ -1,5 +1,6 @@
-class COVIDHealthCardExporter
+# frozen_string_literal: true
 
+class COVIDHealthCardExporter
   def initialize(patient)
     @patient = patient
   end

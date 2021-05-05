@@ -47,7 +47,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     jws = HealthCards::JWS.from_jws(cred.valueString)
     jws.public_key = rails_issuer.key.public_key
     assert jws.verify
-    
+
     # TODO: The spec currently requires references that are invalid
     # according to the FHIR validator
     # Turn this back on when we can update the code/validator
