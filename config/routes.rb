@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       get 'chunks', format: :json
 
     end
+    #check syntax into getting details to show up
   end
 
   resources :health_cards do
@@ -29,7 +30,6 @@ Rails.application.routes.draw do
 <<<<<<< HEAD
 =======
   get '/health_cards/scan', to: 'health_cards#scan', as: :scan_health_card
-  get '/health_cards/detail', to: 'health_cards#detail', as: :detail_health_card
   post '/health_cards/qr_contents', to: 'health_cards#qr_contents', as: :health_card_qr_contents
 >>>>>>> b8ff491 (a button leading to details page but the detail page linking is broken)
 end
