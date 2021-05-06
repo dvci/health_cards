@@ -13,6 +13,7 @@ end
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
+FHIR.logger = Rails.logger
 
 module ActiveSupport
   class TestCase
