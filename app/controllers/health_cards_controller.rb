@@ -9,30 +9,17 @@ class HealthCardsController < ApplicationController
     respond_to do |format|
       format.healthcard { render json: { verifiableCredential: [jws.to_s] } }
       format.pdf do #{ render json: { verifiableCredential: [jws.to_s] } }
-        render pdf: "show", layout: 'pdf.html'
+        # Request body 
+
+        render pdf: "health_card", layout: 'pdf.html', encoding: 'utf8'# , window_status: 'ready_to_print'
       end
+      format.html
     end
   end
 
-    # render :pdf => “file.pdf”, :template => ‘basic_infos/show.html.erb’
-
-  # def show
-  #   respond_to do |format|
-  #     format.html
-  #     format.pdf do
-  #       render pdf: "file_name"   # Excluding ".pdf" extension.
-  #     end
-  #   end
-  # end
-
-  # def pdf
-  #   respond_to do |format|
-  #     format.pdf { render json: { verifiableCredential: [jws.to_s] } }
-  #   end
-  # end
-
-
-
+  def qrcode
+    
+  end
 
   def chunks
     render json: jws.chunks

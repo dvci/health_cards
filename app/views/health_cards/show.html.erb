@@ -1,0 +1,63 @@
+<%= javascript_pack_tag 'qrcode' %>
+<%= wicked_pdf_javascript_include_tag "qr-code" %>
+
+<%=wicked_pdf_stylesheet_link_tag 'pdf' %>
+<p id="notice"><%= notice %></p>
+<section class="section">
+  <div class="container">
+    <div class="content">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p class="title"><%= @patient.full_name %></p>
+          </div>
+        </div>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Gender:</span><span><%= @patient.gender %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Birth Date:</span><span><%= format_date(@patient.birth_date) %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Phone:</span><span><%= number_to_phone(@patient.phone) %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Email:</span><span><%= @patient.email %></span>
+      </div>
+      <div class="block">
+        <span class="has-text-weight-bold mr-2">Address:</span><span><%= show_address(@patient) %></span>
+      </div>
+      <div class="level">
+        <div class="level-left">
+          <% if @patient.immunizations.present? %>
+            <div class="level-item">
+              <p class="title">Immunizations</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="tile is-ancestor">
+        <% @patient.immunizations.each do |i| %>
+          <div class="tile is-parent">
+            <div class="tile is-child box">
+              <div class="block">
+                <span class="has-text-weight-bold"><%= i.vaccine.name %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Date:</span><span><%= format_date(i.occurrence) %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Lot:</span><span><%= i.lot_number %> </span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div id="qr-code"></div>
+    <h1>This is where the QR code should go</h1>
+    <%# <%= wicked_pdf_image_tag 'images/some_qr_code.jpg' %>
+    <%# <%= image_tag image_url('some_qr_code.png') %>
+  </div>
+</section>
