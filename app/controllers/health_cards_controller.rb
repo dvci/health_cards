@@ -10,18 +10,12 @@ class HealthCardsController < ApplicationController
 
   def show
     respond_to do |format|
-      format.healthcard { render json: @exporter.download }
+      format.healthcard { render json: { verifiableCredential: [jws.to_s] } }
+      format.html do
+        details
     end
   end
-
-  def create
-    respond_to do |format|
-      format.fhir_json do
-        fhir_params = FHIR.from_contents(request.raw_post)
-        render json: @exporter.issue(fhir_params)
-      end
-    end
-  end
+end 
 
   def chunks
     render json: @exporter.chunks
@@ -29,11 +23,18 @@ class HealthCardsController < ApplicationController
 
   def scan; end
 
+  def details
+    @jws_encoded_details = jws
+    # @jws_decoded_details = HealthCards::JWS.to_s @jws_encoded_details
+    # @jws_header, @jws_payload, @jws_signature = jws_contents.split('.').map { |entry| decode(jws_encoded_details) }
+    @bundle_details = bundle.to_json
+  end 
+
   def qr_contents
     @jws_payload = HealthCards::Importer.scan(params[:qr_contents])
     @patient = helpers.create_patient_from_jws(@jws_payload)
   end
-
+  
   def upload
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
@@ -42,7 +43,6 @@ class HealthCardsController < ApplicationController
   def detail_patient
     
   end 
-
   private
 
   def health_card
