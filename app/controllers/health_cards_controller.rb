@@ -22,6 +22,7 @@ class HealthCardsController < ApplicationController
       end
     end
   end
+end 
 
   def chunks
     render json: @exporter.chunks
@@ -34,10 +35,12 @@ class HealthCardsController < ApplicationController
     @patient = helpers.create_patient_from_jws(@jws_payload)
   end
 
-  def detail_patient
-    
+  def upload
+    @filename = params[:health_card].original_filename
+    file = params.require(:health_card).read
+    @payload_array = HealthCards::Importer.upload(file)
   end 
-
+  
   private
 
   def create_exporter
