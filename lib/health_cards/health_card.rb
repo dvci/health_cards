@@ -86,7 +86,7 @@ module HealthCards
         @types ||= VC_TYPE.dup
       end
 
-      # Check if this class supports the given type
+      # Check if this class supports the given type claim(s)
       # @param type [Array, String] A type as defined by the SMART Health Cards framework
       # @return [Bool] Whether or not the type param is included in the types supported by the HealthCardn (sub)class
       def supports_type?(*type)
@@ -96,8 +96,8 @@ module HealthCards
 
     # Create a HealthCard
     #
-    # @param verifiable_credential [HealthCards::VerifiableCredential] VerifiableCredential containing a fhir bundle
-    # @param jws [HealthCards::JWS] JWS which should have a payload generated from the verifiable_credential
+    # @param bundle [FHIR::Bundle] VerifiableCredential containing a fhir bundle
+    # @param issuer [String] The url from the Issuer of the HealthCard
     def initialize(bundle:, issuer: nil)
       raise InvalidPayloadException unless bundle.is_a?(FHIR::Bundle)
 
