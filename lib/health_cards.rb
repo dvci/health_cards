@@ -13,6 +13,7 @@ require 'health_cards/exceptions'
 require 'health_cards/verifier'
 require 'health_cards/importer'
 require 'health_cards/covid_health_card'
+require 'health_cards/exporter'
 
 require 'base64'
 require 'fhir_models'

@@ -61,7 +61,7 @@ module HealthCards
       end
 
       # Define allowed attributes for this HealthCard class
-      # @return [Hash] A hash of FHIR::Model subclasses adn attributes that will pass through minimization
+      # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
       def allowable
         @allowable ||= {}
       end
@@ -78,9 +78,12 @@ module HealthCards
       end
 
       # Additional type claims this HealthCard class supports
-      # @param types [String, Array] A string or array of string representing the additional type claims
+      # @param types [String, Array] A string or array of string representing the additional type claims or nil
+      # if used as a getter
+      # @return [Array] the additional types added by this classes
       def additional_types(*add_types)
-        types.concat(add_types)
+        types.concat(add_types) unless add_types.nil?
+        types - VC_TYPE
       end
 
       # Type claims supported by this HealthCard subclass
@@ -88,12 +91,19 @@ module HealthCards
       def types
         @types ||= VC_TYPE.dup
       end
+
+      # Check if this class supports the given type claim(s)
+      # @param type [Array, String] A type as defined by the SMART Health Cards framework
+      # @return [Boolean] Whether or not the type param is included in the types supported by the HealthCard (sub)class
+      def supports_type?(*type)
+        !types.intersection(type).empty?
+      end
     end
 
     # Create a HealthCard
     #
-    # @param verifiable_credential [HealthCards::VerifiableCredential] VerifiableCredential containing a fhir bundle
-    # @param jws [HealthCards::JWS] JWS which should have a payload generated from the verifiable_credential
+    # @param bundle [FHIR::Bundle] VerifiableCredential containing a fhir bundle
+    # @param issuer [String] The url from the Issuer of the HealthCard
     def initialize(bundle:, issuer: nil)
       raise InvalidPayloadException unless bundle.is_a?(FHIR::Bundle)
 
