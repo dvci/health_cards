@@ -4,7 +4,7 @@
 
 # HealthCardsController is the endpoint for download and issue of health cards
 class HealthCardsController < ApplicationController
-  before_action :create_exporter, except: [:scan, :qr_contents]
+  before_action :create_exporter, except: [:scan, :qr_contents, :upload]
 
   def show
     respond_to do |format|
@@ -23,9 +23,14 @@ class HealthCardsController < ApplicationController
   def scan; end
 
   def qr_contents
-    contents = JSON.parse(params[:qr_contents])
-    @jws_payload = HealthCards::Chunking.get_payload_from_qr contents
+    @jws_payload = HealthCards::Importer.scan(params[:qr_contents])
     @patient = helpers.create_patient_from_jws(@jws_payload)
+  end
+
+  def upload
+    @filename = params[:health_card].original_filename
+    file = params.require(:health_card).read
+    @payload_array = HealthCards::Importer.upload(file)
   end
 
   private
