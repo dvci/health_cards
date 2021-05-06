@@ -19,7 +19,7 @@ module HealthCards
 
     # Splits jws into chunks and converts each string into numeric
     def generate_qr_chunks(jws)
-      jws_chunks = split_bundle jws
+      jws_chunks = split_bundle jws.to_s
       jws_chunks.map { |c| convert_jws_to_numeric(c) }
     end
 
