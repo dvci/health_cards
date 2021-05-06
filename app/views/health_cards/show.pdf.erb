@@ -1,4 +1,6 @@
 <%= javascript_pack_tag 'qrcode' %>
+<%= wicked_pdf_javascript_include_tag "qr-code" %>
+
 <%=wicked_pdf_stylesheet_link_tag 'pdf' %>
 <p id="notice"><%= notice %></p>
 <section class="section">
@@ -48,12 +50,14 @@
               <div class="block">
                 <span class="mr-2 has-text-weight-bold">Lot:</span><span><%= i.lot_number %> </span>
               </div>
-              <div id="qr-code"></div>
             </div>
           </div>
         <% end %>
       </div>
     </div>
     <div id="qr-code"></div>
+    <h1>This is where the QR code should go</h1>
+    <%# <%= wicked_pdf_image_tag 'images/some_qr_code.jpg' %>
+    <%# <%= image_tag image_url('some_qr_code.png') %>
   </div>
 </section>

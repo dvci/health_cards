@@ -23,7 +23,11 @@ function addPrefixToQrCodes(chunks) {
   });
 }
 
-fetch(`${window.location.href}/health_card/chunks.json`)
+
+const current = window.location.href;
+const url = current.includes('health_card') ? `${current}/chunks.json` : `${current}/health_card/chunks.json`;
+
+fetch(url)
   .then(res => res.json())
   .then(chunks => {
     const qrCodes = addPrefixToQrCodes(chunks);
@@ -36,6 +40,18 @@ fetch(`${window.location.href}/health_card/chunks.json`)
         version: 22,
         errorCorrectionLevel: 'L'
       });
+
+      // QRCode.toFile('./test.png', 'qrCodse', {
+      //   version: 22,
+      //   errorCorrectionLevel: 'L'
+      // } );
+
       container.appendChild(canvas);
     });
+    // var dataURL = document.getElementById('qr-code').toDataURL();
+    // <a href="dataURL" target="_blank" download="image.png"></a>
+    console.log(container);
+    window.status = 'ready_to_print';
+
+    // window.status = 'true'
   });
