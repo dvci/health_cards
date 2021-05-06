@@ -7,7 +7,16 @@ Rails.application.routes.draw do
   resources :patients do
     resources :immunizations
     resource :health_card do
-      get "/chunks", to: "health_cards#chunks", as: :chunks, format: :json
+      get 'chunks', format: :json
+
+    end
+  end
+
+  resources :health_cards do
+    collection do
+      get 'scan'
+      post 'upload'
+      post 'qr_contents'
     end
   end
   
@@ -16,6 +25,4 @@ Rails.application.routes.draw do
   get "/.well-known/smart-configuration", to: "well_known#smart", as: :well_known_smart, format: :json
   get "/.well-known/jwks", to: "well_known#jwks", as: :well_known_jwks, format: :json
 
-  get '/health_cards/scan', to: 'health_cards#scan', as: :scan_health_card
-  post '/health_cards/qr_contents', to: 'health_cards#qr_contents', as: :health_card_qr_contents
 end

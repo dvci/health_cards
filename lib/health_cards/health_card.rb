@@ -27,15 +27,21 @@ module HealthCards
       # @param payload [String]
       # @return [HealthCards::HealthCard]
       def from_payload(payload)
-        inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(payload)
-        json = JSON.parse(inf)
-
+        json = decompress_payload(payload)
         bundle_hash = json.dig('vc', 'credentialSubject', 'fhirBundle')
 
         raise HealthCards::InvalidCredentialException unless bundle_hash
 
         bundle = FHIR::Bundle.new(bundle_hash)
         new(issuer: json['iss'], bundle: bundle)
+      end
+
+      # Decompress an arbitrary payload, useful for debugging
+      # @param payload [String] compressed payload
+      # @return [Hash] Hash built from JSON contents of payload
+      def decompress_payload(payload)
+        inf = Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(payload)
+        JSON.parse(inf)
       end
 
       # Compress an arbitrary payload, useful for debugging
