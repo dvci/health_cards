@@ -19,11 +19,14 @@ module HealthCards
       end
 
       # Creates a Card from a JWS
-      # @param jws [String] the JWS string
+      # @param jws [String, HealthCards::JWS] the JWS string
       # @param public_key [HealthCards::PublicKey] the public key associated with the JWS
       # @param key [HealthCards::PrivateKey] the private key associated with the JWS
       # @return [HealthCards::HealthCard]
       def from_jws(jws, public_key: nil, key: nil)
+        raise ArgumentError, 'Expected either a HealthCards::JWS or String' unless (jws.is_a?(HealthCards::JWS) || jws.is_a?(String))
+
+        jws = jws.to_s if jws.is_a? HealthCards::JWS
         header, payload, signature = jws.split('.').map { |entry| decode(entry) }
         header = JSON.parse(header)
         JWS.new(header: header, payload: payload, signature: signature,

@@ -84,6 +84,7 @@ class VerifierTest < ActiveSupport::TestCase
   end
 
   test 'Verifier throws exception when attempting to verify health card without an accessible public key' do
+    stub_request(:get, /jwks.json/).to_return(body: HealthCards::KeySet.new(@public_key).to_jwk)
     verifier = HealthCards::Verifier.new
     assert_raises HealthCards::MissingPublicKey do
       verifier.verify @jws
@@ -94,43 +95,35 @@ class VerifierTest < ActiveSupport::TestCase
     end
   end
 
+  test 'Verifier can verify JWS when key is resolvable' do
+    stub_request(:get, /jwks.json/).to_return(body: @verifier.keys.to_jwk)
+    verifier = HealthCards::Verifier.new
+    assert verifier.verify(@jws)
+  end
+
   ### Verification Class Methods
   test 'Verifier class throws exception when attempting to verify health card without an accessible public key' do
-    skip('Need to update test so that health_card does not contain the public key it needs to verify')
-    skip('Need to update Verifier::verify to accept JWS strings')
-    verifier = HealthCards::Verifier
-    assert_raises HealthCards::MissingPublicKey do
-      verifier.verify @jws
-    end
+    stub_request(:get, /jwks.json/).to_return(body: HealthCards::KeySet.new(@public_key).to_jwk)
 
+    verifier = HealthCards::Verifier
     assert_raises HealthCards::MissingPublicKey do
       verifier.verify @jws
     end
   end
 
   test 'Verifier class can verify health cards when key is resolvable' do
-    skip('Key resolution not implemented')
-    stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
+    stub_request(:get, /jwks.json/).to_return(body: @verifier.keys.to_jwk)
     verifier = HealthCards::Verifier
-    verifier.verify(@jws)
-  end
-
-  test 'Verifier can verify JWS when key is resolvable' do
-    skip('Key resolution not implemented')
-    stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
-    verifier = HealthCards::Verifier.new
-    verifier.verify(@jws)
+    assert verifier.verify(@jws)
   end
 
   ## Key Resolution
 
   test 'Verifier key resolution is active by default' do
-    skip('Key resolution not implemented')
-    assert HealthCards::Verifier.new.globally_resolve_keys?
+    assert HealthCards::Verifier.new.resolve_keys?
   end
 
   test 'Verifier key resolution can be disabled' do
-    skip('Key resolution not implemented')
     verifier = HealthCards::Verifier.new
     assert verifier.resolve_keys?
     verifier.resolve_keys = false
@@ -149,29 +142,9 @@ class VerifierTest < ActiveSupport::TestCase
     assert verifier.verify(@jws)
   end
 
-  test 'Verifier class key resolution is active by default' do
-    skip('Key resolution not implemented')
-    assert HealthCards::Verifier.globally_resolve_keys?
-  end
-
-  test 'Verifier class key resolution can be disabled' do
-    skip('Key resolution not implemented')
+  test 'Verifier class will verify health cards when key is resolvable' do
+    stub_request(:get, /jwks.json/).to_return(status: 200, body: @verifier.keys.to_jwk)
     verifier = HealthCards::Verifier
-    assert verifier.globally_resolve_keys?
-    verifier.globally_resolve_keys = false
-    assert_not verifier.globally_resolve_keys?
-    verifier.globally_resolve_keys = true
-  end
-
-  test 'Verifier class will not verify health cards when key is not resolvable' do
-    skip('Key resolution not implemented')
-    stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
-    verifier = HealthCards::Verifier
-    verifier.globally_resolve_keys = false
-    assert_raises HealthCards::MissingPublicKey do
-      verifier.verify(@jws)
-    end
-    verifier.globally_resolve_keys = true
     assert verifier.verify(@jws)
   end
 end

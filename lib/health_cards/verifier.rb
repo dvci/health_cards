@@ -6,10 +6,26 @@ module HealthCards
     attr_reader :keys
     attr_accessor :resolve_keys
 
+    def self.verify(verifiable)
+      jws = JWS.from_jws(verifiable)
+      key_set = resolve_key(jws)
+      key = key_set.find_key(jws.kid)
+      jws.public_key = key
+      jws.verify
+    end
+
+    # Resolve a key
+    # @param jws [HealthCards::JWS, String] The JWS for which to resolve keys
+    # @return [HealthCards::KeySet]
+    def self.resolve_key(jws)
+      res = Net::HTTP.get(URI("#{HealthCard.from_jws(jws.to_s).issuer}/.well-known/jwks.json"))
+      HealthCards::KeySet.from_jwks(res)
+    end
+
     # Create a new Verifier
     #
     # @param keys [HealthCards::KeySet, HealthCards::Key, nil]
-    def initialize(keys: nil)
+    def initialize(keys: nil, resolve_keys: true)
       @keys = case keys
               when KeySet
                 keys
@@ -18,11 +34,13 @@ module HealthCards
               else
                 KeySet.new
               end
+
+      self.resolve_keys = resolve_keys
     end
 
     # Add a key to use when verifying
     #
-    # @param key [HealthCards::Key] the key to add
+    # @param key [HealthCards::Key, HealthCards::KeySet] the key to add
     def add_keys(key)
       @keys.add_keys(key)
     end
@@ -36,20 +54,14 @@ module HealthCards
 
     # Verify a HealthCard
     #
-    # @param verifiable [HealthCards::HealthCard, HealthCards::JWS, String] the health card to verify
+    # @param verifiable [HealthCards::JWS, String] the health card to verify
     # @return [Boolean]
     def verify(verifiable)
       # TODO: This needs better logic to make sure the public key is correct and check for key resolution
-      jws = case verifiable
-            when JWS
-              verifiable
-            when String
-              JWS.from_jws(verifiable)
-            else
-              raise ArgumentError, 'Expected either a HealthCards::JWS or String'
-            end
+      jws = JWS.from_jws(verifiable)
 
-      resolve_key(jws)
+      add_keys(self.class.resolve_key(jws)) if (resolve_keys? && @keys.find_key(jws.kid).nil?)
+
       key = keys.find_key(jws.kid)
       raise MissingPublicKey, 'Verifier does not contain public key that is able to verify this signature' unless key
 
@@ -57,24 +69,10 @@ module HealthCards
       jws.verify
     end
 
-    def resolve_key(jws)
-      return unless (resolve_keys? && @keys.find_key(jws.kid).nil?)
-
-      res = Net::HTTP.get(URI(public_key_url(jws)))
-      add_keys(HealthCards::KeySet.from_jwks(res))
-    end
-
     def resolve_keys?
       resolve_keys
     end
 
     private
-
-    # The location of the JWKS containing the public key for the provided JWS
-    #
-    # @param jws [String, HealthCards::JWS] The JWS
-    def public_key_url(jws)
-      "#{HealthCard.from_jws(jws.to_s).issuer}/.well-known/jwks.json"
-    end
   end
 end
