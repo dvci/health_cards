@@ -17,7 +17,7 @@ module HealthCards
     end
 
     def self.from_jwk(jwk_key)
-      jwk_key.transform_keys(&:to_sym)
+      jwk_key = jwk_key.transform_keys(&:to_sym)
       group = OpenSSL::PKey::EC::Group.new('prime256v1')
       key = OpenSSL::PKey::EC.new(group)
       key.private_key = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk_key[:d]), 2) if jwk_key[:d]
