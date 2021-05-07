@@ -21,11 +21,46 @@ class KeyTest < ActiveSupport::TestCase
     jwk = @key.public_key.to_jwk
 
     assert_not_nil jwk[:x]
-    assert_not_nil jwk[:x]
+    assert_not_nil jwk[:y]
     assert_nil jwk[:d]
 
     assert_equal 'sig', jwk[:use]
     assert_equal 'ES256', jwk[:alg]
+  end
+
+  test 'Create key from jwk containing the private key' do
+    jwk = @key.to_jwk
+    jwk_key = HealthCards::Key.from_jwk(jwk)
+
+    assert jwk_key.is_a? HealthCards::PrivateKey
+
+    assert_not_nil jwk[:x]
+    assert_not_nil jwk[:y]
+    assert_not_nil jwk[:d]
+
+    assert_equal @key.kid, jwk_key.kid
+
+    new_jwk = jwk_key.to_jwk
+    assert_equal jwk[:x], new_jwk[:x]
+    assert_equal jwk[:y], new_jwk[:y]
+    assert_equal jwk[:d], new_jwk[:d]
+  end
+
+  test 'Create key from jwk containing the public key' do
+    jwk = @key.public_key.to_jwk
+    jwk_key = HealthCards::Key.from_jwk(jwk)
+
+    assert jwk_key.is_a? HealthCards::PublicKey
+
+    assert_not_nil jwk[:x]
+    assert_not_nil jwk[:y]
+    assert_nil jwk[:d]
+
+    assert_equal @key.kid, jwk_key.kid
+
+    new_jwk = jwk_key.to_jwk
+    assert_equal jwk[:x], new_jwk[:x]
+    assert_equal jwk[:y], new_jwk[:y]
   end
 
   test 'public coordinates doesn\'t include d' do

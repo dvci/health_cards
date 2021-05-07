@@ -16,6 +16,16 @@ module HealthCards
       raise InvalidKeyException.new(self, obj) unless obj.is_a?(self) || (allow_nil && obj.nil?)
     end
 
+    def self.from_jwk(jwk_key)
+      jwk_key.transform_keys(&:to_sym)
+      group = OpenSSL::PKey::EC::Group.new('prime256v1')
+      key = OpenSSL::PKey::EC.new(group)
+      key.private_key = OpenSSL::BN.new(Base64.urlsafe_decode64(jwk_key[:d]), 2) if jwk_key[:d]
+      public_key_bn = ['04'].pack('H*') + Base64.urlsafe_decode64(jwk_key[:x]) + Base64.urlsafe_decode64(jwk_key[:y])
+      key.public_key = OpenSSL::PKey::EC::Point.new(group, OpenSSL::BN.new(public_key_bn, 2))
+      key.private_key? ? HealthCards::PrivateKey.new(key) : HealthCards::PublicKey.new(key)
+    end
+
     def initialize(ec_key)
       @key = ec_key
     end
