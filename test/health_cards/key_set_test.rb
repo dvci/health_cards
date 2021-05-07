@@ -33,6 +33,13 @@ class KeySetTest < ActiveSupport::TestCase
     assert_includes key_set, @keys[1].public_key
   end
 
+  test 'KeySet can be created from an JWKS' do
+    jwks = HealthCards::KeySet.new(@keys).to_jwk
+    key_set = HealthCards::KeySet.from_jwks(jwks)
+    assert key_set.include?(@keys[0])
+    assert key_set.include?(@keys[1])
+  end
+
   ## Adding and Removing Keys
 
   test 'A single private can be added to an existing KeySet' do
