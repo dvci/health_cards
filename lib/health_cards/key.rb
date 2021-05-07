@@ -15,6 +15,10 @@ module HealthCards
       raise InvalidKeyException.new(self, obj) unless obj.is_a?(self) || (allow_nil && obj.nil?)
     end
 
+    # Create a key from a JWK
+    #
+    # @param jwk_key [Hash] The JWK represented by a Hash
+    # @return [HealthCards::Key] The key represented by the JWK
     def self.from_jwk(jwk_key)
       jwk_key = jwk_key.transform_keys(&:to_sym)
       group = OpenSSL::PKey::EC::Group.new('prime256v1')

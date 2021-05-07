@@ -6,6 +6,12 @@ module HealthCards
     attr_reader :keys
     attr_accessor :resolve_keys
 
+    # Verify a HealthCard
+    #
+    # This method _always_ uses key resolution and does not depend on any cached keys
+    #
+    # @param verifiable [HealthCards::JWS, String] the health card to verify
+    # @return [Boolean]
     def self.verify(verifiable)
       jws = JWS.from_jws(verifiable)
       key_set = resolve_key(jws)
@@ -24,7 +30,8 @@ module HealthCards
 
     # Create a new Verifier
     #
-    # @param keys [HealthCards::KeySet, HealthCards::Key, nil]
+    # @param keys [HealthCards::KeySet, HealthCards::Key, nil] keys to use when verifying Health Cards
+    # @param resolve_keys [Boolean] Enables or disables key resolution
     def initialize(keys: nil, resolve_keys: true)
       @keys = case keys
               when KeySet
