@@ -24,7 +24,10 @@ module HealthCards
       # @param key [HealthCards::PrivateKey] the private key associated with the JWS
       # @return [HealthCards::HealthCard]
       def from_jws(jws, public_key: nil, key: nil)
-        raise ArgumentError, 'Expected either a HealthCards::JWS or String' unless (jws.is_a?(HealthCards::JWS) || jws.is_a?(String))
+        unless jws.is_a?(HealthCards::JWS) || jws.is_a?(String)
+          raise ArgumentError,
+                'Expected either a HealthCards::JWS or String'
+        end
 
         jws = jws.to_s if jws.is_a? HealthCards::JWS
         header, payload, signature = jws.split('.').map { |entry| decode(entry) }

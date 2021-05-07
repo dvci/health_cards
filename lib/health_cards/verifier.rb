@@ -60,7 +60,7 @@ module HealthCards
       # TODO: This needs better logic to make sure the public key is correct and check for key resolution
       jws = JWS.from_jws(verifiable)
 
-      add_keys(self.class.resolve_key(jws)) if (resolve_keys? && @keys.find_key(jws.kid).nil?)
+      add_keys(self.class.resolve_key(jws)) if resolve_keys? && @keys.find_key(jws.kid).nil?
 
       key = keys.find_key(jws.kid)
       raise MissingPublicKey, 'Verifier does not contain public key that is able to verify this signature' unless key
@@ -72,7 +72,5 @@ module HealthCards
     def resolve_keys?
       resolve_keys
     end
-
-    private
   end
 end

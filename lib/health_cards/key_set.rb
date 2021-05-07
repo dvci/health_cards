@@ -11,7 +11,7 @@ module HealthCards
 
     def self.from_jwks(jwks)
       jwks = JSON.parse(jwks)
-      keys = jwks['keys'].map {|jwk| HealthCards::Key.from_jwk(jwk)}
+      keys = jwks['keys'].map { |jwk| HealthCards::Key.from_jwk(jwk) }
       KeySet.new(keys)
     end
 
