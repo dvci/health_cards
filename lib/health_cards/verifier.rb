@@ -4,6 +4,7 @@ module HealthCards
   # Verifiers can validate HealthCards using public keys
   class Verifier
     attr_reader :keys
+    attr_accessor :resolve_keys
 
     # Create a new Verifier
     #
@@ -48,11 +49,32 @@ module HealthCards
               raise ArgumentError, 'Expected either a HealthCards::JWS or String'
             end
 
+      resolve_key(jws)
       key = keys.find_key(jws.kid)
       raise MissingPublicKey, 'Verifier does not contain public key that is able to verify this signature' unless key
 
       jws.public_key = key
       jws.verify
+    end
+
+    def resolve_key(jws)
+      return unless (resolve_keys? && @keys.find_key(jws.kid).nil?)
+
+      res = Net::HTTP.get(URI(public_key_url(jws)))
+      add_keys(HealthCards::KeySet.from_jwks(res))
+    end
+
+    def resolve_keys?
+      resolve_keys
+    end
+
+    private
+
+    # The location of the JWKS containing the public key for the provided JWS
+    #
+    # @param jws [String, HealthCards::JWS] The JWS
+    def public_key_url(jws)
+      "#{HealthCard.from_jws(jws.to_s).issuer}/.well-known/jwks.json"
     end
   end
 end

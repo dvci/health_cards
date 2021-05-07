@@ -139,8 +139,7 @@ class VerifierTest < ActiveSupport::TestCase
   end
 
   test 'Verifier will not verify health cards when key is not resolvable' do
-    skip('Key resolution not implemented')
-    stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
+    stub_request(:get, /jwks.json/).to_return(status: 200, body: @verifier.keys.to_jwk)
     verifier = HealthCards::Verifier.new
     verifier.resolve_keys = false
     assert_raises HealthCards::MissingPublicKey do
