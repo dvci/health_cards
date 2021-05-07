@@ -5,6 +5,7 @@
 # HealthCardsController is the endpoint for download and issue of health cards
 class HealthCardsController < ApplicationController
   before_action :create_exporter, except: [:scan, :qr_contents, :upload]
+  skip_before_action :verify_authenticity_token, only: [:show]
 
   def show
     respond_to do |format|
