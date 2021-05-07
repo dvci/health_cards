@@ -29,7 +29,7 @@ module HealthCards
                 'Expected either a HealthCards::JWS or String'
         end
 
-        jws = jws.to_s if jws.is_a? HealthCards::JWS
+        jws = jws.to_s
         header, payload, signature = jws.split('.').map { |entry| decode(entry) }
         header = JSON.parse(header)
         JWS.new(header: header, payload: payload, signature: signature,
