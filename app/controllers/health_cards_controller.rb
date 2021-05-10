@@ -22,11 +22,16 @@ class HealthCardsController < ApplicationController
   end
 
   def details
-    @fhir_bundle = @bundle
     # @minified_fhir_bundle = 
     @jws_encoded_details = @exporter.jws
-    # @jws_decoded_details = HealthCards::JWS.decode @jws_encoded_details
-    # @qr_code_payload = 
+    @fhir_bundle = HealthCards::HealthCard.from_jws(@jws_encoded_details.to_s)
+    @fhir_bundle = @fhir_bundle.to_bundle
+
+    @jws_header, @jws_fhir_payload, @jws_signature= @jws_encoded_details.to_s.split('.').map { |entry| HealthCards::JWS.decode(entry) }
+    
+    @jws_actual = HealthCards::HealthCard.from_payload @jws_fhir_payload.to_s
+    #@jws_decoded_details = HealthCards::JWS.from_jws @jws_encoded_details.to_s
+    @qr_code_payload = @jws_payload
     # @qr_codes = 
   end 
 
