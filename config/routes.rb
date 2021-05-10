@@ -10,7 +10,6 @@ Rails.application.routes.draw do
       get 'chunks', format: :json
 
     end
-    #check syntax into getting details to show up
   end
 
   resources :health_cards do
