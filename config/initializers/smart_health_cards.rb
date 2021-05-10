@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../../lib/health_cards/lib'
-require_relative '../../lib/health_cards/lib/health_cards'
+require 'health_cards'
 
 Rails.application.configure do
   config.smart = config_for('well-known')
