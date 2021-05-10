@@ -106,6 +106,8 @@ class KeySetTest < ActiveSupport::TestCase
     jwks['keys'].each do |entry|
       assert_equal 'sig', entry['use']
       assert_equal 'ES256', entry['alg']
+      assert_equal 'EC', entry['kty']
+      assert_equal 'P-256', entry['crv']
     end
   end
 end
