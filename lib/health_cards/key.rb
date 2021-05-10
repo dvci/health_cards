@@ -47,7 +47,7 @@ module HealthCards
     end
 
     def public_coordinates
-      coordinates.dup.tap { |coor| coor.delete(:d) }
+      coordinates.slice(:crv, :kty, :x, :y)
     end
 
     def coordinates
