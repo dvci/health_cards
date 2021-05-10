@@ -10,12 +10,25 @@ class HealthCardsController < ApplicationController
 
   def show
     respond_to do |format|
-      format.healthcard { render json: { verifiableCredential: [jws.to_s] } }
+      format.healthcard { render json: @exporter.download }
+      format.fhir_json do
+        @fhir_params = FHIR.from_contents(request.raw_post)
+        render json: @exporter.issue(@fhir_params)
+      end
       format.html do
         details
+      end
     end
   end
-end 
+
+  def details
+    @fhir_bundle = @bundle
+    # @minified_fhir_bundle = 
+    @jws_encoded_details = @exporter.jws
+    # @jws_decoded_details = HealthCards::JWS.decode @jws_encoded_details
+    # @qr_code_payload = 
+    # @qr_codes = 
+  end 
 
   def chunks
     render json: @exporter.chunks
@@ -23,24 +36,17 @@ end
 
   def scan; end
 
-  def details
-    @jws_encoded_details = jws
-    # @jws_decoded_details = HealthCards::JWS.to_s @jws_encoded_details
-    # @jws_header, @jws_payload, @jws_signature = jws_contents.split('.').map { |entry| decode(jws_encoded_details) }
-    @bundle_details = bundle.to_json
-  end 
-
   def qr_contents
     contents = JSON.parse(params[:qr_contents])
     @scan_result = HealthCards::Importer.scan(contents)
   end
-  
   def upload
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
 <<<<<<< HEAD
 =======
     @payload_array = HealthCards::Importer.upload(file)
+<<<<<<< HEAD
 
   def detail_patient
     
@@ -54,6 +60,8 @@ end
   def jws
     issuer.issue_jws(bundle)
 >>>>>>> f778dc0 (a button leading to details page but the detail page linking is broken)
+=======
+>>>>>>> 58fb950 (not able to obtain the decoded_jws)
   end
 
   private
@@ -63,7 +71,4 @@ end
     @exporter = COVIDHealthCardExporter.new(patient)
   end
 
-  def issuer
-    Rails.application.config.issuer
-  end
 end
