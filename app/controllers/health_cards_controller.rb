@@ -5,10 +5,17 @@
 # HealthCardsController is the endpoint for download and issue of health cards
 class HealthCardsController < ApplicationController
   before_action :create_exporter, except: [:scan, :qr_contents, :upload]
+  skip_before_action :verify_authenticity_token, only: [:create]
+  after_action :set_cors_header, only: :create
 
   def show
     respond_to do |format|
       format.healthcard { render json: @exporter.download }
+    end
+  end
+
+  def create
+    respond_to do |format|
       format.fhir_json do
         fhir_params = FHIR.from_contents(request.raw_post)
         render json: @exporter.issue(fhir_params)

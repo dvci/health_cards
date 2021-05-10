@@ -49,6 +49,8 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
 
     post(@fhir_url, params: params.to_hash, as: :json)
 
+    assert response['Access-Control-Allow-Origin'], '*'
+
     output = FHIR.from_contents(response.body)
 
     assert output.is_a?(FHIR::Parameters)
