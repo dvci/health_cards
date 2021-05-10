@@ -12,8 +12,8 @@ class HealthCardsController < ApplicationController
     respond_to do |format|
       format.healthcard { render json: @exporter.download }
       format.fhir_json do
-        fhir_params = FHIR.from_contents(request.raw_post)
-        render json: @exporter.issue(fhir_params)
+        @fhir_params = FHIR.from_contents(request.raw_post)
+        render json: @exporter.issue(@fhir_params)
       end
       format.html do
         @jws_encoded_details = @exporter.jws
@@ -22,7 +22,15 @@ class HealthCardsController < ApplicationController
       end
     end
   end
-end 
+
+  def details
+    @fhir_bundle = @bundle
+    # @minified_fhir_bundle = 
+    @jws_encoded_details = @exporter.jws
+    # @jws_decoded_details = HealthCards::JWS.decode @jws_encoded_details
+    # @qr_code_payload = 
+    # @qr_codes = 
+  end 
 
   def chunks
     render json: @exporter.chunks
@@ -39,13 +47,13 @@ end
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
     @payload_array = HealthCards::Importer.upload(file)
-  end 
-  
+  end
+
   private
 
   def create_exporter
-    @patient = Patient.find(params[:patient_id])
-    @exporter = COVIDHealthCardExporter.new(@patient)
+    patient = Patient.find(params[:patient_id])
+    @exporter = COVIDHealthCardExporter.new(patient)
   end
 
 end
