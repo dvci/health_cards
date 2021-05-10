@@ -6,4 +6,12 @@ namespace :test do
   end
 end
 
+namespace :health_cards do
+  desc 'irb'
+  task :irb do
+    require 'irb'
+    binding.irb
+  end
+end
+
 Rake::Task["test:run"].enhance ["test:health_cards"]
