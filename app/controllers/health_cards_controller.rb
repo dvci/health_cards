@@ -23,15 +23,6 @@ class HealthCardsController < ApplicationController
     end
   end
 
-  def details
-    @fhir_bundle = @bundle
-    # @minified_fhir_bundle = 
-    @jws_encoded_details = @exporter.jws
-    # @jws_decoded_details = HealthCards::JWS.decode @jws_encoded_details
-    # @qr_code_payload = 
-    # @qr_codes = 
-  end 
-
   def chunks
     render json: @exporter.chunks
   end
