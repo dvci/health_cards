@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'health_cards/chunking'
 
 JWS_SMALL = 's' * 1195
 JWS_LARGE = 'l' * 1196
@@ -11,6 +10,7 @@ FILEPATH_NUMERIC_QR_CODE = 'example-numeric-qr-code'
 FILEPATH_NUMERIC_QR_CODE_MULTIPLE = 'example-numeric-qr-code-multiple'
 FILEPATH_JWS = 'example-jws'
 FILEPATH_JWS_MULTIPLE = 'example-jws-multiple'
+FILEPATH_PAYLOAD_MINIFIED = 'example-jws-payload-minified'
 
 class ChunkingTest < ActiveSupport::TestCase
   setup do
