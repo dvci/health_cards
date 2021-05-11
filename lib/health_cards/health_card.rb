@@ -196,7 +196,7 @@ module HealthCards
 
     def process_url(url)
       new_url = @url_map.key?(url) ? @url_map[url] : @url_map["#{issuer}/#{url}"]
-      raise InvalidBundleReferenceException(url) unless new_url
+      raise InvalidBundleReferenceException, url unless new_url
 
       new_url
     end
