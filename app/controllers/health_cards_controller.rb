@@ -23,10 +23,12 @@ class HealthCardsController < ApplicationController
 
   def details
     @jws_encoded_details = @exporter.jws
-    @jws_header, @jws_fhir_payload, @jws_signature= @jws_encoded_details.to_s.split('.').map { |entry| HealthCards::JWS.decode(entry) }
+    @jws_header, @jws_fhir_payload, @jws_signature = @jws_encoded_details.to_s.split('.').map do |entry|
+      HealthCards::JWS.decode(entry)
+    end
     @health_card = HealthCards::HealthCard.from_jws @jws_encoded_details.to_s
     @qr_code_payload = @exporter.chunks
-  end 
+  end
 
   def chunks
     render json: @exporter.chunks
@@ -50,5 +52,4 @@ class HealthCardsController < ApplicationController
     @patient = Patient.find(params[:patient_id])
     @exporter = COVIDHealthCardExporter.new(@patient)
   end
-
 end
