@@ -17,8 +17,8 @@ class HealthCardsController < ApplicationController
   def create
     respond_to do |format|
       format.fhir_json do
-        @fhir_params = FHIR.from_contents(request.raw_post)
-        render json: @exporter.issue(@fhir_params)
+        fhir_params = FHIR.from_contents(request.raw_post)
+        render json: @exporter.issue(fhir_params)
       end
     end
   end
