@@ -12,22 +12,15 @@ class HealthCardsController < ApplicationController
     respond_to do |format|
       format.healthcard { render json: @exporter.download }
       format.fhir_json do
-        @fhir_params = FHIR.from_contents(request.raw_post)
-        render json: @exporter.issue(@fhir_params)
+        fhir_params = FHIR.from_contents(request.raw_post)
+        render json: @exporter.issue(fhir_params)
       end
       format.html do
-        details
+        @jws_encoded_details = @exporter.jws
+        @health_card = HealthCards::HealthCard.from_jws @jws_encoded_details.to_s
+        @qr_code_payload = @exporter.chunks
       end
     end
-  end
-
-  def details
-    @jws_encoded_details = @exporter.jws
-    @jws_header, @jws_fhir_payload, @jws_signature = @jws_encoded_details.to_s.split('.').map do |entry|
-      HealthCards::JWS.decode(entry)
-    end
-    @health_card = HealthCards::HealthCard.from_jws @jws_encoded_details.to_s
-    @qr_code_payload = @exporter.chunks
   end
 
   def chunks
