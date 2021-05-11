@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'health_cards'
+
+key = HealthCards::PrivateKey.generate_key
+key.to_jwk
+
+issuer = HealthCards::Issuer.new(key: key, url: 'http://example.com')
+
+jws = issuer.issue_jws(FHIR::Bundle.new)
+jws.verify
+
+ver = HealthCards::Verifier.new(keys: key.public_key)
+ver.verify(jws)
+
+card1 = HealthCards::HealthCard.from_jws(jws.to_s)
+card1.to_json
+
+card2 = HealthCards::COVIDHealthCard.from_jws(jws.to_s)
+card2.to_json

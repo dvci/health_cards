@@ -1,0 +1,12 @@
+<section class="section">
+  <div class="container">
+    <p class="title"><%= pluralize @payload_array.size, 'credential' %> found in file '<%= @filename %>'</p>
+    <div class="tile is-ancestor box">
+      <% @payload_array.each do |payload| %>
+        <div class="tile is-child">
+        <%= render partial: 'patient', object: create_patient_from_jws(payload), locals: {payload: payload} %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
