@@ -57,7 +57,8 @@
     </div>
     <div id="qr-code"></div>
     <h1>This is where the QR code should go</h1>
-    <%# <%= wicked_pdf_image_tag 'images/some_qr_code.jpg' %>
-    <%# <%= image_tag image_url('some_qr_code.png') %>
+    <%= @image_uri %>
+    <%= wicked_pdf_image_tag @image_uri %>
+
   </div>
 </section>

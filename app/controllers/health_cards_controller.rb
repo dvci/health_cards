@@ -18,7 +18,7 @@ class HealthCardsController < ApplicationController
   end
 
   def qrcode
-    
+    @image_uri = params[:qrcode]
   end
 
   def chunks

@@ -36,10 +36,18 @@ fetch(url)
     // Add each QR code to the qr-code container
     qrCodes.forEach(qrCode => {
       const canvas = document.createElement('canvas');
-      QRCode.toCanvas(canvas, qrCode, {
+
+      options = {
         version: 22,
         errorCorrectionLevel: 'L'
-      });
+      };
+      QRCode.toDataURL(qrCode, options, function (err, url) {
+        if (err) throw err
+        var field = document.getElementById('qr-code-field')
+        field.value = url
+      })
+
+      QRCode.toCanvas(canvas, qrCode, options);
 
       // QRCode.toFile('./test.png', 'qrCodse', {
       //   version: 22,
@@ -52,6 +60,8 @@ fetch(url)
     // <a href="dataURL" target="_blank" download="image.png"></a>
     console.log(container);
     window.status = 'ready_to_print';
+    console.log(window.status)
 
-    // window.status = 'true'
+    // var myUrl = container.toDataURL('image/png');
+    // $("#qr-code").val(myUrl);
   });
