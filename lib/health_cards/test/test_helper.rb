@@ -7,7 +7,7 @@ require 'minitest/autorun'
 require 'webmock/minitest'
 require 'active_support'
 
-FHIR.logger.level=Logger::FATAL
+FHIR.logger.level = Logger::FATAL
 
 module ActiveSupport
   class TestCase
@@ -24,7 +24,7 @@ module ActiveSupport
     end
 
     def rails_key_path
-      "test/fixtures/keys/test_key.pem"
+      'test/fixtures/keys/test_key.pem'
     end
 
     def rails_private_key
