@@ -6,3 +6,7 @@
 require_relative 'config/application'
 
 Rails.application.load_tasks
+
+Rake::Task[:test].enhance do
+  Rake::Task["test:health_cards"].invoke
+end
