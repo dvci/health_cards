@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require 'rake/testtask'
 
 namespace :test do
+  # rubocop:disable Rails/RakeEnvironment
   task :health_cards do
-    puts 'wwere'
-    sh "cd lib/health_cards && bin/rake"
+    sh 'cd lib/health_cards && bin/rake'
   end
+  # rubocop:enable Rails/RakeEnvironment
 end

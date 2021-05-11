@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift File.dirname(__FILE__) + '/../../lib/health_cards/lib'
+$LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../../lib/health_cards/lib"
 require 'health_cards'
 
 Rails.application.configure do
