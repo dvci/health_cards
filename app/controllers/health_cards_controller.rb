@@ -48,8 +48,8 @@ class HealthCardsController < ApplicationController
   private
 
   def create_exporter
-    patient = Patient.find(params[:patient_id])
-    @exporter = COVIDHealthCardExporter.new(patient)
+    @patient = Patient.find(params[:patient_id])
+    @exporter = COVIDHealthCardExporter.new(@patient)
   end
 
   def issuer
