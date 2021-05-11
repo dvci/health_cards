@@ -17,7 +17,7 @@ class HealthCardsController < ApplicationController
       end
       format.html do
         @jws_encoded_details = @exporter.jws
-        @health_card = HealthCards::HealthCard.from_jws @jws_encoded_details.to_s
+        @health_card = HealthCards::COVIDHealthCard.from_jws @jws_encoded_details
         @qr_code_payload = @exporter.chunks
       end
     end
