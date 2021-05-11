@@ -9,3 +9,12 @@ Metrics/BlockLength:
   Enabled: true
   Exclude:
     - test/**/*
+
+Metrics/AbcSize:
+  Max: 30
+
+Metrics/ClassLength:
+  Max: 200
+
+Metrics/MethodLength:
+  Max: 25
