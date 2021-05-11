@@ -11,6 +11,9 @@ class HealthCardsController < ApplicationController
   def show
     respond_to do |format|
       format.healthcard { render json: @exporter.download }
+      format.pdf do
+        create(@patient, format: 'pdf')
+      end
     end
   end
 
@@ -25,7 +28,7 @@ class HealthCardsController < ApplicationController
         @image_uri = params[:qrcode]
         render pdf: "health_card", layout: 'pdf.html', encoding: 'utf8'
       end
-
+      
     end
   end
 

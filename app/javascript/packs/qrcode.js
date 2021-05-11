@@ -23,7 +23,6 @@ function addPrefixToQrCodes(chunks) {
   });
 }
 
-
 const current = window.location.href;
 const url = current.includes('health_card') ? `${current}/chunks.json` : `${current}/health_card/chunks.json`;
 
@@ -36,7 +35,6 @@ fetch(url)
     // Add each QR code to the qr-code container
     qrCodes.forEach(qrCode => {
       const canvas = document.createElement('canvas');
-
       options = {
         version: 22,
         errorCorrectionLevel: 'L'

@@ -11,8 +11,16 @@
           <div class="is-grouped">
             <%= link_to 'Edit', edit_patient_path(@patient), class: 'button is-info is-light' %> 
             <%= link_to 'Download Health Card', patient_health_card_path(@patient, format: 'smart-health-card'), class: 'button is-info is-light' %>
-            <%= link_to 'Download PDF', patient_health_card_path(@patient, format: 'pdf'), class: 'button is-info is-light' %>
-
+            <%#link_to 'Download PDF', patient_health_card_path(@patient, format: 'pdf'), class: 'button is-info is-light' %>
+            <img id ="image">
+              <div class="level-right">
+                <div class="level-item">
+                  <%= form_with url: patient_health_card_path(@patient, format: 'pdf'), method: :post do |f| %>
+                    <%= f.hidden_field :qrcode, id: 'qr-code-field' %>
+                    <%= f.submit 'View PDF', class: 'button is-info is-light' %>
+                  <% end %>
+                </div>
+              </div>
           </div>
         </div>
       </div>
@@ -65,20 +73,7 @@
         <% end %>
       </div>
     </div>
-    <img id ="image">
     <div id="qr-code"></div>
-
-    <div class="level-right">
-      <div class="level-item">
-    
-        <div> 
-        <%= form_with url: patient_health_card_path(@patient, format: 'pdf'), method: :post do |f| %>
-          <%= f.hidden_field :qrcode, id: 'qr-code-field' %>
-          <%= f.submit 'View PDF', class: 'button is-info' %>
-        <% end %>
-      </div>
-    </div>
-
     <%= link_to 'Patient List', patients_path, class: 'button is-info' %>
   </div>
 </section>
