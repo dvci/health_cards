@@ -28,7 +28,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should show health card' do
-    get patient_health_card_url(@patient, format: :html)
+    get(patient_health_card_url(@patient, format: :html))
     assert_response :success
   end
 
