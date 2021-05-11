@@ -27,6 +27,12 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+
+  test 'should show health card' do
+    get patient_health_card_url(@patient, format: :html)
+    assert_response :success
+  end
+
   test 'upload file' do
     file = fixture_file_upload('test/fixtures/files/example-00-e-file.smart-health-card')
     post(upload_health_cards_path, params: { health_card: file })
