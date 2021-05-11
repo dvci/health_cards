@@ -140,6 +140,14 @@ class HealthCardTest < ActiveSupport::TestCase
     end
   end
 
+  test 'raises error when url refers to resource outside bundle' do
+    bundle = FHIR::Bundle.new(load_json_fixture('example-logical-link-bundle-bad'))
+    card = HealthCards::HealthCard.new(issuer: 'http://example.org/fhir', bundle: bundle)
+    assert_raises HealthCards::InvalidBundleReferenceException do
+      new_bundle = FHIR::Bundle.new(card.strip_fhir_bundle)
+    end
+  end
+
   test 'compress_payload applies a raw deflate compression and allows for the original payload to be restored' do
     original_hc = HealthCards::HealthCard.new(issuer: @issuer, bundle: FHIR::Bundle.new)
     new_hc = HealthCards::HealthCard.from_payload(original_hc.to_s)
