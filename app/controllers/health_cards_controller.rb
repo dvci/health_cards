@@ -12,8 +12,8 @@ class HealthCardsController < ApplicationController
     respond_to do |format|
       format.healthcard { render json: @exporter.download }
       format.fhir_json do
-        @fhir_params = FHIR.from_contents(request.raw_post)
-        render json: @exporter.issue(@fhir_params)
+        fhir_params = FHIR.from_contents(request.raw_post)
+        render json: @exporter.issue(fhir_params)
       end
       format.html do
         @jws_encoded_details = @exporter.jws
