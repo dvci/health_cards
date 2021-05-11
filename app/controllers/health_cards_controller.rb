@@ -11,12 +11,6 @@ class HealthCardsController < ApplicationController
   def show
     respond_to do |format|
       format.healthcard { render json: @exporter.download }
-      format.pdf do #{ render json: { verifiableCredential: [jws.to_s] } }
-        # Request body 
-        
-        render pdf: "health_card", layout: 'pdf.html', encoding: 'utf8'# , window_status: 'ready_to_print'
-      end
-      format.html
     end
   end
 
@@ -26,11 +20,19 @@ class HealthCardsController < ApplicationController
         fhir_params = FHIR.from_contents(request.raw_post)
         render json: @exporter.issue(fhir_params)
       end
+
+      format.pdf do
+        @image_uri = params[:qrcode]
+        render pdf: "health_card", layout: 'pdf.html', encoding: 'utf8'
+      end
+
     end
   end
 
   def qrcode
     @image_uri = params[:qrcode]
+    # @patient_id = params[:patient]
+    # render patient_health_card_path(@patient_id, format: 'pdf')
   end
 
   def chunks
@@ -53,7 +55,7 @@ class HealthCardsController < ApplicationController
   private
 
   def create_exporter
-    patient = Patient.find(params[:patient_id])
-    @exporter = COVIDHealthCardExporter.new(patient)
+    @patient = Patient.find(params[:patient_id])
+    @exporter = COVIDHealthCardExporter.new(@patient)
   end
 end

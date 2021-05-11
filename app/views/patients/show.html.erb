@@ -72,7 +72,7 @@
       <div class="level-item">
     
         <div> 
-        <%= form_with url: qrcode_patient_health_card_path(@patient), method: :post do |f| %>
+        <%= form_with url: patient_health_card_path(@patient, format: 'pdf'), method: :post do |f| %>
           <%= f.hidden_field :qrcode, id: 'qr-code-field' %>
           <%= f.submit 'View PDF', class: 'button is-info' %>
         <% end %>
