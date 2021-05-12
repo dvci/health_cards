@@ -30,6 +30,10 @@ module HealthCards
       key.private_key? ? HealthCards::PrivateKey.new(key) : HealthCards::PublicKey.new(key)
     end
 
+    def group
+      @key.group
+    end
+
     def initialize(ec_key)
       @key = ec_key
     end

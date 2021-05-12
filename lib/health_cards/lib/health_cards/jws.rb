@@ -31,13 +31,14 @@ module HealthCards
 
         header, payload, signature = jws.to_s.split('.').map { |entry| decode(entry) }
         header = JSON.parse(header)
-        JWS.new(header: header, payload: payload, signature: signature,
+        jws = JWS.new(header: header, payload: payload, signature: signature,
                 public_key: public_key, key: key)
+        puts jws.signature
+        jws
       end
     end
 
     attr_reader :key, :public_key, :payload
-    attr_writer :signature
     attr_accessor :header
 
     # Create a new JWS
@@ -46,7 +47,7 @@ module HealthCards
       # Not using accessors because they reset the signature which requires both a key and a payload
       @header = header
       @payload = payload
-      self.signature = signature if signature
+      @signature = signature
       @key = key
       @public_key = public_key || key&.public_key
     end
@@ -109,12 +110,25 @@ module HealthCards
     #
     # @return [Boolean]
     def verify
+      puts 'we hit'
       raise MissingPublicKey unless public_key
-
-      public_key.verify(encoded_payload, signature)
+      ppayload = "#{JWS.encode(@header.to_json)}.#{encoded_payload}"
+      puts "My Payload: #{JWS.encode(@header.to_json)}.#{encoded_payload}"
+      puts "signature: #{signature}"
+      puts signature
+      public_key.verify(OpenSSL::Digest.new('sha256').digest(ppayload), raw_to_asn1(signature, public_key))
+      # Alternative:
+      # public_key.verify(ppayload, raw_to_asn1(signature, public_key))
     end
 
     private
+
+    def raw_to_asn1(signature, private_key)
+      byte_size = (private_key.group.degree + 7) / 8
+      sig_bytes = signature[0..(byte_size - 1)]
+      sig_char = signature[byte_size..-1] || ''
+      OpenSSL::ASN1::Sequence.new([sig_bytes, sig_char].map { |int| OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(int, 2)) }).to_der
+    end
 
     def encoded_payload
       JWS.encode(payload)
