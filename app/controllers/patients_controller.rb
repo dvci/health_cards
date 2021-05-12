@@ -15,7 +15,13 @@ class PatientsController < ApplicationController
     respond_to do |format|
       format.html
       format.fhir_json { render json: @patient.to_json }
-      format.json { render json: @patient.to_json }
+      format.json do
+        if helpers.verify_token(request.headers)
+          render json: @patient.to_json
+        else
+          render json: { errors: ['Unauthorized code'] }, status: :unauthorized
+        end
+      end
     end
   end
 

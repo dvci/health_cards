@@ -18,9 +18,15 @@ class AuthController < ApplicationController
     params = request.parameters
     if params[:code] == Rails.application.config.auth_code
       scope = ['launch/patient', 'patient/Immunization.read']
-      payload = { exp: ((Time.now + 3600).to_f + 1000).to_i, scope: scope }
+      payload = { exp: ((Time.current + 3600).to_f + 1000).to_i, scope: scope }
       token = JWT.encode payload, Rails.application.config.hc_key.key, 'ES256'
-      render json: { access_token: token, token_type: 'Bearer', expires_in: 3600, scope: scope, patient: '13' }
+      render json: {
+        access_token: token,
+        token_type: 'Bearer',
+        expires_in: 3600,
+        scope: scope,
+        patient: Patient.all.first.id
+      }
     else
       render json: { errors: ['Unauthorized code'] }, status: :unauthorized
     end
