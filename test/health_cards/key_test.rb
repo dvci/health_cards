@@ -8,13 +8,13 @@ class KeyTest < ActiveSupport::TestCase
     @key_path = rails_key_path
     @key = HealthCards::PrivateKey.load_from_or_create_from_file(@key_path)
     @test_jwk = {
-      kty: "EC",
-      kid: "3Kfdg-XwP-7gXyywtUfUADwBumDOPKMQx-iELL11W9s",
-      use: "sig",
-      alg: "ES256",
-      crv: "P-256",
-      x: "11XvRWy1I2S0EyJlyf_bWfw_TQ5CJJNLw78bHXNxcgw",
-      y: "eZXwxvO1hvCY0KucrPfKo7yAyMT6Ajc3N7OkAB6VYy8"
+      kty: 'EC',
+      kid: '3Kfdg-XwP-7gXyywtUfUADwBumDOPKMQx-iELL11W9s',
+      use: 'sig',
+      alg: 'ES256',
+      crv: 'P-256',
+      x: '11XvRWy1I2S0EyJlyf_bWfw_TQ5CJJNLw78bHXNxcgw',
+      y: 'eZXwxvO1hvCY0KucrPfKo7yAyMT6Ajc3N7OkAB6VYy8'
     }
   end
 

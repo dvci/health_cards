@@ -23,7 +23,7 @@ module HealthCards
     end
 
     def sign(payload)
-      asn1_to_raw(@key.sign(OpenSSL::Digest::SHA256.new, payload), self)
+      asn1_to_raw(@key.sign(OpenSSL::Digest.new('SHA256'), payload), self)
     end
 
     def public_key

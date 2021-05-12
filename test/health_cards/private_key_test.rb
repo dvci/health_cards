@@ -5,12 +5,11 @@ require 'test_helper'
 class PrivateKeyTest < Minitest::Test
   def setup
     # Key from https://datatracker.ietf.org/doc/html/rfc7515#appendix-A.3.1
-    @jwk = {kty: "EC",
-            crv: "P-256",
-            x:"f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU",
-            y:"x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0",
-            d:"jpsQnnGQmL-YBIffH1136cspYG6-0iY7X1fCE9-E9LI"
-    }
+    @jwk = { kty: 'EC',
+             crv: 'P-256',
+             x: 'f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU',
+             y: 'x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0',
+             d: 'jpsQnnGQmL-YBIffH1136cspYG6-0iY7X1fCE9-E9LI' }
 
     @key = HealthCards::PrivateKey.from_jwk(@jwk)
 
@@ -24,7 +23,7 @@ class PrivateKeyTest < Minitest::Test
     signature = @key.sign(payload)
     assert @key.public_key.verify(payload, signature)
 
-    public_jwk = @jwk.reject {|k, _v| k == :d}
+    public_jwk = @jwk.reject { |k, _v| k == :d }
     jwk_public_key = HealthCards::Key.from_jwk(public_jwk)
     assert jwk_public_key.is_a? HealthCards::PublicKey
     assert jwk_public_key.verify(payload, signature)

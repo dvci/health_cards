@@ -3,7 +3,6 @@ module HealthCards
   #
   # @see https://datatracker.ietf.org/doc/html/rfc7515#appendix-A.3.1
   module Encoding
-
     # Encodes the provided data using url safe base64 without padding
     # @param data [String] the data to be encoded
     # @return [String] the encoded data
