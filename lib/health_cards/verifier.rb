@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
 require 'net/http'
+require_relative 'verification'
 
 module HealthCards
   # Verifiers can validate HealthCards using public keys
   class Verifier
     attr_reader :keys
     attr_accessor :resolve_keys
+
+    include HealthCards::Verification
+    extend HealthCards::Verification
 
     # Verify a HealthCard
     #
@@ -16,32 +20,6 @@ module HealthCards
     # @return [Boolean]
     def self.verify(verifiable)
       verify_using_key_set(verifiable)
-    end
-
-    # Verify Health Card with given KeySet
-    #
-    # @param verifiable [HealthCards::JWS, String] the health card to verify
-    # @param key_set [HealthCards::KeySet, nil] the KeySet from which keys should be taken or added
-    # @param resolve_keys [Boolean] if keys should be resolved
-    # @return [Boolean]
-    def self.verify_using_key_set(verifiable, key_set = nil, resolve_keys = true)
-      jws = JWS.from_jws(verifiable)
-      key_set ||= HealthCards::KeySet.new
-      key_set.add_keys(resolve_key(jws)) if resolve_keys && key_set.find_key(jws.kid).nil?
-
-      key = key_set.find_key(jws.kid)
-      raise MissingPublicKey, 'Verifier does not contain public key that is able to verify this signature' unless key
-
-      jws.public_key = key
-      jws.verify
-    end
-
-    # Resolve a key
-    # @param jws [HealthCards::JWS, String] The JWS for which to resolve keys
-    # @return [HealthCards::KeySet]
-    def self.resolve_key(jws)
-      res = Net::HTTP.get(URI("#{HealthCard.from_jws(jws.to_s).issuer}/.well-known/jwks.json"))
-      HealthCards::KeySet.from_jwks(res)
     end
 
     # Create a new Verifier
@@ -80,7 +58,7 @@ module HealthCards
     # @param verifiable [HealthCards::JWS, String] the health card to verify
     # @return [Boolean]
     def verify(verifiable)
-      self.class.verify_using_key_set(verifiable, keys, resolve_keys?)
+      verify_using_key_set(verifiable, keys, resolve_keys?)
     end
 
     def resolve_keys?
