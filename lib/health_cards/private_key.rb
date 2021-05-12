@@ -34,6 +34,10 @@ module HealthCards
       @public_key = PublicKey.new(pub)
     end
 
+    def key
+      @key
+    end
+
     private
 
     # Convert the ASN.1 Representation into the raw signature

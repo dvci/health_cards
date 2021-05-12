@@ -3,6 +3,7 @@
 # PatientsController manages patients via the Web UI
 class PatientsController < ApplicationController
   before_action :set_patient, only: %i[show edit update destroy]
+  after_action :set_cors_header, only: :show
 
   # GET /patients or /patients.json
   def index
@@ -14,6 +15,7 @@ class PatientsController < ApplicationController
     respond_to do |format|
       format.html
       format.fhir_json { render json: @patient.to_json }
+      format.json { render json: @patient.to_json }
     end
   end
 
