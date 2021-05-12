@@ -12,6 +12,7 @@ class PrivateKeyTest < Minitest::Test
              d: 'jpsQnnGQmL-YBIffH1136cspYG6-0iY7X1fCE9-E9LI' }
 
     @key = HealthCards::PrivateKey.from_jwk(@jwk)
+    @key2 = HealthCards::PrivateKey.from_jwk(@jwk)
 
     @encoder = Class.new
     @encoder.extend(HealthCards::Encoding)
@@ -19,7 +20,8 @@ class PrivateKeyTest < Minitest::Test
 
   def test_signing_payloads
     # Examples from https://datatracker.ietf.org/doc/html/rfc7515#appendix-A.3.1
-    payload = 'eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ'
+    payload = 'eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19'\
+              'yb290Ijp0cnVlfQ'
     signature = @key.sign(payload)
     assert @key.public_key.verify(payload, signature)
 
@@ -29,15 +31,22 @@ class PrivateKeyTest < Minitest::Test
     assert jwk_public_key.verify(payload, signature)
   end
 
-  def test_keys_from_jwk_deterministic
-    key1 = HealthCards::PrivateKey.from_jwk(@jwk)
-    key2 = HealthCards::PrivateKey.from_jwk(@jwk)
-    assert_equal key1.kid, key2.kid
+  def test_keys_from_jwk_deterministic_kid
+    assert_equal @key.kid, @key2.kid
+  end
 
-    assert_equal @jwk[:x], key1.coordinates[:x]
-    assert_equal @jwk[:y], key1.coordinates[:y]
+  def test_keys_from_jwk_deterministic_public_x_coordinates
+    assert_equal @jwk[:y], @key.coordinates[:y]
+    assert_equal @key.coordinates[:y], @key2.coordinates[:y]
+  end
 
-    assert_equal @jwk[:d], key1.coordinates[:d]
-    assert_equal key1.coordinates[:d], key2.coordinates[:d]
+  def test_keys_from_jwk_deterministic_public_y_coordinates
+    assert_equal @jwk[:y], @key.coordinates[:y]
+    assert_equal @key.coordinates[:y], @key2.coordinates[:y]
+  end
+
+  def test_keys_from_jwk_deterministic_private_coordinates
+    assert_equal @jwk[:d], @key.coordinates[:d]
+    assert_equal @key.coordinates[:d], @key2.coordinates[:d]
   end
 end

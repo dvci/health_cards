@@ -21,7 +21,8 @@ class EncodingTest < Minitest::Test
   def test_encodes_payload_correctly
     # Examples from: https://datatracker.ietf.org/doc/html/rfc7515
     {
-      "{\"iss\":\"joe\",\r\n \"exp\":1300819380,\r\n \"http://example.com/is_root\":true}" => 'eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ',
+      "{\"iss\":\"joe\",\r\n \"exp\":1300819380,\r\n \"http://example.com/is_root\":true}" =>
+        'eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ',
       'Payload' => 'UGF5bG9hZA'
     }.each do |payload, expected_base64url|
       assert_equal @klass.encode(payload), expected_base64url
