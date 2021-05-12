@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module HealthCards
   # Encoding utilities for producing JWS
   #
