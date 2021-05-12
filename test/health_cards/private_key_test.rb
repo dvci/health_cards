@@ -22,10 +22,15 @@ class PrivateKeyTest < Minitest::Test
     # Examples from https://datatracker.ietf.org/doc/html/rfc7515#appendix-A.3.1
     payload = 'eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ'
     signature = @key.sign(payload)
-    assert_equal @encoder.encode(signature), 'DtEhU3ljbEg8L38VWAfUAqOyKAM6-Xx-F4GawxaepmXFCgfTjDxw5djxLa8ISlSApmWQxfKTUJqPP3-Kg6NU1Q'
+    assert @key.public_key.verify(payload, signature)
+
+    public_jwk = @jwk.reject {|k, _v| k == :d}
+    jwk_public_key = HealthCards::Key.from_jwk(public_jwk)
+    assert jwk_public_key.is_a? HealthCards::PublicKey
+    assert jwk_public_key.verify(payload, signature)
   end
 
-  def test_keys_from_jwk_sign_deterministically
+  def test_keys_from_jwk_deterministic
     key1 = HealthCards::PrivateKey.from_jwk(@jwk)
     key2 = HealthCards::PrivateKey.from_jwk(@jwk)
     assert_equal key1.kid, key2.kid
@@ -33,12 +38,7 @@ class PrivateKeyTest < Minitest::Test
     assert_equal @jwk[:x], key1.coordinates[:x]
     assert_equal @jwk[:y], key1.coordinates[:y]
 
-    puts key1.coordinates[:d]
     assert_equal @jwk[:d], key1.coordinates[:d]
     assert_equal key1.coordinates[:d], key2.coordinates[:d]
-
-    payload = 'foo'
-    assert_equal key1.sign(payload), key1.sign(payload)
-    assert_equal key1.sign(payload), key2.sign(payload)
   end
 end
