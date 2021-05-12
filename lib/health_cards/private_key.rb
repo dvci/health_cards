@@ -23,7 +23,7 @@ module HealthCards
     end
 
     def sign(payload)
-      @key.dsa_sign_asn1(payload)
+      asn1_to_raw(@key.sign(OpenSSL::Digest::SHA256.new, payload), self)
     end
 
     def public_key
@@ -32,6 +32,13 @@ module HealthCards
       pub = OpenSSL::PKey::EC.new('prime256v1')
       pub.public_key = @key.public_key
       @public_key = PublicKey.new(pub)
+    end
+
+    private
+
+    def asn1_to_raw(signature, private_key)
+      byte_size = (private_key.group.degree + 7) / 8
+      OpenSSL::ASN1.decode(signature).value.map { |value| value.value.to_s(2).rjust(byte_size, "\x00") }.join
     end
   end
 end

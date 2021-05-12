@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'net/http'
+
 module HealthCards
   # Verifiers can validate HealthCards using public keys
   class Verifier

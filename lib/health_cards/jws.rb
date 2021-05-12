@@ -46,7 +46,7 @@ module HealthCards
       # Not using accessors because they reset the signature which requires both a key and a payload
       @header = header
       @payload = payload
-      self.signature = signature if signature
+      @signature = signature if signature
       @key = key
       @public_key = public_key || key&.public_key
     end
@@ -96,7 +96,7 @@ module HealthCards
 
       raise MissingPrivateKey unless key
 
-      @signature ||= key.sign(encoded_payload)
+      @signature ||= key.sign(jws_signing_input)
     end
 
     # Export the card to a JWS String
@@ -111,10 +111,14 @@ module HealthCards
     def verify
       raise MissingPublicKey unless public_key
 
-      public_key.verify(encoded_payload, signature)
+      public_key.verify(jws_signing_input, signature)
     end
 
     private
+
+    def jws_signing_input
+      "#{JWS.encode(@header.to_json)}.#{encoded_payload}"
+    end
 
     def encoded_payload
       JWS.encode(payload)

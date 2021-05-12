@@ -34,6 +34,10 @@ module HealthCards
       @key = ec_key
     end
 
+    def group
+      @key.group
+    end
+
     def to_json(*_args)
       to_jwk.to_json
     end
