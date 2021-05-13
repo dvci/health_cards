@@ -9,7 +9,7 @@ module HealthCards
     # @param key_set [HealthCards::KeySet, nil] the KeySet from which keys should be taken or added
     # @param resolve_keys [Boolean] if keys should be resolved
     # @return [Boolean]
-    def verify_using_key_set(verifiable, key_set = nil, resolve_keys = true)
+    def verify_using_key_set(verifiable, key_set = nil, resolve_keys: true)
       jws = JWS.from_jws(verifiable)
       key_set ||= HealthCards::KeySet.new
       key_set.add_keys(resolve_key(jws)) if resolve_keys && key_set.find_key(jws.kid).nil?
