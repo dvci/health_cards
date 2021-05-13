@@ -144,7 +144,7 @@ class HealthCardTest < ActiveSupport::TestCase
     bundle = FHIR::Bundle.new(load_json_fixture('example-logical-link-bundle-bad'))
     card = HealthCards::HealthCard.new(issuer: 'http://example.org/fhir', bundle: bundle)
     assert_raises HealthCards::InvalidBundleReferenceException do
-      new_bundle = FHIR::Bundle.new(card.strip_fhir_bundle)
+      FHIR::Bundle.new(card.strip_fhir_bundle)
     end
   end
 
