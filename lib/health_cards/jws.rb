@@ -4,27 +4,20 @@ module HealthCards
   # Create JWS from a payload
   class JWS
     class << self
-      # Encodes the provided data using url safe base64 without padding
-      # @param data [String] the data to be encoded
-      # @return [String] the encoded data
-      def encode(data)
-        Base64.urlsafe_encode64(data, padding: false).gsub("\n", '')
-      end
-
-      # Decodes the provided data using url safe base 64
-      # @param data [String] the data to be decoded
-      # @return [String] the decoded data
-      def decode(data)
-        Base64.urlsafe_decode64(data)
-      end
+      include Encoding
 
       # Creates a Card from a JWS
-      # @param jws [String] the JWS string
+      # @param jws [String, HealthCards::JWS] the JWS string
       # @param public_key [HealthCards::PublicKey] the public key associated with the JWS
       # @param key [HealthCards::PrivateKey] the private key associated with the JWS
       # @return [HealthCards::HealthCard]
       def from_jws(jws, public_key: nil, key: nil)
-        header, payload, signature = jws.split('.').map { |entry| decode(entry) }
+        unless jws.is_a?(HealthCards::JWS) || jws.is_a?(String)
+          raise ArgumentError,
+                'Expected either a HealthCards::JWS or String'
+        end
+
+        header, payload, signature = jws.to_s.split('.').map { |entry| decode(entry) }
         header = JSON.parse(header)
         JWS.new(header: header, payload: payload, signature: signature,
                 public_key: public_key, key: key)
@@ -41,7 +34,7 @@ module HealthCards
       # Not using accessors because they reset the signature which requires both a key and a payload
       @header = header
       @payload = payload
-      self.signature = signature if signature
+      @signature = signature if signature
       @key = key
       @public_key = public_key || key&.public_key
     end
@@ -91,7 +84,7 @@ module HealthCards
 
       raise MissingPrivateKey unless key
 
-      @signature ||= key.sign(encoded_payload)
+      @signature ||= key.sign(jws_signing_input)
     end
 
     # Export the card to a JWS String
@@ -106,10 +99,14 @@ module HealthCards
     def verify
       raise MissingPublicKey unless public_key
 
-      public_key.verify(encoded_payload, signature)
+      public_key.verify(jws_signing_input, signature)
     end
 
     private
+
+    def jws_signing_input
+      "#{JWS.encode(@header.to_json)}.#{encoded_payload}"
+    end
 
     def encoded_payload
       JWS.encode(payload)
