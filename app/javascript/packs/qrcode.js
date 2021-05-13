@@ -44,22 +44,7 @@ fetch(url)
         var field = document.getElementById('qr-code-field')
         field.value = url
       })
-
       QRCode.toCanvas(canvas, qrCode, options);
-
-      // QRCode.toFile('./test.png', 'qrCodse', {
-      //   version: 22,
-      //   errorCorrectionLevel: 'L'
-      // } );
-
       container.appendChild(canvas);
     });
-    // var dataURL = document.getElementById('qr-code').toDataURL();
-    // <a href="dataURL" target="_blank" download="image.png"></a>
-    console.log(container);
-    window.status = 'ready_to_print';
-    console.log(window.status)
-
-    // var myUrl = container.toDataURL('image/png');
-    // $("#qr-code").val(myUrl);
   });

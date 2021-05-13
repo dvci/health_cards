@@ -11,17 +11,11 @@
           <div class="is-grouped">
             <%= link_to 'Edit', edit_patient_path(@patient), class: 'button is-info is-light' %> 
             <%= link_to 'Download Health Card', patient_health_card_path(@patient, format: 'smart-health-card'), class: 'button is-info is-light' %>
-            <%#link_to 'Download PDF', patient_health_card_path(@patient, format: 'pdf'), class: 'button is-info is-light' %>
-            <img id ="image">
-              <div class="level-right">
-                <div class="level-item">
-                  <%= form_with url: patient_health_card_path(@patient, format: 'pdf'), method: :post do |f| %>
-                    <%= f.hidden_field :qrcode, id: 'qr-code-field' %>
-                    <%= f.submit 'View PDF', class: 'button is-info is-light' %>
-                  <% end %>
-                </div>
-              </div>
           </div>
+          <%= form_with url: patient_health_card_path(@patient, format: 'pdf'), method: :post do |f| %>
+            <%= f.hidden_field :qrcode, id: 'qr-code-field' %>
+            <%= f.submit 'Download PDF', class: 'button is-info is-light container' %>
+          <% end %>
         </div>
       </div>
       <div class="block">
