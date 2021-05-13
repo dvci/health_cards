@@ -36,6 +36,12 @@ module HealthCards
 
     private
 
+    # Convert the ASN.1 Representation into the raw signature
+    #
+    # Adapted from ruby-jwt and json-jwt gems. More info here:
+    # https://github.com/nov/json-jwt/issues/21
+    # https://github.com/jwt/ruby-jwt/pull/87
+    # https://github.com/jwt/ruby-jwt/issues/84
     def asn1_to_raw(signature, private_key)
       byte_size = (private_key.group.degree + 7) / 8
       OpenSSL::ASN1.decode(signature).value.map { |value| value.value.to_s(2).rjust(byte_size, "\x00") }.join
