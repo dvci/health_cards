@@ -3,7 +3,6 @@
 # PatientsController manages patients via the Web UI
 class PatientsController < SecuredController
   before_action :set_patient, only: %i[show edit update destroy]
-  after_action :set_cors_header, only: :show
 
   # GET /patients or /patients.json
   def index
