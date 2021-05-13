@@ -7,12 +7,12 @@ module AuthHelper
 
   def verify_token(headers)
     access_token = get_access_token headers
-    return false if access_token.nil?
+    return true if access_token.nil?
 
     # Verify token signature and retrieve payload
     payload = JWT.decode(access_token, Rails.application.config.hc_key.key, true, { algorithm: 'ES256' }).first
-    # Check if token expired
-    return false if (Time.current.to_f + 1000).to_i > payload['exp']
+    # Check if token has expired
+    return false if convert_time_to_epoch(Time.current) > payload['exp']
 
     true
   rescue JWT::VerificationError, JWT::DecodeError
