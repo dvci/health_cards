@@ -58,7 +58,7 @@ module HealthCards
     # @param verifiable [HealthCards::JWS, String] the health card to verify
     # @return [Boolean]
     def verify(verifiable)
-      verify_using_key_set(verifiable, keys, resolve_keys?)
+      verify_using_key_set(verifiable, keys, resolve_keys: resolve_keys?)
     end
 
     def resolve_keys?
