@@ -11,14 +11,18 @@ class HealthCardsController < ApplicationController
   def show
     respond_to do |format|
       format.healthcard { render json: @exporter.download }
-    end
-  end
+      format.html do
+        @jws_encoded_details = @exporter.jws
+        @health_card = HealthCards::COVIDHealthCard.from_jws @jws_encoded_details.to_s
+        @qr_code_payload = @exporter.chunks
 
-  def create
-    respond_to do |format|
-      format.fhir_json do
-        fhir_params = FHIR.from_contents(request.raw_post)
-        render json: @exporter.issue(fhir_params)
+        if @qr_code_payload.length == 1
+          @qr_code_payload[0] = "shc:/#{@qr_code_payload[0]}"
+        else
+          @qr_code_payload = qr_code_payload.map.with_index do |s, i|
+            "shc:/#{i + 1}/#{@qr_code_payload.length}/#{s}"
+          end
+        end
       end
     end
   end
