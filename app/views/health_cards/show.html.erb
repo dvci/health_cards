@@ -8,7 +8,7 @@
 
   <section class="section">
     <div class="container">
-      <p class="title">FHIR Bundle</p>
+
       <div class="card is-fullwidth">
         <header class="card-header">
           <p class="card-header-title">FHIR Bundle</p>
@@ -17,15 +17,16 @@
           </a>
         </header>
           <div class="card-content">
-            <div class="content">
-              <%= @health_card.to_json %>
+          <div class="content">
+            <pre style="white-space:pre-wrap;">
+              <p> <%= JSON.pretty_generate(@health_card.to_hash) %> </p>
+            </pre>
             </div>
           </div>
         </div>
     <br>
     <br>
 
-    <p class="title">Minified FHIR Bundle</p>
     <div class="card is-fullwidth">
       <header class="card-header">
         <p class="card-header-title">Minified FHIR Bundle</p>
@@ -36,16 +37,14 @@
         <div class="card-content">
           <div class="content">
            <pre>
-              <%= @health_card.bundle.to_json %>
+              <p> <%= @health_card.bundle.to_json %> </p>
            </pre>
           </div>
         </div>
       </div>
     <br>
     <br>
-    <br>
 
-    <p class="title">Encoded JWS</p>
     <div class="card is-fullwidth">
       <header class="card-header">
         <p class="card-header-title">Encoded JWS</p>
@@ -54,15 +53,16 @@
         </a>
       </header>
         <div class="card-content">
-          <div class="content", style="word-wrap: break-word; width: 800px">
-            <%= @jws_encoded_details%>
-          </div>
+          <pre style="white-space:pre-wrap;">
+            <div class="content", style="word-wrap: break-word; width: 800px">
+                <p> <%= @jws_encoded_details%> </p>
+            </div>
+          </pre>
         </div>
       </div>
     <br>
     <br>
     
-    <p class="title">QR Details</p>
     <div class="card is-fullwidth">
       <header class="card-header">
         <p class="card-header-title">QR Details</p>
@@ -71,12 +71,13 @@
         </a>
       </header>
         <div class="card-content">
-          <div class="content", style="word-wrap: break-word; width: 800px">
-            <%= @qr_code_payload %>
-          </div>
+          <pre style="white-space:pre-wrap;">
+            <div class="content", style="word-wrap: break-word; width: 800px">
+                <p> <%= @qr_code_payload %> </p>
+            </div>
+          </pre>
         </div>
     </div>
   </div>
+  <%= link_to 'Back', patient_path(@patient), class: 'button is-info is-light' %>
 </section>
-
-<%= link_to 'Back', patient_path(@patient), class: 'button is-info is-light' %>

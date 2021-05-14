@@ -13,8 +13,16 @@ class HealthCardsController < ApplicationController
       format.healthcard { render json: @exporter.download }
       format.html do
         @jws_encoded_details = @exporter.jws
-        @health_card = HealthCards::COVIDHealthCard.from_jws @jws_encoded_details
+        @health_card = HealthCards::COVIDHealthCard.from_jws @jws_encoded_details.to_s
         @qr_code_payload = @exporter.chunks
+
+        if @qr_code_payload.length == 1
+          @qr_code_payload[0] = "shc:/#{@qr_code_payload[0]}"
+        else
+          @qr_code_payload = qr_code_payload.map.with_index do |s, i|
+            "shc:/#{i + 1}/#{@qr_code_payload.length}/#{s}"
+          end
+        end
       end
     end
   end
