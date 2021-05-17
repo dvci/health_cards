@@ -109,12 +109,14 @@
 <script>
   const fileInput = document.querySelector('#health-card-upload input[type=file]');
   fileInput.onchange = () => {
+    const fileName = document.querySelector('#health-card-upload .file-name');
+    const uploadButton = document.querySelector('#upload-button');
     if (fileInput.files.length > 0) {
-      const fileName = document.querySelector('#health-card-upload .file-name');
       fileName.textContent = fileInput.files[0].name;
-
-      const uploadButton = document.querySelector('#upload-button');
       uploadButton.disabled = false;
+    } else {
+      fileName.textContent = 'No file uploaded';
+      uploadButton.disabled = true;
     }
   }
 </script>
