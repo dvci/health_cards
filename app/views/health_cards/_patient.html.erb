@@ -1,6 +1,12 @@
 <p id="notice"><%= notice %></p>
 <section class="section">
   <div class="container">
+    <div class="notification is-light <%= verified ? 'is-success' : 'is-danger' %>" >
+      <span class="icon is-large">
+        <i class="fa fa-2x <%= verified ? 'fa-check-circle' : 'fa-exclamation-circle' %>"></i>
+      </span>
+      <span class="is-size-4"><%= verified ? 'JWS Signature Verified.' : error_message %></span>
+    </div>
     <% if patient.nil? %>
       <div>
         <p class="title">No Patient resource in FHIR bundle, displaying VC payload below</p>

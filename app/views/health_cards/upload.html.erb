@@ -1,10 +1,10 @@
 <section class="section">
   <div class="container">
-    <p class="title"><%= pluralize @payload_array.size, 'credential' %> found in file '<%= @filename %>'</p>
+    <p class="title"><%= pluralize @upload_result.size, 'credential' %> found in file '<%= @filename %>'</p>
     <div class="tile is-ancestor box">
-      <% @payload_array.each do |payload| %>
+      <% @upload_result.each do |result| %>
         <div class="tile is-child">
-        <%= render partial: 'patient', object: create_patient_from_jws(payload), locals: {payload: payload} %>
+        <%= render partial: 'patient', object: create_patient_from_jws(result[:payload]), locals: {payload: result[:payload], verified: result[:verified], error_message: result[:error_message]} %>
         </div>
       <% end %>
     </div>
