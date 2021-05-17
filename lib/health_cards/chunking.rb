@@ -35,14 +35,6 @@ module HealthCards
       end
     end
 
-    def get_payload_from_qr(qr_chunks)
-      jws = assemble_jws qr_chunks
-
-      # Get JWS payload, then decode and inflate
-      message = Base64.urlsafe_decode64 jws.split('.')[1]
-      JSON.parse(Zlib::Inflate.new(-Zlib::MAX_WBITS).inflate(message))
-    end
-
     private
 
     # Each character "c" of the jws is converted into a sequence of two digits by taking c.ord - 45
