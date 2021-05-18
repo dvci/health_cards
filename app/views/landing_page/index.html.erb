@@ -7,7 +7,7 @@
 <section class="section">
   <div class="container">
     <div class="content is-medium">
-      <p>Put some sort of description here. Link to relevant specs, etc.</p>
+      <p>Reference Implementation of SMART Health Cards Issuer & Verifier</p>
     </div>
   </div>
 </section>
@@ -74,7 +74,7 @@
                 <%= file_field_tag :health_card, class: 'file-input' %>
                 <span class="file-cta">
                   <span class="file-icon">
-                    <i class="fas fa-upload"></i>
+                    <i class="fa fa-upload"></i>
                   </span>
                   <span class="file-label">
                     Choose a file…
@@ -87,7 +87,7 @@
             </div>
             </p>
             <p class="control">
-              <%= submit_tag 'Upload', class: 'button is-success ml-1' %>
+              <%= submit_tag 'Upload', class: 'button is-success ml-1', disabled: true, id: "upload-button" %>
             </p>
           </div>
 
@@ -109,9 +109,14 @@
 <script>
   const fileInput = document.querySelector('#health-card-upload input[type=file]');
   fileInput.onchange = () => {
+    const fileName = document.querySelector('#health-card-upload .file-name');
+    const uploadButton = document.querySelector('#upload-button');
     if (fileInput.files.length > 0) {
-      const fileName = document.querySelector('#health-card-upload .file-name');
       fileName.textContent = fileInput.files[0].name;
+      uploadButton.disabled = false;
+    } else {
+      fileName.textContent = 'No file uploaded';
+      uploadButton.disabled = true;
     }
   }
 </script>

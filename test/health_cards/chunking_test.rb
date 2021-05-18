@@ -68,12 +68,4 @@ class ChunkingTest < ActiveSupport::TestCase
     assembled_jws = @dummy_class.assemble_jws qr_chunks
     assert_equal expected_jws, assembled_jws
   end
-
-  test 'VC should get returned from QR code' do
-    qr_chunks = load_json_fixture(FILEPATH_NUMERIC_QR_CODE)
-    payload = load_json_fixture(FILEPATH_PAYLOAD_MINIFIED)
-    decoded_payload = @dummy_class.get_payload_from_qr qr_chunks
-
-    assert_equal payload['vc'], decoded_payload['vc']
-  end
 end
