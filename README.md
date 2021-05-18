@@ -1,6 +1,6 @@
 # HealthCards
 
-Creating verifiable credentials with FHIR using [SMART Health Cards](https://healthwallet.cards/)
+Creating verifiable credentials with FHIR using [SMART Health Cards](https://smarthealth.cards/)
 
 ## Developing
 
