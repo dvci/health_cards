@@ -1,0 +1,39 @@
+default: &default
+  resourceType: OperationDefinition
+  id: health-cards-issue
+  status: active
+  name: HealthCardsIssue
+  kind: operation
+  code: health-cards-issue
+  system: false
+  type: false
+  instance: true
+  parameter:
+    - name: credentialType
+      use: in
+      min: 1
+      max: '*'
+      type: uri
+    - name: includeIdentityClaim
+      use: in
+      min: 0
+      max: '*'
+      type: string  
+    - name: _since
+      use: in
+      min: 0
+      max: 1
+      type: datetime 
+    - name: verifiableCredential
+      use: out
+      min: 0
+      max: 1
+      type: string                               
+
+
+development:
+  <<: *default
+test:
+  <<: *default
+production:
+  <<: *default

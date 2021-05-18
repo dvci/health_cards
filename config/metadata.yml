@@ -1,0 +1,21 @@
+default: &default
+  resourceType: CapabilityStatement
+  status: active
+  fhirVersion: 4.0.1
+  format: [application/fhir+json]
+  rest:
+    - mode: server
+      resource:
+        - patient: 
+            type: Patient
+            operation:
+              - health-cards-issue: 
+                  name: health-cards-issue
+                  definition: OperationDefinition/health-cards-issue
+
+development:
+  <<: *default
+test:
+  <<: *default
+production:
+  <<: *default
