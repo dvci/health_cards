@@ -30,14 +30,14 @@ class HealthCardsController < ApplicationController
   def scan; end
 
   def qr_contents
-    @jws_payload = HealthCards::Importer.scan(params[:qr_contents])
-    @patient = helpers.create_patient_from_jws(@jws_payload)
+    contents = JSON.parse(params[:qr_contents])
+    @scan_result = HealthCards::Importer.scan(contents)
   end
 
   def upload
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
-    @payload_array = HealthCards::Importer.upload(file)
+    @upload_result = HealthCards::Importer.upload(file)
   end
 
   private
