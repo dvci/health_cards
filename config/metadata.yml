@@ -6,12 +6,10 @@ default: &default
   rest:
     - mode: server
       resource:
-        - patient: 
-            type: Patient
-            operation:
-              - health-cards-issue: 
-                  name: health-cards-issue
-                  definition: OperationDefinition/health-cards-issue
+        - type: Patient
+          operation:
+          - name: health-cards-issue
+            definition: OperationDefinition/health-cards-issue
 
 development:
   <<: *default
