@@ -7,7 +7,7 @@ module HealthCards
   # A HealthCard which implements the credential claims specified by https://smarthealth.cards/
   class HealthCard
     VC_TYPE = [
-      'https://healthwallet.cards#health-card'
+      'https://smarthealth.cards#health-card'
     ].freeze
 
     attr_reader :issuer, :nbf, :bundle
