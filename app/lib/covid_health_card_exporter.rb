@@ -32,7 +32,7 @@ class COVIDHealthCardExporter
 
   def jws
     issuer = Rails.application.config.issuer
-    @jws ||= issuer.issue_jws(@patient.to_bundle(issuer.url))
+    @jws ||= issuer.issue_jws(@patient.to_bundle(issuer.url), type: HealthCards::COVIDHealthCard)
   end
 
   def validate_fhir_params(fhir_params)
