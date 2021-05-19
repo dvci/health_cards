@@ -87,7 +87,7 @@
             </div>
             </p>
             <p class="control">
-              <%= submit_tag 'Upload', class: 'button is-success ml-1' %>
+              <%= submit_tag 'Upload', class: 'button is-success ml-1', disabled: true, id: "upload-button" %>
             </p>
           </div>
 
@@ -109,9 +109,14 @@
 <script>
   const fileInput = document.querySelector('#health-card-upload input[type=file]');
   fileInput.onchange = () => {
+    const fileName = document.querySelector('#health-card-upload .file-name');
+    const uploadButton = document.querySelector('#upload-button');
     if (fileInput.files.length > 0) {
-      const fileName = document.querySelector('#health-card-upload .file-name');
       fileName.textContent = fileInput.files[0].name;
+      uploadButton.disabled = false;
+    } else {
+      fileName.textContent = 'No file uploaded';
+      uploadButton.disabled = true;
     }
   }
 </script>
