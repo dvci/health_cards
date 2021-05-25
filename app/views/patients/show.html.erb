@@ -13,7 +13,7 @@
             <%= link_to 'Download Health Card', patient_health_card_path(@patient, format: 'smart-health-card'), class: 'button is-info is-light' %>
             <%= form_with url: patient_health_card_path(@patient, format: 'pdf'), class: 'button is-info is-light', method: :post do |f| %>        
               <%= f.hidden_field :qrcode, id: 'qr-code-field' %>
-              <%= f.submit 'Download PDF', class: 'button is-info is-light' %>
+              <%= f.submit 'Download PDF', id:'download-pdf-button', class: 'button is-info is-light' %>
             <% end %>
           </div>
         </div>
@@ -71,3 +71,14 @@
     <%= link_to 'Patient List', patients_path, class: 'button is-info' %>
   </div>
 </section>
+
+<script>
+  {
+    const downloadButton = document.querySelector('#download-pdf-button');
+    downloadButton.onclick = () => {
+      // Disable elements on page after download button has been clicked
+      const container = document.querySelector('.container');
+      container.style['pointer-events'] = 'none';
+    }
+  }
+</script>
