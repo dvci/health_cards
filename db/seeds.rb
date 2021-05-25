@@ -7,12 +7,15 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-Vaccine.create(name: 'Moderna COVID-19 Vaccine',
-               code: '207',
-               doses_required: 2)
-Vaccine.create(name: 'Pfizer COVID-19 Vaccine',
-               code: '208',
-               doses_required: 2)
-Vaccine.create(name: 'Janssen COVID-19 Vaccine',
-               code: '212',
-               doses_required: 1)
+Vaccine.find_or_create_by(code: '207') do |vaccine|
+  vaccine.name = 'Moderna COVID-19 Vaccine'
+  vaccine.doses_required = 2
+end
+Vaccine.find_or_create_by(code: '208') do |vaccine|
+  vaccine.name = 'Pfizer COVID-19 Vaccine'
+  vaccine.doses_required = 2
+end
+Vaccine.find_or_create_by(code: '212') do |vaccine|
+  vaccine.name = 'Janssen COVID-19 Vaccine'
+  vaccine.doses_required = 1
+end
