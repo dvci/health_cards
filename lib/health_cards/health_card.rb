@@ -56,14 +56,33 @@ module HealthCards
       # @param attributes [Array] An array of string with the attribute names that will be passed through
       #  when data is minimized
       def allow(klass, attributes)
-        resource_type = klass.name.split('::').last
-        allowable[resource_type] = attributes
+        allowable[klass] = attributes
+      end
+
+      # Define disallowed attributes for this HealthCard class
+      # @param klass [Class] Scopes the attributes to a spefic class. Must be a subclass of FHIR::Model
+      # @param attributes [Array] An array of string with the attribute names that will be passed through
+      #  when data is minimized
+      def disallow(klass, attributes)
+        disallowable[klass] = attributes
       end
 
       # Define allowed attributes for this HealthCard class
       # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
       def allowable
-        @allowable ||= {}
+        return @allowable if @allowable
+
+        base = superclass == HealthCards::HealthCard ? superclass.allowable : {}
+        @allowable = base
+      end
+
+      # Define disallowed attributes for this HealthCard class
+      # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
+      def disallowable
+        return @disallowable if @disallowable
+
+        base = superclass == HealthCards::HealthCard ? superclass.disallowable : {}
+        @disallowable = base
       end
 
       # Sets/Gets the fhir version that will be passed through to the credential created by an instnace of
@@ -99,6 +118,10 @@ module HealthCards
         !types.intersection(type).empty?
       end
     end
+
+    allow FHIR::Meta, %w[security]
+    disallow FHIR::CodeableConcept, %w[text]
+    disallow FHIR::Coding, %w[display]
 
     # Create a HealthCard
     #
@@ -146,78 +169,90 @@ module HealthCards
     # @return [Hash] A hash with the same content as the FHIR::Bundle, processed accoding
     # to SMART Health Cards framework and any constraints created by subclasses
     def strip_fhir_bundle
-      stripped_bundle = @bundle.to_hash
-      if stripped_bundle.key?('entry') && !stripped_bundle['entry'].empty?
-        entries = stripped_bundle['entry']
-        entries, @url_map = redefine_uris(entries)
-        update_elements(entries)
+      return [] unless bundle.entry
+
+      # Using this to dup the original bundle, hopefully it correctly dups everything
+      new_bundle = FHIR::Bundle.new(bundle.to_hash)
+      url_map = redefine_uris(new_bundle)
+
+      walk_resource(new_bundle) do |value, type|
+        case type
+        when 'Reference'
+          value.reference = process_reference(url_map, value)
+        when 'Resource'
+          value.id = nil
+          value.text = nil
+          value.meta = nil unless value.meta&.security
+        end
+
+        handle_allowable(value)
+        handle_disallowable(value)
       end
-      stripped_bundle
+
+      new_bundle
     end
 
     private
 
-    def redefine_uris(entries)
+    def redefine_uris(bundle)
       url_map = {}
       resource_count = 0
-      entries.each do |entry|
-        old_url = entry['fullUrl']
+      bundle.entry.each do |entry|
+        old_url = entry.fullUrl
         new_url = "resource:#{resource_count}"
         url_map[old_url] = new_url
-        entry['fullUrl'] = new_url
+        entry.fullUrl = new_url
         resource_count += 1
       end
-      [entries, url_map]
+      url_map
     end
 
-    def update_elements(entries)
-      entries.each do |entry|
-        resource = entry['resource']
+    def walk_resource(resource, &block)
+      resource.class::METADATA.each do |field_name, meta|
+        type = meta['type']
+        local_name = meta.fetch :local_name, field_name
+        values = [resource.instance_variable_get("@#{local_name}")].flatten.compact
+        next if values.empty?
 
-        resource.delete('id')
-        resource.delete('text')
-        if resource.dig('meta', 'security')
-          resource['meta'] = resource['meta'].slice('security')
-        else
-          resource.delete('meta')
+        values.each do |value|
+          yield value, type
+          walk_resource value, &block unless FHIR::PRIMITIVES.include? type
         end
-        handle_allowable(resource)
-        update_nested_elements(resource)
       end
     end
 
     def handle_allowable(resource)
-      allowable = self.class.allowable[resource['resourceType']]
-      return resource unless allowable
+      klass = resource.class
+      allowable = self.class.allowable[klass]
 
-      allow = allowable + ['resourceType']
-      resource.select! { |att| allow.include?(att) }
+      return unless allowable
+
+      allowed = resource.to_hash.select! { |att| allowable.include?(att) }
+
+      resource.from_hash(allowed)
     end
 
-    def process_url(url)
-      new_url = @url_map.key?(url) ? @url_map[url] : @url_map["#{issuer}/#{url}"]
+    def handle_disallowable(resource)
+      klass = resource.class
+      disallowable = self.class.disallowable[klass]
+
+      return unless disallowable
+
+      allowed = resource.to_hash.delete_if { |att| disallowable.include?(att) }
+
+      resource.from_hash(allowed)
+    end
+
+    def process_reference(url_map, ref)
+      url = ref.reference
+
+      return unless url
+
+      new_url = url_map.key?(url) ? url_map[url] : url_map["#{issuer}/#{url}"]
+
       raise InvalidBundleReferenceException, url unless new_url
 
       new_url
-    end
-
-    def update_nested_elements(hash)
-      hash.map { |k, v| update_nested_element(hash, k, v) }
-    end
-
-    def update_nested_element(hash, attribute_name, value) # rubocop:disable Metrics/CyclomaticComplexity
-      case value
-      when String
-        hash[attribute_name] = process_url(value) if attribute_name == 'reference'
-      when Hash
-        value.delete('text') if attribute_name.include?('CodeableConcept') || value.key?('coding')
-        update_nested_elements(value)
-      when Array
-        value.each do |member_element|
-          member_element.delete('display') if attribute_name == 'coding'
-          update_nested_elements(member_element) if member_element.is_a?(Hash)
-        end
-      end
     end
   end
 end
