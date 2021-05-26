@@ -14,7 +14,6 @@ class HealthCardsController < ApplicationController
       format.html do
         @jws_encoded_details = @exporter.jws
         @health_card = HealthCards::COVIDHealthCard.from_jws @jws_encoded_details
-
         @qr_code_payload = @exporter.chunks
 
         if @qr_code_payload.length == 1
