@@ -2,7 +2,7 @@
 <p id="notice"><%= notice %></p>
 <section class="hero is-link">
   <div class="hero-body">
-    <p class="title">Patient Details</p>
+    <p class="title">Health Card Details</p>
   </div>
 </section>
 
@@ -11,7 +11,7 @@
 
       <div class="card is-fullwidth">
         <header class="card-header">
-          <p class="card-header-title">FHIR Bundle</p>
+          <p class="card-header-title">Expanded JWS Payload</p>
           <a class="card-header-icon card-toggle">
             <i class="fa fa-angle-down"></i>
           </a>
@@ -27,9 +27,27 @@
     <br>
     <br>
 
+          <div class="card is-fullwidth">
+        <header class="card-header">
+          <p class="card-header-title">Minified JWS Payload</p>
+          <a class="card-header-icon card-toggle">
+            <i class="fa fa-angle-down"></i>
+          </a>
+        </header>
+          <div class="card-content">
+          <div class="content">
+            <pre style="white-space:pre-wrap;">
+              <p> <%= @health_card.to_json %> </p>
+            </pre>
+            </div>
+          </div>
+        </div>
+    <br>
+    <br>
+
     <div class="card is-fullwidth">
       <header class="card-header">
-        <p class="card-header-title">Minified FHIR Bundle</p>
+        <p class="card-header-title">FHIR Bundle</p>
         <a class="card-header-icon card-toggle">
           <i class="fa fa-angle-down"></i>
         </a>
@@ -65,7 +83,7 @@
     
     <div class="card is-fullwidth">
       <header class="card-header">
-        <p class="card-header-title">QR Details</p>
+        <p class="card-header-title">Numeric QR</p>
         <a class="card-header-icon card-toggle">
           <i class="fa fa-angle-down"></i>
         </a>
@@ -73,7 +91,7 @@
         <div class="card-content">
           <pre style="white-space:pre-wrap;">
             <div class="content", style="word-wrap: break-word; width: 800px">
-                <p> <%= @qr_code_payload %> </p>
+                <p> <%= @qr_code_payload.join(', ') %> </p>
             </div>
           </pre>
         </div>
