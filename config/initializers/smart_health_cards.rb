@@ -4,6 +4,8 @@ require 'health_cards'
 
 Rails.application.configure do
   config.smart = config_for('well-known')
+  config.metadata = config_for('metadata')
+  config.operation = config_for('operation')
 
   config.hc_key_path = ENV['KEY_PATH']
   FileUtils.mkdir_p(File.dirname(ENV['KEY_PATH']))
