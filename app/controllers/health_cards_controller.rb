@@ -50,7 +50,7 @@ class HealthCardsController < ApplicationController
   def upload
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
-    @payload_array = HealthCards::Importer.upload(file)
+    @upload_result = HealthCards::Importer.upload(file)
   end
 
   private
