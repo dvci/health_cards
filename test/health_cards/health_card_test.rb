@@ -99,6 +99,23 @@ class HealthCardTest < ActiveSupport::TestCase
     assert_equal(resource_nums, inc_array)
   end
 
+  test 'changes to stripped bundle do not affect bundle values' do
+    stripped_bundle = @health_card.strip_fhir_bundle
+    
+    # Check bundle
+    stripped_bundle.type = 'foobar'
+    assert_not_equal @health_card.bundle.type, stripped_bundle.type
+
+    # Check entry value
+    patient = stripped_bundle.entry[0].resource
+    patient.name[0].family = 'foobar'
+    assert_not_equal @health_card.bundle.entry[0].resource.name[0].family, stripped_bundle.entry[0].resource.name[0].family
+
+    # Check entries
+    stripped_bundle.entry = []
+    assert_not_equal @health_card.bundle.entry.length, stripped_bundle.entry.length
+  end
+
   test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
     stripped_bundle = @health_card.strip_fhir_bundle
     stripped_entries = stripped_bundle.entry
