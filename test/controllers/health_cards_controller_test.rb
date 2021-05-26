@@ -27,6 +27,11 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'should show health card' do
+    get(patient_health_card_url(@patient, format: :html))
+    assert_response :success
+  end
+
   test 'upload file' do
     stub_request(:get, 'https://smarthealth.cards/examples/issuer/.well-known/jwks.json').to_return(body: '{"keys":[]}')
     file = fixture_file_upload('test/fixtures/files/example-00-e-file.smart-health-card')
