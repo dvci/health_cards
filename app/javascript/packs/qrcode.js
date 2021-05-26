@@ -29,6 +29,9 @@ fetch(`${window.location.href}/health_card/chunks.json`)
     const qrCodes = addPrefixToQrCodes(chunks);
     const container = document.getElementById('qr-code');
 
+    // Remove all children of qr-code container
+    while (container.firstChild && !container.firstChild.remove());
+
     // Add each QR code to the qr-code container
     qrCodes.forEach(qrCode => {
       const canvas = document.createElement('canvas');
