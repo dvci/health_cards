@@ -6,7 +6,6 @@
 class HealthCardsController < SecuredController
   before_action :create_exporter, except: [:scan, :qr_contents, :upload]
   skip_before_action :verify_authenticity_token, only: [:create]
-  after_action :set_cors_header, only: :create
 
   def show
     respond_to do |format|

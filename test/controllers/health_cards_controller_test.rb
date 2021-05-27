@@ -58,7 +58,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
                                             valueUri: 'https://smarthealth.cards#covid19')
     params = FHIR::Parameters.new(parameter: [param])
 
-    post(@fhir_url, params: params.to_hash, as: :json)
+    post(@fhir_url, params: params.to_hash, headers: { 'Origin' => 'http://example.com' }, as: :json)
 
     assert response['Access-Control-Allow-Origin'], '*'
 

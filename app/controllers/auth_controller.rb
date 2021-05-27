@@ -3,7 +3,6 @@
 # AuthController exposes authorization endpoints for users to get access tokens
 class AuthController < ApplicationController
   skip_before_action :verify_authenticity_token, only: :token
-  after_action :set_cors_header, only: :token
 
   def authorize
     params = request.params
