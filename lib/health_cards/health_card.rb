@@ -144,7 +144,7 @@ module HealthCards
           type: self.class.types,
           credentialSubject: {
             fhirVersion: self.class.fhir_version,
-            fhirBundle: strip_fhir_bundle
+            fhirBundle: strip_fhir_bundle.to_hash
           }
         }
 

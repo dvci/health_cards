@@ -101,7 +101,7 @@ class HealthCardTest < ActiveSupport::TestCase
 
   test 'changes to stripped bundle do not affect bundle values' do
     stripped_bundle = @health_card.strip_fhir_bundle
-    
+
     # Check bundle
     stripped_bundle.type = 'foobar'
     assert_not_equal @health_card.bundle.type, stripped_bundle.type
@@ -109,7 +109,8 @@ class HealthCardTest < ActiveSupport::TestCase
     # Check entry value
     patient = stripped_bundle.entry[0].resource
     patient.name[0].family = 'foobar'
-    assert_not_equal @health_card.bundle.entry[0].resource.name[0].family, stripped_bundle.entry[0].resource.name[0].family
+    assert_not_equal @health_card.bundle.entry[0].resource.name[0].family,
+                     stripped_bundle.entry[0].resource.name[0].family
 
     # Check entries
     stripped_bundle.entry = []
