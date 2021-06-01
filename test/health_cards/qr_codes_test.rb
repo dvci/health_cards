@@ -22,7 +22,8 @@ class QrCodesTest < ActiveSupport::TestCase
         size: 650
       )
 
-      IO.binwrite("tmp/qr/test-qrcode-#{i + 1}.png", png.to_s)
+      image = ChunkyPNG::Image.from_file("test/fixtures/files/qr/#{i + 1}.png")
+      assert_equal png, image
     end
   end
 end
