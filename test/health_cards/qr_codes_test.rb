@@ -8,8 +8,10 @@ class QrCodesTest < ActiveSupport::TestCase
     @jws = HealthCards::JWS.from_jws(load_json_fixture('example-jws-multiple'))
     codes = HealthCards::QRCodes.new(jws: @jws)
 
-    codes.chunks.each_with_index do |_ch, i|
-      png = codes.chunks[0].as_png(
+    assert_equal 3, codes.chunks.length
+
+    codes.chunks.each_with_index do |ch, i|
+      png = ch.as_png(
         bit_depth: 1,
         border_modules: 4,
         color_mode: ChunkyPNG::COLOR_GRAYSCALE,

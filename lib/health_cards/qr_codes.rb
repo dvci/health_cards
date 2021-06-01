@@ -5,18 +5,19 @@ module HealthCards
   class QRCodes
     attr_reader :chunks
 
-    def initialize(jws: nil)
-      # if 1 chunk, attach prefix shc:/
-      # if multiple chunks, attach prefix shc:/$orderNumber/$totalChunkCount
-      chunks = Chunking.generate_qr_chunks(jws)
-      if chunks.length == 1
-        chunks[0] = "shc:/#{chunks[0]}"
+    def initialize(jws: nil, chunks: nil)
+      raise ArgumentError, 'Must supply either a JWS or QR Code chunks string(s)' unless jws.nil? ^ chunks.nil?
+
+      if jws
+        chunks = Chunking.generate_qr_chunks(jws)
+        @chunks = chunks.map { |ch| Chunk.new(ch) }
       else
-        chunks.each_with_index do |ch, i|
-          chunks[i] = "shc:/#{i + 1}/#{chunks.length}/#{ch}"
-        end
+        @chunks = chunks
       end
-      @chunks = chunks.map { |ch| Chunk.new(ch) }
+    end
+
+    def to_jws
+      assemble_jws(chunks.map(&:to_s))
     end
   end
 
@@ -31,15 +32,12 @@ module HealthCards
 
   # RQRCode shim for encoding
   class ChunkCore < RQRCodeCore::QRCode
-    MAX_CHUNK_SIZE = 1191
-
     def initialize(input)
       @data = input
       @error_correct_level = 1
       @version = 22
       @module_count = @version * 4 + RQRCodeCore::QRPOSITIONPATTERNLENGTH
       @modules = Array.new(@module_count)
-      # super(input, size: 22, level: :l, mode: :number)
       @data_list = SHCQRCode.new(@data)
       @data_cache = nil
       make

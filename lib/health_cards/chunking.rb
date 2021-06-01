@@ -19,8 +19,18 @@ module HealthCards
 
     # Splits jws into chunks and converts each string into numeric
     def generate_qr_chunks(jws)
-      jws_chunks = split_bundle jws.to_s
-      jws_chunks.map { |c| convert_jws_to_numeric(c) }
+      chunks = split_bundle(jws.to_s).map { |c| convert_jws_to_numeric(c) }
+
+      # if 1 chunk, attach prefix shc:/
+      # if multiple chunks, attach prefix shc:/$orderNumber/$totalChunkCount
+      if chunks.length == 1
+        chunks[0] = "shc:/#{chunks[0]}"
+      else
+        chunks.each_with_index do |ch, i|
+          chunks[i] = "shc:/#{i + 1}/#{chunks.length}/#{ch}"
+        end
+      end
+      chunks
     end
 
     # Assemble jws from qr code chunks
