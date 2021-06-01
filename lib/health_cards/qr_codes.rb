@@ -58,11 +58,17 @@ module HealthCards
         multi = MULTI_REGEX.match(@data)
         prefix = multi ? multi.to_s : SINGLE_REGEX.match(@data).to_s
 
+        buffer.byte_encoding_start(prefix.length)
+
         prefix.each_byte do |b|
           buffer.put(b, 8)
         end
 
-        @data.delete_prefix(prefix).size.times do |i|
+        num_content = @data.delete_prefix(prefix)
+
+        buffer.numeric_encoding_start(num_content.length)
+
+        num_content.size.times do |i|
           next unless (i % 3).zero?
 
           chars = @data[i, 3]
