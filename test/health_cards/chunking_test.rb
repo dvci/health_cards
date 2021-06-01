@@ -41,14 +41,14 @@ class ChunkingTest < ActiveSupport::TestCase
   end
 
   test 'A JWS of size <= 1195 returns one QR chunk' do
-    small_qr_chunk = @dummy_class.generate_qr_chunks(JWS_SMALL)
+    small_qr_chunk = @dummy_class.jws_to_qr_chunks(JWS_SMALL)
     assert_equal(1, small_qr_chunk.length)
     expected_result = ['shc:/' + JWS_SMALL.chars.map { |c| format('%02d', c.ord - 45) }.join]
     assert_equal(expected_result, small_qr_chunk)
   end
 
   test 'A JWS of size 1191 * 2 + 1 characters returns 3 QR chunks' do
-    qr_chunks = @dummy_class.generate_qr_chunks(JWS_3)
+    qr_chunks = @dummy_class.jws_to_qr_chunks(JWS_3)
     assert_equal(3, qr_chunks.length)
     idx = 0
     expected_result = @dummy_class.split_bundle(JWS_3).map do |c|
@@ -61,7 +61,7 @@ class ChunkingTest < ActiveSupport::TestCase
   test 'A single numeric QR coderake test returns correctly assembled JWS' do
     qr_chunks = load_json_fixture(FILEPATH_NUMERIC_QR_CODE)
     expected_jws = load_json_fixture(FILEPATH_JWS)
-    assembled_jws = @dummy_class.assemble_jws qr_chunks
+    assembled_jws = @dummy_class.qr_chunks_to_jws qr_chunks
     assert_equal expected_jws, assembled_jws
   end
 
@@ -69,7 +69,7 @@ class ChunkingTest < ActiveSupport::TestCase
     qr_chunks = load_json_fixture(FILEPATH_NUMERIC_QR_CODE_MULTIPLE)
     expected_jws = load_json_fixture(FILEPATH_JWS_MULTIPLE)
 
-    assembled_jws = @dummy_class.assemble_jws qr_chunks
+    assembled_jws = @dummy_class.qr_chunks_to_jws qr_chunks
     assert_equal expected_jws, assembled_jws
   end
 end

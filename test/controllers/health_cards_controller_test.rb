@@ -44,7 +44,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     chunks = JSON.parse(response.body)
-    jws = HealthCards::Chunking.assemble_jws chunks
+    jws = HealthCards::Chunking.qr_chunks_to_jws chunks
     assert_jws_bundle_match(jws, @key, @patient, @vax)
   end
 

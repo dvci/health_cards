@@ -96,7 +96,7 @@
 
 **API**
 - `#split_bundle`
-- `#generate_qr_chunks`
+- `#jws_to_qr_chunks`
 
 
 # Classes *outside* the library

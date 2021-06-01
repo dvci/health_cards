@@ -9,7 +9,7 @@ module HealthCards
       raise ArgumentError, 'Must supply either a JWS or QR Code chunks string(s)' unless jws.nil? ^ chunks.nil?
 
       if jws
-        chunks = Chunking.generate_qr_chunks(jws)
+        chunks = Chunking.jws_to_qr_chunks(jws)
         @chunks = chunks.map { |ch| Chunk.new(ch) }
       else
         @chunks = chunks
@@ -17,7 +17,7 @@ module HealthCards
     end
 
     def to_jws
-      assemble_jws(chunks.map(&:to_s))
+      qr_chunks_to_jws(chunks.map(&:to_s))
     end
   end
 

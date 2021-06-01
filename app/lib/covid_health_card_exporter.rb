@@ -9,6 +9,10 @@ class COVIDHealthCardExporter
     HealthCards::Exporter.download([jws])
   end
 
+  def qr_code_images
+    
+  end
+
   def issue(fhir_params)
     err = validate_fhir_params(fhir_params)
     return err.to_json if err
@@ -20,10 +24,6 @@ class COVIDHealthCardExporter
     vcs << jws if HealthCards::COVIDHealthCard.supports_type?(*types)
 
     HealthCards::Exporter.issue(vcs)
-  end
-
-  def chunks
-    HealthCards::Exporter.generate_qr_chunks(jws)
   end
 
   def extract_types(fhir_params)

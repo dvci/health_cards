@@ -18,7 +18,7 @@ module HealthCards
     end
 
     # Splits jws into chunks and converts each string into numeric
-    def generate_qr_chunks(jws)
+    def jws_to_qr_chunks(jws)
       chunks = split_bundle(jws.to_s).map { |c| convert_jws_to_numeric(c) }
 
       # if 1 chunk, attach prefix shc:/
@@ -34,7 +34,7 @@ module HealthCards
     end
 
     # Assemble jws from qr code chunks
-    def assemble_jws(qr_chunks)
+    def qr_chunks_to_jws(qr_chunks)
       if qr_chunks.length == 1
         # Strip off shc:/ and convert numeric jws
         numeric_jws = qr_chunks[0].delete_prefix('shc:/')
