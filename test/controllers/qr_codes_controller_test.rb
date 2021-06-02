@@ -19,9 +19,15 @@ class QRCodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  # test 'submit scanning' do
+  test 'submit scanning' do
+    stub_request(:get, /jwks.json/).to_return(body: HealthCards::KeySet.new(private_key.public_key).to_jwk)
 
-  # end
+    scanning_input = load_json_fixture('example-scanning-input')
+
+    post(qr_codes_path(scanning_input))
+
+    assert_response :success
+  end
 
   test 'qr code image (single)' do
     get(patient_qr_code_path(@patient, 1, format: :png))

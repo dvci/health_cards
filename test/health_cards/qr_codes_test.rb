@@ -4,21 +4,23 @@ require 'test_helper'
 require 'fileutils'
 
 class QrCodesTest < ActiveSupport::TestCase
-  test 'chunk converts to valid code' do
-    input = load_json_fixture('example-numeric-qr-code')
+  setup do
+    @jws = HealthCards::JWS.from_jws(load_json_fixture('example-jws-multiple'))
+    @chunks = load_json_fixture('example-numeric-qr-code')
+  end
 
-    codes = HealthCards::QRCodes.new(chunks: input)
+  test 'chunk converts to valid code' do
+    codes = HealthCards::QRCodes.new(@chunks)
 
     image = ChunkyPNG::Image.from_file('test/fixtures/files/qr/single.png')
 
     assert_equal 1, codes.chunks.length
-    assert_equal input[0], codes.chunks[0].data
+    assert_equal @chunks[0], codes.chunks[0].data
     assert_equal image, codes.chunks[0].image
   end
 
   test 'initialize codes from jws' do
-    jws = HealthCards::JWS.from_jws(load_json_fixture('example-jws-multiple'))
-    codes = HealthCards::QRCodes.new(jws: jws)
+    codes = HealthCards::QRCodes.from_jws(@jws)
 
     assert_equal 3, codes.chunks.length
 

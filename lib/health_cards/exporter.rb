@@ -20,7 +20,7 @@ module HealthCards
       end
 
       def qr_codes(jws)
-        QRCodes.new(jws: jws)
+        QRCodes.from_jws(jws)
       end
     end
   end

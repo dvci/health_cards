@@ -5,11 +5,11 @@ module HealthCards
   class QRCodes
     attr_reader :chunks
 
-    def initialize(jws: nil, chunks: nil)
-      raise ArgumentError, 'Must supply either a JWS or QR Code chunks string(s)' unless jws.nil? ^ chunks.nil?
+    def self.from_jws(jws)
+      QRCodes.new(Chunking.jws_to_qr_chunks(jws.to_s))
+    end
 
-      chunks = Chunking.jws_to_qr_chunks(jws) if jws
-
+    def initialize(chunks)
       @chunks = chunks.map.with_index(1) { |ch, i| Chunk.new(ordinal: i, input: ch) }
     end
 
@@ -22,7 +22,7 @@ module HealthCards
     end
 
     def to_jws
-      qr_chunks_to_jws(chunks.map(&:to_s))
+      Chunking.qr_chunks_to_jws(chunks.map(&:data))
     end
   end
 
