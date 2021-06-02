@@ -10,7 +10,7 @@ module HealthCards
     end
 
     def initialize(chunks)
-      @chunks = chunks.map.with_index(1) { |ch, i| Chunk.new(ordinal: i, input: ch) }
+      @chunks = chunks.sort.map.with_index(1) { |ch, i| Chunk.new(ordinal: i, input: ch) }
     end
 
     def single?
