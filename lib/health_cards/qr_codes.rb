@@ -8,12 +8,17 @@ module HealthCards
     def initialize(jws: nil, chunks: nil)
       raise ArgumentError, 'Must supply either a JWS or QR Code chunks string(s)' unless jws.nil? ^ chunks.nil?
 
-      if jws
-        chunks = Chunking.jws_to_qr_chunks(jws)
-        @chunks = chunks.map { |ch| Chunk.new(ch) }
-      else
-        @chunks = chunks
-      end
+      chunks = Chunking.jws_to_qr_chunks(jws) if jws
+
+      @chunks = chunks.map.with_index(1) { |ch, i| Chunk.new(ordinal: i, input: ch) }
+    end
+
+    def single?
+      chunks.count == 1
+    end
+
+    def code_by_ordinal(num)
+      chunks.find { |ch| ch.ordinal == num }
     end
 
     def to_jws
@@ -25,13 +30,37 @@ module HealthCards
 
   # RQR Shim for Encoding
   class Chunk < RQRCode::QRCode
-    def initialize(string, *_args)
-      @qrcode = ChunkCore.new(string)
+    attr_reader :ordinal
+
+    def data
+      @qrcode.data
+    end
+
+    def initialize(ordinal: 1, input: nil)
+      @ordinal = ordinal
+      @qrcode = ChunkCore.new(input)
+    end
+
+    def image
+      as_png(
+        bit_depth: 1,
+        border_modules: 4,
+        color_mode: ChunkyPNG::COLOR_GRAYSCALE,
+        color: 'black',
+        file: nil,
+        fill: 'white',
+        module_px_size: 6,
+        resize_exactly_to: false,
+        resize_gte_to: false,
+        size: 650
+      )
     end
   end
 
   # RQRCode shim for encoding
   class ChunkCore < RQRCodeCore::QRCode
+    attr_accessor :data
+
     def initialize(input)
       @data = input
       @error_correct_level = 1
@@ -69,7 +98,7 @@ module HealthCards
         num_content.size.times do |i|
           next unless (i % 3).zero?
 
-          chars = @data[i, 3]
+          chars = num_content[i, 3]
           bit_length = get_bit_length(chars.length)
           buffer.put(get_code(chars), bit_length)
         end

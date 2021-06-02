@@ -12,7 +12,9 @@ class PatientsController < ApplicationController
   # GET /patients/1 or /patients/1.json
   def show
     respond_to do |format|
-      format.html
+      format.html do
+        @exporter = COVIDHealthCardExporter.new(@patient)
+      end
       format.fhir_json { render json: @patient.to_json }
     end
   end

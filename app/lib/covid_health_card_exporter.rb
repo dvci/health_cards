@@ -9,8 +9,12 @@ class COVIDHealthCardExporter
     HealthCards::Exporter.download([jws])
   end
 
-  def qr_code_images
-    
+  def qr_codes
+    @qr_codes ||= HealthCards::Exporter.qr_codes(jws)
+  end
+
+  def qr_code_image(ordinal)
+    qr_codes.code_by_ordinal(ordinal).image
   end
 
   def issue(fhir_params)

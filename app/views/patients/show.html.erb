@@ -1,4 +1,3 @@
-<%= javascript_pack_tag 'qrcode' %>
 <p id="notice"><%= notice %></p>
 <section class="section">
   <div class="container">
@@ -65,7 +64,23 @@
         <% end %>
       </div>
     </div>
-    <div id="qr-code"></div>
+
+    <div id="qr-code" >
+      <% if @exporter.qr_codes.single? %>
+        <%= image_tag patient_qr_code_path(@patient, 1, format: :png) %>
+      <% else %>
+        <div class="tabs is-large">
+          <ul>
+            <% @exporter.qr_codes.chunks.each do |chunk| %>
+              <li>
+                <a><%= chunk.ordinal %></a>
+                <%= image_tag patient_qr_code_path(@patient, chunk.ordinal, format: :png) %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
     <%= link_to 'Patient List', patients_path, class: 'button is-info' %>
   </div>
 </section>

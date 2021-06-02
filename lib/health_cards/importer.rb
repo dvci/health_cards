@@ -20,8 +20,8 @@ module HealthCards
     # @param [Array<String>] Array containing numeric QR chunks
     # @return [Hash] Hash containing the JWS payload and verification contents
     def self.scan(qr_contents)
-      jws_string = qr_chunks_to_jws qr_contents
-      verify_jws jws_string
+      qr_codes = QRCodes.new(chunks: qr_contents)
+      verify_jws qr_codes.to_jws
     end
 
     # Verify JWS signature

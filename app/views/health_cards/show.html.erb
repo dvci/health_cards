@@ -91,7 +91,9 @@
         <div class="card-content">
           <pre style="white-space:pre-wrap;">
             <div class="content", style="word-wrap: break-word; width: 800px">
-                <p> <%= @qr_code_payload.join(', ') %> </p>
+                <% @qr_code.chunks.each do |ch| %>
+                <p> <%= ch.data %> </p>
+                <% end %>
             </div>
           </pre>
         </div>

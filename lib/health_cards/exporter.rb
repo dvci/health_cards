@@ -3,7 +3,6 @@
 module HealthCards
   # Converts a JWS to formats needed by endpoints (e.g. $issue-health-card, download and qr code)
   module Exporter
-
     class << self
       # Export JWS for file download
       # @param [Array<JWS, String>] An array of JWS objects to be exported

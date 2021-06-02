@@ -4,7 +4,7 @@
 
 # HealthCardsController is the endpoint for download and issue of health cards
 class HealthCardsController < ApplicationController
-  before_action :create_exporter, except: [:scan, :qr_contents, :upload]
+  before_action :create_exporter, except: :upload
   skip_before_action :verify_authenticity_token, only: [:create]
   after_action :set_cors_header, only: :create
 
@@ -14,15 +14,7 @@ class HealthCardsController < ApplicationController
       format.html do
         @jws_encoded_details = @exporter.jws
         @health_card = HealthCards::COVIDHealthCard.from_jws @jws_encoded_details
-        @qr_code_payload = @exporter.chunks
-
-        if @qr_code_payload.length == 1
-          @qr_code_payload[0] = "shc:/#{@qr_code_payload[0]}"
-        else
-          @qr_code_payload = qr_code_payload.map.with_index do |s, i|
-            "shc:/#{i + 1}/#{@qr_code_payload.length}/#{s}"
-          end
-        end
+        @qr_code = @exporter.qr_codes
       end
     end
   end
@@ -36,27 +28,9 @@ class HealthCardsController < ApplicationController
     end
   end
 
-  def chunks
-    render json: @exporter.chunks
-  end
-
-  def scan; end
-
-  def qr_contents
-    contents = JSON.parse(params[:qr_contents])
-    @scan_result = HealthCards::Importer.scan(contents)
-  end
-
   def upload
     @filename = params[:health_card].original_filename
     file = params.require(:health_card).read
     @upload_result = HealthCards::Importer.upload(file)
-  end
-
-  private
-
-  def create_exporter
-    @patient = Patient.find(params[:patient_id])
-    @exporter = COVIDHealthCardExporter.new(@patient)
   end
 end

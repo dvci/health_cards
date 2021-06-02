@@ -39,15 +39,6 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test 'get chunks for QR code generation' do
-    get(chunks_patient_health_card_url(@patient))
-    assert_response :success
-
-    chunks = JSON.parse(response.body)
-    jws = HealthCards::Chunking.qr_chunks_to_jws chunks
-    assert_jws_bundle_match(jws, @key, @patient, @vax)
-  end
-
   test 'issue smart card' do
     param = FHIR::Parameters::Parameter.new(name: 'credentialType',
                                             valueUri: 'https://smarthealth.cards#covid19')
