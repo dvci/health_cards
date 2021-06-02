@@ -8,7 +8,7 @@ Rails.application.routes.draw do
     resources :immunizations
     resource :health_card do
       get 'chunks', format: :json
-      post "/qrcode", to: "health_cards#qrcode", as: :qrcode, format: :json 
+
     end
   end
 
