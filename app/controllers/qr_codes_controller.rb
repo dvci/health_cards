@@ -15,7 +15,7 @@ class QRCodesController < ApplicationController
       format.png do
         image = @exporter.qr_code_image(params[:id].to_i)
 
-        render :not_found and return unless image
+        head :not_found and return unless image
 
         send_data image.to_s, type: 'image/png', disposition: 'inline'
       end

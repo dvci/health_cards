@@ -14,7 +14,10 @@ class COVIDHealthCardExporter
   end
 
   def qr_code_image(ordinal)
-    qr_codes.code_by_ordinal(ordinal).image
+    code = qr_codes.code_by_ordinal(ordinal)
+    return unless code
+
+    code.image.to_s
   end
 
   def issue(fhir_params)

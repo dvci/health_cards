@@ -38,7 +38,7 @@
         </div>
         <div class="level-right">
           <div class="level-item">
-            <%= form_with url: '/health_cards/qr_contents', method: :post do |f| %>
+            <%= form_with url: qr_codes_path, method: :post do |f| %>
               <%= f.hidden_field :qr_contents, id: 'qr-contents' %>
               <%= f.submit 'View Contents', class: 'button is-info' %>
             <% end %>

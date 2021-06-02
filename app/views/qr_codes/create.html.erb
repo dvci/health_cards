@@ -1,0 +1,1 @@
+<%= render partial: 'patients/patient', object: create_patient_from_jws(@scan_result[:payload]), locals: {payload: @scan_result[:payload], verified: @scan_result[:verified], error_message: @scan_result[:error_message]} %>
