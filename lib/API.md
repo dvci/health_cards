@@ -89,17 +89,36 @@
 **API**
 - `#verify`
 
-# Modules
-
-## HealthCards::Chunking
-> Provides methods for performing jws chunking for QR codes
+## HealthCards::QRCodes
+> Represents a set of QR Codes that map to a single JWS
 
 **API**
-- `#split_bundle`
-- `#jws_to_qr_chunks`
+- `::from_JWS`
+- `::new`
+- `#chunks`
+- `#single?`
+- `#code_by_ordinal`
+- `#to_jws`
 
+## HealthCards::QRCodes::Chunks
+> Represents a single QR Code from a single chunk of a JWS
+
+**API**
+- `::new`
+- `#data`
+- `#image`
+
+# Modules
+
+## HealthCards::ChunkingUtils
+> Implements chunking specific functionality for transforming between raw JWS and QR encoded strings
+
+**API**
+- `::split_bundle`
+- `::jws_to_qr_chunks`
+- `::qr_chunks_to_jws`
 
 # Classes *outside* the library
 
 ## COVIDHealthCard
-> Responsible for munging the FHIR payload to meet the FHIR Profile
+> Responsible for transforming the FHIR bundle payload to meet the COVID Vaccinations Data Minimization Profile

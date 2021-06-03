@@ -3,8 +3,6 @@
 module HealthCards
   # Converts a JWS to formats needed by endpoints (e.g. $issue-health-card, download and qr code)
   module Importer
-    extend Chunking
-
     # Import JWS from file upload
     # @param  [String] JSON string containing file upload contents
     # @return [Array<Hash>] An array of Hashes containing JWS payload and verification contents

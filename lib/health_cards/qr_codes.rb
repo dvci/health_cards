@@ -6,7 +6,7 @@ module HealthCards
     attr_reader :chunks
 
     def self.from_jws(jws)
-      QRCodes.new(Chunking.jws_to_qr_chunks(jws.to_s))
+      QRCodes.new(ChunkingUtils.jws_to_qr_chunks(jws.to_s))
     end
 
     def initialize(chunks)
@@ -22,7 +22,7 @@ module HealthCards
     end
 
     def to_jws
-      Chunking.qr_chunks_to_jws(chunks.map(&:data))
+      ChunkingUtils.qr_chunks_to_jws(chunks.map(&:data))
     end
   end
 
