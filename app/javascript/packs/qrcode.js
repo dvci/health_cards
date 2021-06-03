@@ -23,7 +23,10 @@ function addPrefixToQrCodes(chunks) {
   });
 }
 
-fetch(`${window.location.href}/health_card/chunks.json`)
+const current = window.location.href;
+const url = current.includes('health_card') ? `${current}/chunks.json` : `${current}/health_card/chunks.json`;
+
+fetch(url)
   .then(res => res.json())
   .then(chunks => {
     const qrCodes = addPrefixToQrCodes(chunks);
@@ -35,10 +38,16 @@ fetch(`${window.location.href}/health_card/chunks.json`)
     // Add each QR code to the qr-code container
     qrCodes.forEach(qrCode => {
       const canvas = document.createElement('canvas');
-      QRCode.toCanvas(canvas, qrCode, {
+      options = {
         version: 22,
         errorCorrectionLevel: 'L'
-      });
+      };
+      QRCode.toDataURL(qrCode, options, function (err, url) {
+        if (err) throw err
+        var field = document.getElementById('qr-code-field')
+        field.value = url
+      })
+      QRCode.toCanvas(canvas, qrCode, options);
       container.appendChild(canvas);
     });
   });

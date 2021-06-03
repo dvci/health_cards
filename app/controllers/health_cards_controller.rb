@@ -33,6 +33,10 @@ class HealthCardsController < ApplicationController
         fhir_params = FHIR.from_contents(request.raw_post)
         render json: @exporter.issue(fhir_params)
       end
+      format.pdf do
+        @image_uri = params[:qrcode]
+        render pdf: 'health_card', layout: 'pdf', encoding: 'utf8'
+      end
     end
   end
 
@@ -61,7 +65,8 @@ class HealthCardsController < ApplicationController
   rescue ActiveRecord::RecordNotFound => e
     raise e unless params[:format] == 'fhir_json'
 
-    issue = FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'not-found', diagnostic: 'Patient does not exist')
+    issue = FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'not-found',
+                                              diagnostic: 'Patient does not exist')
     render json: FHIR::OperationOutcome.new(issue: issue).to_json, status: :not_found and return
   end
 end
