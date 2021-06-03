@@ -22,7 +22,7 @@ class HealthCardsController < ApplicationController
       end
       format.pdf do
         @image_uri = params[:qrcode]
-        render pdf: 'health_card', layout: 'pdf.html', encoding: 'utf8'
+        render pdf: 'health_card', layout: 'pdf', encoding: 'utf8'
       end
     end
   end
