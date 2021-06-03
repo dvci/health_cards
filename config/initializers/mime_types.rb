@@ -8,3 +8,4 @@
 Mime::Type.register 'application/smart-health-card', :healthcard, [], ['smart-health-card']
 Mime::Type.register 'application/fhir+json', :fhir_json
 Mime::Type.register 'image/png', :png
+Mime::Type.register 'application/pdf', :pdf

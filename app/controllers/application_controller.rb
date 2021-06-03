@@ -3,10 +3,6 @@
 class ApplicationController < ActionController::Base
   private
 
-  def set_cors_header
-    response.header['Access-Control-Allow-Origin'] = '*'
-  end
-
   def create_exporter
     @patient = Patient.find(params[:patient_id])
     @exporter = COVIDHealthCardExporter.new(@patient)

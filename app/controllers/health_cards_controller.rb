@@ -3,10 +3,9 @@
 # require 'app/lib/covid_health_card_reporter'
 
 # HealthCardsController is the endpoint for download and issue of health cards
-class HealthCardsController < ApplicationController
+class HealthCardsController < SecuredController
   before_action :create_exporter, except: :upload
   skip_before_action :verify_authenticity_token, only: [:create]
-  after_action :set_cors_header, only: :create
 
   def show
     respond_to do |format|
@@ -24,6 +23,10 @@ class HealthCardsController < ApplicationController
       format.fhir_json do
         fhir_params = FHIR.from_contents(request.raw_post)
         render json: @exporter.issue(fhir_params)
+      end
+      format.pdf do
+        @image_uri = params[:qrcode]
+        render pdf: 'health_card', layout: 'pdf', encoding: 'utf8'
       end
     end
   end

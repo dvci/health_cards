@@ -2,8 +2,6 @@
 
 # MetadataController exposes the metadata configuration to identify server capabilities
 class MetadataController < ApplicationController
-  after_action :set_cors_header
-
   def capability_statement
     render json: Rails.application.config.metadata
   end
