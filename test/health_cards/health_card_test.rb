@@ -21,10 +21,6 @@ class HealthCardTest < ActiveSupport::TestCase
     assert @health_card.bundle.is_a?(FHIR::Bundle)
   end
 
-  # test "metadata walking" do
-  #   byebug
-  # end
-
   test 'HealthCard handles empty payloads' do
     compressed_payload = HealthCards::HealthCard.compress_payload(FHIR::Bundle.new.to_json)
     jws = HealthCards::JWS.new(header: {}, payload: compressed_payload, key: rails_private_key)
@@ -151,7 +147,8 @@ class HealthCardTest < ActiveSupport::TestCase
     resource_with_reference = stripped_resources[2]
 
     reference = resource_with_reference.resource.subject.reference
-    assert(reference.start_with?('resource:') && (reference.length <= 12))
+
+    assert_match(/resource:[0-9]+/, reference)
   end
 
   test 'all reference types are replaced with short resource-scheme URIs' do
