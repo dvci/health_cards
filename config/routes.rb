@@ -28,6 +28,6 @@ Rails.application.routes.draw do
   get "/metadata", to: "metadata#capability_statement", as: :fhir_capabilitystatement, format: :fhir_json
   get "/OperationDefinition/health-cards-issue", to: "metadata#operation_definition", as: :fhir_operationdefinition, format: :fhir_json
 
-  get "/auth/authorize", to: "auth#authorize", as: :auth_authorize
+  get "/auth/authorize", to: "auth#authorize", as: :auth_code
   post "/auth/token", to: "auth#token", as: :auth_token
 end
