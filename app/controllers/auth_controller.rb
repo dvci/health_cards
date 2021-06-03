@@ -17,10 +17,11 @@ class AuthController < ApplicationController
     params = request.parameters
     if params[:code] == Rails.application.config.auth_code
       scope = ['launch/patient', 'patient/Immunization.read']
+      header = { alg: 'ES256' }
       payload = { exp: Time.now.to_i + 3600, scope: scope }
-      token = JWT.encode payload, Rails.application.config.hc_key.key, 'ES256'
+      jws = HealthCards::JWS.new(header: header, payload: payload.to_json, key: Rails.application.config.hc_key)
       render json: {
-        access_token: token,
+        access_token: jws.to_s,
         token_type: 'Bearer',
         expires_in: 3600,
         scope: scope,

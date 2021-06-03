@@ -15,11 +15,12 @@ class SecuredController < ApplicationController
     access_token = get_access_token headers
     return if access_token.nil?
 
-    # Verify token signature and expiration
-    JWT.decode(access_token, Rails.application.config.hc_key.key, true, { algorithm: 'ES256' }).first
-  rescue JWT::ExpiredSignature
+    jws = HealthCards::JWS.from_jws(access_token, key: Rails.application.config.hc_key)
+    # Verify token signature
+    render json: { errors: ['Unauthorized code'] }, status: :unauthorized unless jws.verify
+    # Check if token is expired
+    return unless Time.now.to_i > JSON.parse(jws.payload)['exp']
+
     render json: { errors: ['Expired Access Token'] }, status: :unauthorized
-  rescue JWT::VerificationError, JWT::DecodeError
-    render json: { errors: ['Unauthorized code'] }, status: :unauthorized
   end
 end

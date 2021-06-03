@@ -114,7 +114,6 @@ GEM
     json (2.5.1)
     json-minify (0.0.3)
       json (> 0)
-    jwt (2.2.3)
     listen (3.4.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -292,7 +291,6 @@ DEPENDENCIES
   font-awesome-rails
   jbuilder (~> 2.7)
   json-minify
-  jwt
   listen (~> 3.3)
   pry
   pry-byebug
