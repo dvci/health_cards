@@ -24,10 +24,10 @@ module HealthCards
         color: 'black',
         file: nil,
         fill: 'white',
-        module_px_size: 6,
-        resize_exactly_to: false,
+        module_px_size: 5,
+        resize_exactly_to: true,
         resize_gte_to: false,
-        size: 650
+        size: 600
       )
     end
   end

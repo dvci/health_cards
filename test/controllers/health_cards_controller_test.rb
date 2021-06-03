@@ -28,7 +28,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'create health card PDF' do
-    post(patient_health_card_path(@patient, format: 'pdf'))
+    get(patient_health_card_path(@patient, format: 'pdf'))
     assert_response :success
   end
 

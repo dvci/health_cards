@@ -69,16 +69,6 @@ class HealthCardTest < ActiveSupport::TestCase
     end
   end
 
-  ## Save as a QR Code
-
-  test 'Health Card can be saved as a QR Code' do
-    skip('Save as QR Code not implemented')
-    file_name = './example-qr.svg'
-    @health_card.save_as_qr_code('./example-qr.svg')
-    assert File.file?(file_name)
-    File.delete(file_name)
-  end
-
   test 'redefine_uris populates Bundle.entry.fullUrl elements with short resource-scheme URIs' do
     stripped_bundle = @health_card.strip_fhir_bundle
 

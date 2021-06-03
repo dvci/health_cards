@@ -10,10 +10,7 @@
           <div class="is-grouped">
             <%= link_to 'Edit', edit_patient_path(@patient), class: 'button is-info is-light' %> 
             <%= link_to 'Download Health Card', patient_health_card_path(@patient, format: 'smart-health-card'), class: 'button is-info is-light' %>
-            <%= form_with url: patient_health_card_path(@patient, format: 'pdf'), class: 'button is-info is-light', method: :post do |f| %>        
-              <%= f.hidden_field :qrcode, id: 'qr-code-field' %>
-              <%= f.submit 'Download PDF', id:'download-pdf-button', class: 'button is-info is-light' %>
-            <% end %>
+            <%= link_to 'Download PDF', patient_health_card_path(@patient, format: 'pdf'), id:'download-pdf-button', class: 'button is-info is-light' %>
             <%= link_to 'Health Card Details', patient_health_card_path(@patient), class: 'button is-info is-light' %>
           </div>
         </div>
@@ -68,15 +65,7 @@
       </div>
     </div>
 
-    <div class="tile is-ancestor">
-      <% @exporter.qr_codes.chunks.each do |ch| %>
-        <div class="tile is-parent">
-          <div class="tile is-child box">
-            <%= image_tag patient_qr_code_path(@patient, ch.ordinal, format: :png) %>
-          </div>
-        </div>
-      <% end %>
-    </div>
+    <%= render partial: 'qr_codes/chunks', object: @exporter.qr_codes.chunks %>
     <%= link_to 'Patient List', patients_path, class: 'button is-info' %>
   </div>
 </section>

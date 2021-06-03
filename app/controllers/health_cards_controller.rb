@@ -15,6 +15,7 @@ class HealthCardsController < SecuredController
         @health_card = HealthCards::COVIDHealthCard.from_jws @jws_encoded_details
         @qr_code = @exporter.qr_codes
       end
+      format.pdf { render pdf: 'health_card', layout: 'pdf', encoding: 'utf8' }
     end
   end
 
@@ -23,10 +24,6 @@ class HealthCardsController < SecuredController
       format.fhir_json do
         fhir_params = FHIR.from_contents(request.raw_post)
         render json: @exporter.issue(fhir_params)
-      end
-      format.pdf do
-        @image_uri = params[:qrcode]
-        render pdf: 'health_card', layout: 'pdf', encoding: 'utf8'
       end
     end
   end
