@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # PatientsController manages patients via the Web UI
-class PatientsController < ApplicationController
+class PatientsController < SecuredController
   before_action :set_patient, only: %i[show edit update destroy]
 
   # GET /patients or /patients.json
@@ -14,6 +14,7 @@ class PatientsController < ApplicationController
     respond_to do |format|
       format.html
       format.fhir_json { render json: @patient.to_json }
+      format.json { render json: @patient.to_json }
     end
   end
 

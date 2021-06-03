@@ -4,8 +4,6 @@ require 'health_cards'
 
 # WellKnownController exposes the .well-known configuration to identify relevant urls and server capabilities
 class WellKnownController < ApplicationController
-  after_action :set_cors_header
-
   def smart
     render json: Rails.application.config.smart
   end
