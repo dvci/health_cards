@@ -75,11 +75,15 @@
 
 <script>
   {
-    const downloadButton = document.querySelector('#download-pdf-button');
+    const downloadButtonId = 'download-pdf-button';
+    const downloadButton = document.querySelector(`#${downloadButtonId}`);
     downloadButton.onclick = () => {
       // Disable elements on page after download button has been clicked
       const container = document.querySelector('.container');
       container.style['pointer-events'] = 'none';
+      document.querySelectorAll('.button').forEach(b => {
+        if (b.id !== downloadButtonId) b.setAttribute('disabled', true)
+      });
     }
   }
 </script>
