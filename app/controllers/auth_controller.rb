@@ -17,7 +17,7 @@ class AuthController < ApplicationController
     params = request.parameters
     if params[:code] == Rails.application.config.auth_code
       scope = ['launch/patient', 'patient/Immunization.read']
-      payload = { exp: helpers.convert_time_to_epoch(Time.current + 3600), scope: scope }
+      payload = { exp: Time.now.to_i + 3600, scope: scope }
       token = JWT.encode payload, Rails.application.config.hc_key.key, 'ES256'
       render json: {
         access_token: token,
