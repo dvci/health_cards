@@ -65,7 +65,8 @@ class HealthCardsController < ApplicationController
   rescue ActiveRecord::RecordNotFound => e
     raise e unless params[:format] == 'fhir_json'
 
-    issue = FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'not-found', diagnostic: 'Patient does not exist')
+    issue = FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'not-found',
+                                              diagnostic: 'Patient does not exist')
     render json: FHIR::OperationOutcome.new(issue: issue).to_json, status: :not_found and return
   end
 end
