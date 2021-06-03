@@ -96,7 +96,6 @@
 - `::from_JWS`
 - `::new`
 - `#chunks`
-- `#single?`
 - `#code_by_ordinal`
 - `#to_jws`
 
