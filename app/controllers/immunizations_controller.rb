@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Handles immunization of patients through web UI
-class ImmunizationsController < ApplicationController
+class ImmunizationsController < SecuredController
   before_action :find_patient, except: :show
   before_action :set_immunization, only: %i[edit update destroy]
   before_action :find_vaccines, only: %i[new edit create update]

@@ -27,6 +27,11 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'create health card PDF' do
+    post(patient_health_card_path(@patient, format: 'pdf'))
+    assert_response :success
+  end
+
   test 'should show health card' do
     get(patient_health_card_url(@patient, format: :html))
     assert_response :success
@@ -53,7 +58,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
                                             valueUri: 'https://smarthealth.cards#covid19')
     params = FHIR::Parameters.new(parameter: [param])
 
-    post(@fhir_url, params: params.to_hash, as: :json)
+    post(@fhir_url, params: params.to_hash, headers: { 'Origin' => 'http://example.com' }, as: :json)
 
     assert response['Access-Control-Allow-Origin'], '*'
 

@@ -13,4 +13,7 @@ Rails.application.configure do
 
   config.hc_key = kp
   config.issuer = HealthCards::Issuer.new(url: ENV['HOST'], key: config.hc_key)
+
+  config.auth_code = ENV['AUTH_CODE']
+  config.client_id = ENV['CLIENT_ID']
 end
