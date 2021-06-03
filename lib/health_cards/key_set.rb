@@ -9,6 +9,16 @@ module HealthCards
 
     def_delegator :keys, :empty?
 
+    # Create a KeySet from a JWKS
+    #
+    # @param jwks [String] the JWKS as a string
+    # @return [HealthCards::KeySet]
+    def self.from_jwks(jwks)
+      jwks = JSON.parse(jwks)
+      keys = jwks['keys'].map { |jwk| HealthCards::Key.from_jwk(jwk) }
+      KeySet.new(keys)
+    end
+
     # Create a new KeySet
     #
     # @param keys [HealthCards::Key, Array<HealthCards::Key>, nil] the initial keys

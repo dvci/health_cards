@@ -84,6 +84,7 @@ class VerifierTest < ActiveSupport::TestCase
   end
 
   test 'Verifier throws exception when attempting to verify health card without an accessible public key' do
+    stub_request(:get, /jwks.json/).to_return(body: HealthCards::KeySet.new(@public_key).to_jwk)
     verifier = HealthCards::Verifier.new
     assert_raises HealthCards::MissingPublicKey do
       verifier.verify @jws
@@ -94,43 +95,35 @@ class VerifierTest < ActiveSupport::TestCase
     end
   end
 
+  test 'Verifier can verify JWS when key is resolvable' do
+    stub_request(:get, /jwks.json/).to_return(body: @verifier.keys.to_jwk)
+    verifier = HealthCards::Verifier.new
+    assert verifier.verify(@jws)
+  end
+
   ### Verification Class Methods
   test 'Verifier class throws exception when attempting to verify health card without an accessible public key' do
-    skip('Need to update test so that health_card does not contain the public key it needs to verify')
-    skip('Need to update Verifier::verify to accept JWS strings')
-    verifier = HealthCards::Verifier
-    assert_raises HealthCards::MissingPublicKey do
-      verifier.verify @jws
-    end
+    stub_request(:get, /jwks.json/).to_return(body: HealthCards::KeySet.new(@public_key).to_jwk)
 
+    verifier = HealthCards::Verifier
     assert_raises HealthCards::MissingPublicKey do
       verifier.verify @jws
     end
   end
 
   test 'Verifier class can verify health cards when key is resolvable' do
-    skip('Key resolution not implemented')
-    stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
+    stub_request(:get, /jwks.json/).to_return(body: @verifier.keys.to_jwk)
     verifier = HealthCards::Verifier
-    verifier.verify(@jws)
-  end
-
-  test 'Verifier can verify JWS when key is resolvable' do
-    skip('Key resolution not implemented')
-    stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
-    verifier = HealthCards::Verifier.new
-    verifier.verify(@jws)
+    assert verifier.verify(@jws)
   end
 
   ## Key Resolution
 
   test 'Verifier key resolution is active by default' do
-    skip('Key resolution not implemented')
-    assert HealthCards::Verifier.new.globally_resolve_keys?
+    assert HealthCards::Verifier.new.resolve_keys?
   end
 
   test 'Verifier key resolution can be disabled' do
-    skip('Key resolution not implemented')
     verifier = HealthCards::Verifier.new
     assert verifier.resolve_keys?
     verifier.resolve_keys = false
@@ -139,8 +132,7 @@ class VerifierTest < ActiveSupport::TestCase
   end
 
   test 'Verifier will not verify health cards when key is not resolvable' do
-    skip('Key resolution not implemented')
-    stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
+    stub_request(:get, /jwks.json/).to_return(status: 200, body: @verifier.keys.to_jwk)
     verifier = HealthCards::Verifier.new
     verifier.resolve_keys = false
     assert_raises HealthCards::MissingPublicKey do
@@ -150,29 +142,32 @@ class VerifierTest < ActiveSupport::TestCase
     assert verifier.verify(@jws)
   end
 
-  test 'Verifier class key resolution is active by default' do
-    skip('Key resolution not implemented')
-    assert HealthCards::Verifier.globally_resolve_keys?
-  end
-
-  test 'Verifier class key resolution can be disabled' do
-    skip('Key resolution not implemented')
+  test 'Verifier class will verify health cards when key is resolvable' do
+    stub_request(:get, /jwks.json/).to_return(status: 200, body: @verifier.keys.to_jwk)
     verifier = HealthCards::Verifier
-    assert verifier.globally_resolve_keys?
-    verifier.globally_resolve_keys = false
-    assert_not verifier.globally_resolve_keys?
-    verifier.globally_resolve_keys = true
-  end
-
-  test 'Verifier class will not verify health cards when key is not resolvable' do
-    skip('Key resolution not implemented')
-    stub_request(:get, /jwks.json/).to_return(body: @public_key.to_jwk)
-    verifier = HealthCards::Verifier
-    verifier.globally_resolve_keys = false
-    assert_raises HealthCards::MissingPublicKey do
-      verifier.verify(@jws)
-    end
-    verifier.globally_resolve_keys = true
     assert verifier.verify(@jws)
+  end
+
+  ## Test Against Spec Examples
+  test 'Against Example Data' do
+    jws = 'eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiIsImtpZCI6IjNLZmRnLVh3UC03Z1h5eXd0VWZVQUR3QnVtRE9QS01ReC1pRUxMMTFXOXMifQ.'\
+          '3ZJLb9swEIT_SrC9ypKo1HWsW5wCfRyKAk17KXygqbXFgA-BpIS4gf57d2kHaIE4p56q24rDjzNDPoGOEVroUxpiW1XRypB6lCb1pZKhixU'\
+          '-SjsYjBUJRwxQgNvtoRXvmvp6vbxeinJ1c1PApKB9gnQcENqfl3FvTsOCB0Jd1mlrR6d_yaS9e1Wo_KQ7sYZtASpghy5pab6NuwdUiS3tex'\
+          '1-YIjMaeFtWZeCePx3M7rOIGsCRj8GhffZPpwXinMcUN4Yop2c0AHhSBmJPBrzPRgSPO9vaxI8Dy-Av1Ic2s8dSosniLTaEA9uHWlCzGcc9'\
+          'ISOe_zse543JWxnCrjTFP69TMwS66VY1GLR1DDPxYtuxOtuPv1dcUwyjTHH5QtPyBc0SaW0wzvfZYLynXaHbDweY0J7fjp0M71ZlT4cKm62'\
+          'irqr1PRIAJV3QlOvYN7OBQznCrKdPQZ07O3PBknklRpDXuKw99qeEE0OXHMsqmrvg6X3yF6kSj4wstNxMDLXubm7-oAOgzRXH30cdJKGiqI'\
+          'SjU9fRrvjrVDnT1xssPkvG2zW_7rBFS_M9P0G.jLfaCb4OaneXDv1p9U29fcWGRkgWnMYizLrRAN_uOsdNRlY5m5Jcot-KHxV1fKjAyCj2D'\
+          'dmdrze8VbqfY8hoHg'
+
+    jwk = {
+      kty: 'EC',
+      kid: '3Kfdg-XwP-7gXyywtUfUADwBumDOPKMQx-iELL11W9s',
+      use: 'sig',
+      alg: 'ES256',
+      crv: 'P-256',
+      x: '11XvRWy1I2S0EyJlyf_bWfw_TQ5CJJNLw78bHXNxcgw',
+      y: 'eZXwxvO1hvCY0KucrPfKo7yAyMT6Ajc3N7OkAB6VYy8'
+    }
+    assert HealthCards::Verifier.new(keys: HealthCards::Key.from_jwk(jwk)).verify(jws)
   end
 end

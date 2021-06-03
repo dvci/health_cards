@@ -1,14 +1,32 @@
 # frozen_string_literal: true
 
+require 'net/http'
+require_relative 'verification'
+
 module HealthCards
   # Verifiers can validate HealthCards using public keys
   class Verifier
     attr_reader :keys
+    attr_accessor :resolve_keys
+
+    include HealthCards::Verification
+    extend HealthCards::Verification
+
+    # Verify a HealthCard
+    #
+    # This method _always_ uses key resolution and does not depend on any cached keys
+    #
+    # @param verifiable [HealthCards::JWS, String] the health card to verify
+    # @return [Boolean]
+    def self.verify(verifiable)
+      verify_using_key_set(verifiable)
+    end
 
     # Create a new Verifier
     #
-    # @param keys [HealthCards::KeySet, HealthCards::Key, nil]
-    def initialize(keys: nil)
+    # @param keys [HealthCards::KeySet, HealthCards::Key, nil] keys to use when verifying Health Cards
+    # @param resolve_keys [Boolean] Enables or disables key resolution
+    def initialize(keys: nil, resolve_keys: true)
       @keys = case keys
               when KeySet
                 keys
@@ -17,11 +35,13 @@ module HealthCards
               else
                 KeySet.new
               end
+
+      self.resolve_keys = resolve_keys
     end
 
     # Add a key to use when verifying
     #
-    # @param key [HealthCards::Key] the key to add
+    # @param key [HealthCards::Key, HealthCards::KeySet] the key to add
     def add_keys(key)
       @keys.add_keys(key)
     end
@@ -35,24 +55,14 @@ module HealthCards
 
     # Verify a HealthCard
     #
-    # @param verifiable [HealthCards::HealthCard, HealthCards::JWS, String] the health card to verify
+    # @param verifiable [HealthCards::JWS, String] the health card to verify
     # @return [Boolean]
     def verify(verifiable)
-      # TODO: This needs better logic to make sure the public key is correct and check for key resolution
-      jws = case verifiable
-            when JWS
-              verifiable
-            when String
-              JWS.from_jws(verifiable)
-            else
-              raise ArgumentError, 'Expected either a HealthCards::JWS or String'
-            end
+      verify_using_key_set(verifiable, keys, resolve_keys: resolve_keys?)
+    end
 
-      key = keys.find_key(jws.kid)
-      raise MissingPublicKey, 'Verifier does not contain public key that is able to verify this signature' unless key
-
-      jws.public_key = key
-      jws.verify
+    def resolve_keys?
+      resolve_keys
     end
   end
 end

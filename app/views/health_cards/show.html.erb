@@ -1,0 +1,103 @@
+<%= javascript_pack_tag 'details_pg' %>
+<p id="notice"><%= notice %></p>
+<section class="hero is-link">
+  <div class="hero-body">
+    <p class="title">Health Card Details</p>
+  </div>
+</section>
+
+  <section class="section">
+    <div class="container">
+
+    <div class="card is-fullwidth">
+      <header class="card-header">
+        <p class="card-header-title">FHIR Bundle</p>
+        <a class="card-header-icon card-toggle">
+          <i class="fa fa-angle-down"></i>
+        </a>
+      </header>
+        <div class="card-content">
+          <div class="content">
+           <pre>
+              <p> <%= @health_card.bundle.to_json %> </p>
+           </pre>
+          </div>
+        </div>
+      </div>
+    <br>
+    <br>
+
+      <div class="card is-fullwidth">
+        <header class="card-header">
+          <p class="card-header-title">Expanded JWS Payload</p>
+          <a class="card-header-icon card-toggle">
+            <i class="fa fa-angle-down"></i>
+          </a>
+        </header>
+          <div class="card-content">
+          <div class="content">
+            <pre style="white-space:pre-wrap;">
+              <p> <%= JSON.pretty_generate(@health_card.to_hash) %> </p>
+            </pre>
+            </div>
+          </div>
+        </div>
+    <br>
+    <br>
+
+      <div class="card is-fullwidth">
+        <header class="card-header">
+          <p class="card-header-title">Minified JWS Payload</p>
+          <a class="card-header-icon card-toggle">
+            <i class="fa fa-angle-down"></i>
+          </a>
+        </header>
+          <div class="card-content">
+          <div class="content">
+            <pre style="white-space:pre-wrap;">
+              <p> <%= @health_card.to_json %> </p>
+            </pre>
+            </div>
+          </div>
+        </div>
+    <br>
+    <br>
+
+    <div class="card is-fullwidth">
+      <header class="card-header">
+        <p class="card-header-title">Encoded JWS</p>
+        <a class="card-header-icon card-toggle">
+          <i class="fa fa-angle-down"></i>
+        </a>
+      </header>
+        <div class="card-content">
+          <pre style="white-space:pre-wrap;">
+            <div class="content", style="word-wrap: break-word; width: 800px">
+                <p> <%= @jws_encoded_details%> </p>
+            </div>
+          </pre>
+        </div>
+      </div>
+    <br>
+    <br>
+    
+    <div class="card is-fullwidth">
+      <header class="card-header">
+        <p class="card-header-title">Numeric QR</p>
+        <a class="card-header-icon card-toggle">
+          <i class="fa fa-angle-down"></i>
+        </a>
+      </header>
+        <div class="card-content">
+          <pre style="white-space:pre-wrap;">
+            <div class="content", style="word-wrap: break-word; width: 800px">
+                <p> <%= @qr_code_payload.join(', ') %> </p>
+            </div>
+          </pre>
+        </div>
+    </div>
+          <br>
+          <br>
+          <%= link_to 'Back', patient_path(@patient), class: 'button is-info is-light' %>
+  </div>
+</section>

@@ -32,7 +32,13 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'should show health card' do
+    get(patient_health_card_url(@patient, format: :html))
+    assert_response :success
+  end
+
   test 'upload file' do
+    stub_request(:get, 'https://smarthealth.cards/examples/issuer/.well-known/jwks.json').to_return(body: '{"keys":[]}')
     file = fixture_file_upload('test/fixtures/files/example-00-e-file.smart-health-card')
     post(upload_health_cards_path, params: { health_card: file })
     assert_response :success
@@ -73,6 +79,14 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     card = HealthCards::COVIDHealthCard.from_payload(jws.payload)
     assert card.bundle.entry[0].resource.is_a?(FHIR::Patient)
     assert card.bundle.entry[1].resource.is_a?(FHIR::Immunization)
+  end
+
+  test 'should return OperationOutcome when no patient exists for $issue endpoint' do
+    post issue_vc_path(patient_id: 1234, format: :fhir_json)
+    output = FHIR.from_contents(response.body)
+    assert output.is_a?(FHIR::OperationOutcome)
+    assert output.valid?
+    assert_response :not_found
   end
 
   test 'empty parameter' do

@@ -15,6 +15,7 @@
               <%= f.hidden_field :qrcode, id: 'qr-code-field' %>
               <%= f.submit 'Download PDF', id:'download-pdf-button', class: 'button is-info is-light' %>
             <% end %>
+            <%= link_to 'Health Card Details', patient_health_card_path(@patient), class: 'button is-info is-light' %>
           </div>
         </div>
       </div>
