@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rqrcode'
+
 module HealthCards
   # Implements QR Code chunking in ruby
   class QRCodes

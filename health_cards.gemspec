@@ -13,6 +13,7 @@ Gem::Specification.new do |spec|
   spec.license       = 'Apache 2.0'
   spec.add_runtime_dependency 'fhir_models'
   spec.add_runtime_dependency 'json-minify'
+  spec.add_runtime_dependency 'rqrcode'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.7.0')
   spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
   spec.metadata['homepage_uri'] = spec.homepage

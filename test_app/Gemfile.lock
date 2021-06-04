@@ -4,12 +4,14 @@ PATH
     health_cards (0.0.1)
       fhir_models
       json-minify
+      rqrcode
 
 GEM
   remote: https://rubygems.org/
   specs:
     bcp47 (0.3.3)
       i18n
+    chunky_png (1.4.0)
     concurrent-ruby (1.1.8)
     date_time_precision (0.8.1)
     fhir_models (4.1.1)
@@ -28,6 +30,10 @@ GEM
     nokogiri (1.11.2-x86_64-darwin)
       racc (~> 1.4)
     racc (1.5.2)
+    rqrcode (2.0.0)
+      chunky_png (~> 1.0)
+      rqrcode_core (~> 1.0)
+    rqrcode_core (1.0.0)
 
 PLATFORMS
   x86_64-darwin-19
