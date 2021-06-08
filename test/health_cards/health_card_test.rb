@@ -96,21 +96,10 @@ class HealthCardTest < ActiveSupport::TestCase
   end
 
   test 'changes to stripped bundle do not affect bundle values' do
-    stripped_bundle = @health_card.strip_fhir_bundle
-
-    # Check bundle
-    stripped_bundle.type = 'foobar'
-    assert_not_equal @health_card.bundle.type, stripped_bundle.type
-
-    # Check entry value
-    patient = stripped_bundle.entry[0].resource
-    patient.name[0].family = 'foobar'
-    assert_not_equal @health_card.bundle.entry[0].resource.name[0].family,
-                     stripped_bundle.entry[0].resource.name[0].family
-
-    # Check entries
-    stripped_bundle.entry = []
-    assert_not_equal @health_card.bundle.entry.length, stripped_bundle.entry.length
+    original_json = @health_card.to_json
+    @health_card.strip_fhir_bundle
+    original_json2 = @health_card.to_json
+    assert_equal original_json, original_json2
   end
 
   test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
@@ -119,8 +108,8 @@ class HealthCardTest < ActiveSupport::TestCase
 
     stripped_entries.each do |entry|
       resource = entry.resource
-      assert_not(resource.id)
-      assert_not(resource.text)
+      assert_not(resource.id, "#{resource} has id")
+      assert_not(resource.text, "#{resource} has text")
       meta = resource.meta
       if meta
         assert_equal 1, meta.to_hash.length

@@ -2,6 +2,7 @@
 
 require 'json/minify'
 require 'zlib'
+require 'uri'
 
 module HealthCards
   # A HealthCard which implements the credential claims specified by https://smarthealth.cards/
@@ -9,6 +10,31 @@ module HealthCards
     VC_TYPE = [
       'https://smarthealth.cards#health-card'
     ].freeze
+
+    FHIR_REF_REGEX = %r{((http|https)://([A-Za-z0-9\-\\.:%$]*/)+)?(
+      Account|ActivityDefinition|AdverseEvent|AllergyIntolerance|Appointment|AppointmentResponse|AuditEvent|Basic|
+      Binary|BiologicallyDerivedProduct|BodyStructure|Bundle|CapabilityStatement|CarePlan|CareTeam|CatalogEntry|
+      ChargeItem|ChargeItemDefinition|Claim|ClaimResponse|ClinicalImpression|CodeSystem|Communication|
+      CommunicationRequest|CompartmentDefinition|Composition|ConceptMap|Condition|Consent|Contract|Coverage|
+      CoverageEligibilityRequest|CoverageEligibilityResponse|DetectedIssue|Device|DeviceDefinition|DeviceMetric
+      |DeviceRequest|DeviceUseStatement|DiagnosticReport|DocumentManifest|DocumentReference|EffectEvidenceSynthesis|
+      Encounter|Endpoint|EnrollmentRequest|EnrollmentResponse|EpisodeOfCare|EventDefinition|Evidence|EvidenceVariable|
+      ExampleScenario|ExplanationOfBenefit|FamilyMemberHistory|Flag|Goal|GraphDefinition|Group|GuidanceResponse|
+      HealthcareService|ImagingStudy|Immunization|ImmunizationEvaluation|ImmunizationRecommendation|
+      ImplementationGuide|InsurancePlan|Invoice|Library|Linkage|List|Location|Measure|MeasureReport|Media|Medication|
+      MedicationAdministration|MedicationDispense|MedicationKnowledge|MedicationRequest|MedicationStatement|
+      MedicinalProduct|MedicinalProductAuthorization|MedicinalProductContraindication|MedicinalProductIndication|
+      MedicinalProductIngredient|MedicinalProductInteraction|MedicinalProductManufactured|MedicinalProductPackaged|
+      MedicinalProductPharmaceutical|MedicinalProductUndesirableEffect|MessageDefinition|MessageHeader|
+      MolecularSequence|NamingSystem|NutritionOrder|Observation|ObservationDefinition|OperationDefinition|
+      OperationOutcome|Organization|OrganizationAffiliation|Patient|PaymentNotice|PaymentReconciliation|Person|
+      PlanDefinition|Practitioner|PractitionerRole|Procedure|Provenance|Questionnaire|QuestionnaireResponse|
+      RelatedPerson|RequestGroup|ResearchDefinition|ResearchElementDefinition|ResearchStudy|ResearchSubject|
+      RiskAssessment|RiskEvidenceSynthesis|Schedule|SearchParameter|ServiceRequest|Slot|Specimen|SpecimenDefinition|
+      StructureDefinition|StructureMap|Subscription|Substance|SubstanceNucleicAcid|SubstancePolymer|SubstanceProtein|
+      SubstanceReferenceInformation|SubstanceSourceMaterial|SubstanceSpecification|SupplyDelivery|SupplyRequest|Task|
+      TerminologyCapabilities|TestReport|TestScript|ValueSet|VerificationResult|VisionPrescription)/
+      [A-Za-z0-9\-.]{1,64}(/_history/[A-Za-z0-9\-.]{1,64})?}x.freeze
 
     attr_reader :issuer, :nbf, :bundle
 
@@ -57,6 +83,8 @@ module HealthCards
       #  when data is minimized
       def allow(klass, attributes)
         allowable[klass] = attributes
+
+        # keys.map ( key.is_a? klass)
       end
 
       # Define disallowed attributes for this HealthCard class
@@ -72,8 +100,7 @@ module HealthCards
       def allowable
         return @allowable if @allowable
 
-        base = superclass == HealthCards::HealthCard ? superclass.allowable : {}
-        @allowable = base
+        @allowable = parent_allowables
       end
 
       # Define disallowed attributes for this HealthCard class
@@ -81,8 +108,7 @@ module HealthCards
       def disallowable
         return @disallowable if @disallowable
 
-        base = superclass == HealthCards::HealthCard ? superclass.disallowable : {}
-        @disallowable = base
+        @disallowable = parent_disallowables
       end
 
       # Sets/Gets the fhir version that will be passed through to the credential created by an instnace of
@@ -116,6 +142,16 @@ module HealthCards
       # @return [Boolean] Whether or not the type param is included in the types supported by the HealthCard (sub)class
       def supports_type?(*type)
         !types.intersection(type).empty?
+      end
+
+      protected
+
+      def parent_allowables(base = {})
+        self < HealthCards::HealthCard ? superclass.parent_allowables(base.merge(superclass.allowable)) : base
+      end
+
+      def parent_disallowables(base = {})
+        self < HealthCards::HealthCard ? superclass.parent_disallowables(base.merge(superclass.disallowable)) : base
       end
     end
 
@@ -171,28 +207,34 @@ module HealthCards
     def strip_fhir_bundle
       return [] unless bundle.entry
 
-      # Using this to dup the original bundle, hopefully it correctly dups everything
-      new_bundle = FHIR::Bundle.new(bundle.to_hash)
+      new_bundle = duplicate_bundle
       url_map = redefine_uris(new_bundle)
 
-      walk_resource(new_bundle) do |value, type|
-        case type
-        when 'Reference'
-          value.reference = process_reference(url_map, value)
-        when 'Resource'
-          value.id = nil
-          value.text = nil
-          value.meta = nil unless value.meta&.security
-        end
+      new_bundle.entry.map do |entry|
+        walk_resource(entry) do |value, type|
+          case type
+          when 'Reference'
+            value.reference = process_reference(url_map, entry, value)
+          when 'Resource'
+            value.id = nil
+            value.text = nil
+            value.meta = nil unless value.meta&.security
+          end
 
-        handle_allowable(value)
-        handle_disallowable(value)
+          handle_allowable(value)
+          handle_disallowable(value)
+        end
+        entry
       end
 
       new_bundle
     end
 
     private
+
+    def duplicate_bundle
+      FHIR::Bundle.new(bundle.to_hash)
+    end
 
     def redefine_uris(bundle)
       url_map = {}
@@ -222,8 +264,7 @@ module HealthCards
     end
 
     def handle_allowable(resource)
-      klass = resource.class
-      allowable = self.class.allowable[klass]
+      allowable = self.class.allowable[resource.class]
 
       return unless allowable
 
@@ -233,8 +274,7 @@ module HealthCards
     end
 
     def handle_disallowable(resource)
-      klass = resource.class
-      disallowable = self.class.disallowable[klass]
+      disallowable = self.class.disallowable[resource.class]
 
       return unless disallowable
 
@@ -243,14 +283,20 @@ module HealthCards
       resource.from_hash(allowed)
     end
 
-    def process_reference(url_map, ref)
-      url = ref.reference
+    def process_reference(url_map, entry, ref)
+      entry_url = URI(url_map.key(entry.fullUrl))
+      ref_url = ref.reference
 
-      return unless url
+      return unless ref_url
 
-      new_url = url_map.key?(url) ? url_map[url] : url_map["#{issuer}/#{url}"]
+      return url_map[ref_url] if url_map[ref_url]
 
-      raise InvalidBundleReferenceException, url unless new_url
+      fhir_base_url = FHIR_REF_REGEX.match(entry_url.to_s)[1]
+      full_url = URI.join(fhir_base_url, ref_url).to_s
+
+      new_url = url_map[full_url]
+
+      raise InvalidBundleReferenceException, full_url unless new_url
 
       new_url
     end
