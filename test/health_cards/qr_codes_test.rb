@@ -11,7 +11,7 @@ class QrCodesTest < ActiveSupport::TestCase
 
   test 'chunk converts to valid code' do
     codes = HealthCards::QRCodes.new(@chunks)
-    codes.chunks.each { |ch| ch.image.save('test/fixtures/files/qr/single.png') }
+
     image = ChunkyPNG::Image.from_file('test/fixtures/files/qr/single.png')
 
     assert_equal 1, codes.chunks.length
@@ -23,7 +23,7 @@ class QrCodesTest < ActiveSupport::TestCase
     codes = HealthCards::QRCodes.from_jws(@jws)
 
     assert_equal 3, codes.chunks.length
-    codes.chunks.each { |ch| ch.image.save("test/fixtures/files/qr/#{ch.ordinal}.png") }
+
     codes.chunks.each.with_index(1) do |ch, i|
       image = ChunkyPNG::Image.from_file("test/fixtures/files/qr/#{i}.png")
       assert_equal image, ch.image
