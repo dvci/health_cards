@@ -54,9 +54,9 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
 
   test 'minified entries' do
     bundle = @card.strip_fhir_bundle
-    assert_equal 3, bundle['entry'].size
-    patient = FHIR::Patient.new(bundle['entry'][0]['resource'])
-    imm = FHIR::Immunization.new(bundle['entry'][1]['resource'])
+    assert_equal 3, bundle.entry.size
+    patient = bundle.entry[0].resource
+    imm = bundle.entry[1].resource
 
     assert_equal 'Jane', patient.name.first.given.first
     assert_equal '1961-01-20', patient.birthDate

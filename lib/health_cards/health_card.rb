@@ -2,6 +2,7 @@
 
 require 'json/minify'
 require 'zlib'
+require 'uri'
 
 module HealthCards
   # A HealthCard which implements the credential claims specified by https://smarthealth.cards/
@@ -9,6 +10,31 @@ module HealthCards
     VC_TYPE = [
       'https://smarthealth.cards#health-card'
     ].freeze
+
+    FHIR_REF_REGEX = %r{((http|https)://([A-Za-z0-9\-\\.:%$]*/)+)?(
+      Account|ActivityDefinition|AdverseEvent|AllergyIntolerance|Appointment|AppointmentResponse|AuditEvent|Basic|
+      Binary|BiologicallyDerivedProduct|BodyStructure|Bundle|CapabilityStatement|CarePlan|CareTeam|CatalogEntry|
+      ChargeItem|ChargeItemDefinition|Claim|ClaimResponse|ClinicalImpression|CodeSystem|Communication|
+      CommunicationRequest|CompartmentDefinition|Composition|ConceptMap|Condition|Consent|Contract|Coverage|
+      CoverageEligibilityRequest|CoverageEligibilityResponse|DetectedIssue|Device|DeviceDefinition|DeviceMetric
+      |DeviceRequest|DeviceUseStatement|DiagnosticReport|DocumentManifest|DocumentReference|EffectEvidenceSynthesis|
+      Encounter|Endpoint|EnrollmentRequest|EnrollmentResponse|EpisodeOfCare|EventDefinition|Evidence|EvidenceVariable|
+      ExampleScenario|ExplanationOfBenefit|FamilyMemberHistory|Flag|Goal|GraphDefinition|Group|GuidanceResponse|
+      HealthcareService|ImagingStudy|Immunization|ImmunizationEvaluation|ImmunizationRecommendation|
+      ImplementationGuide|InsurancePlan|Invoice|Library|Linkage|List|Location|Measure|MeasureReport|Media|Medication|
+      MedicationAdministration|MedicationDispense|MedicationKnowledge|MedicationRequest|MedicationStatement|
+      MedicinalProduct|MedicinalProductAuthorization|MedicinalProductContraindication|MedicinalProductIndication|
+      MedicinalProductIngredient|MedicinalProductInteraction|MedicinalProductManufactured|MedicinalProductPackaged|
+      MedicinalProductPharmaceutical|MedicinalProductUndesirableEffect|MessageDefinition|MessageHeader|
+      MolecularSequence|NamingSystem|NutritionOrder|Observation|ObservationDefinition|OperationDefinition|
+      OperationOutcome|Organization|OrganizationAffiliation|Patient|PaymentNotice|PaymentReconciliation|Person|
+      PlanDefinition|Practitioner|PractitionerRole|Procedure|Provenance|Questionnaire|QuestionnaireResponse|
+      RelatedPerson|RequestGroup|ResearchDefinition|ResearchElementDefinition|ResearchStudy|ResearchSubject|
+      RiskAssessment|RiskEvidenceSynthesis|Schedule|SearchParameter|ServiceRequest|Slot|Specimen|SpecimenDefinition|
+      StructureDefinition|StructureMap|Subscription|Substance|SubstanceNucleicAcid|SubstancePolymer|SubstanceProtein|
+      SubstanceReferenceInformation|SubstanceSourceMaterial|SubstanceSpecification|SupplyDelivery|SupplyRequest|Task|
+      TerminologyCapabilities|TestReport|TestScript|ValueSet|VerificationResult|VisionPrescription)/
+      [A-Za-z0-9\-.]{1,64}(/_history/[A-Za-z0-9\-.]{1,64})?}x.freeze
 
     attr_reader :issuer, :nbf, :bundle
 
@@ -56,14 +82,32 @@ module HealthCards
       # @param attributes [Array] An array of string with the attribute names that will be passed through
       #  when data is minimized
       def allow(klass, attributes)
-        resource_type = klass.name.split('::').last
-        allowable[resource_type] = attributes
+        allowable[klass] = attributes
+
+      end
+
+      # Define disallowed attributes for this HealthCard class
+      # @param klass [Class] Scopes the attributes to a spefic class. Must be a subclass of FHIR::Model
+      # @param attributes [Array] An array of string with the attribute names that will be passed through
+      #  when data is minimized
+      def disallow(klass, attributes)
+        disallowable[klass] = attributes
       end
 
       # Define allowed attributes for this HealthCard class
       # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
       def allowable
-        @allowable ||= {}
+        return @allowable if @allowable
+
+        @allowable = parent_allowables
+      end
+
+      # Define disallowed attributes for this HealthCard class
+      # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
+      def disallowable
+        return @disallowable if @disallowable
+
+        @disallowable = parent_disallowables
       end
 
       # Sets/Gets the fhir version that will be passed through to the credential created by an instnace of
@@ -98,7 +142,21 @@ module HealthCards
       def supports_type?(*type)
         !types.intersection(type).empty?
       end
+
+      protected
+
+      def parent_allowables(base = {})
+        self < HealthCards::HealthCard ? base.merge(superclass.allowable) : base
+      end
+
+      def parent_disallowables(base = {})
+        self < HealthCards::HealthCard ? base.merge(superclass.disallowable) : base
+      end
     end
+
+    allow FHIR::Meta, %w[security]
+    disallow FHIR::CodeableConcept, %w[text]
+    disallow FHIR::Coding, %w[display]
 
     # Create a HealthCard
     #
@@ -121,7 +179,7 @@ module HealthCards
           type: self.class.types,
           credentialSubject: {
             fhirVersion: self.class.fhir_version,
-            fhirBundle: strip_fhir_bundle
+            fhirBundle: strip_fhir_bundle.to_hash
           }
         }
 
@@ -146,78 +204,100 @@ module HealthCards
     # @return [Hash] A hash with the same content as the FHIR::Bundle, processed accoding
     # to SMART Health Cards framework and any constraints created by subclasses
     def strip_fhir_bundle
-      stripped_bundle = @bundle.to_hash
-      if stripped_bundle.key?('entry') && !stripped_bundle['entry'].empty?
-        entries = stripped_bundle['entry']
-        entries, @url_map = redefine_uris(entries)
-        update_elements(entries)
+      return [] unless bundle.entry
+
+      new_bundle = duplicate_bundle
+      url_map = redefine_uris(new_bundle)
+
+      new_bundle.entry.map do |entry|
+        walk_resource(entry) do |value, type|
+          case type
+          when 'Reference'
+            value.reference = process_reference(url_map, entry, value)
+          when 'Resource'
+            value.id = nil
+            value.text = nil
+            value.meta = nil unless value.meta&.security
+          end
+
+          handle_allowable(value)
+          handle_disallowable(value)
+        end
+        entry
       end
-      stripped_bundle
+
+      new_bundle
     end
 
     private
 
-    def redefine_uris(entries)
-      url_map = {}
-      resource_count = 0
-      entries.each do |entry|
-        old_url = entry['fullUrl']
-        new_url = "resource:#{resource_count}"
-        url_map[old_url] = new_url
-        entry['fullUrl'] = new_url
-        resource_count += 1
-      end
-      [entries, url_map]
+    def duplicate_bundle
+      FHIR::Bundle.new(bundle.to_hash)
     end
 
-    def update_elements(entries)
-      entries.each do |entry|
-        resource = entry['resource']
+    def redefine_uris(bundle)
+      url_map = {}
+      resource_count = 0
+      bundle.entry.each do |entry|
+        old_url = entry.fullUrl
+        new_url = "resource:#{resource_count}"
+        url_map[old_url] = new_url
+        entry.fullUrl = new_url
+        resource_count += 1
+      end
+      url_map
+    end
 
-        resource.delete('id')
-        resource.delete('text')
-        if resource.dig('meta', 'security')
-          resource['meta'] = resource['meta'].slice('security')
-        else
-          resource.delete('meta')
+    def walk_resource(resource, &block)
+      resource.class::METADATA.each do |field_name, meta|
+        type = meta['type']
+        local_name = meta.fetch :local_name, field_name
+        values = [resource.instance_variable_get("@#{local_name}")].flatten.compact
+        next if values.empty?
+
+        values.each do |value|
+          yield value, type
+          walk_resource value, &block unless FHIR::PRIMITIVES.include? type
         end
-        handle_allowable(resource)
-        update_nested_elements(resource)
       end
     end
 
     def handle_allowable(resource)
-      allowable = self.class.allowable[resource['resourceType']]
-      return resource unless allowable
+      allowable = self.class.allowable[resource.class]
 
-      allow = allowable + ['resourceType']
-      resource.select! { |att| allow.include?(att) }
+      return unless allowable
+
+      allowed = resource.to_hash.select! { |att| allowable.include?(att) }
+
+      resource.from_hash(allowed)
     end
 
-    def process_url(url)
-      new_url = @url_map.key?(url) ? @url_map[url] : @url_map["#{issuer}/#{url}"]
-      raise InvalidBundleReferenceException, url unless new_url
+    def handle_disallowable(resource)
+      disallowable = self.class.disallowable[resource.class]
+
+      return unless disallowable
+
+      allowed = resource.to_hash.delete_if { |att| disallowable.include?(att) }
+
+      resource.from_hash(allowed)
+    end
+
+    def process_reference(url_map, entry, ref)
+      entry_url = URI(url_map.key(entry.fullUrl))
+      ref_url = ref.reference
+
+      return unless ref_url
+
+      return url_map[ref_url] if url_map[ref_url]
+
+      fhir_base_url = FHIR_REF_REGEX.match(entry_url.to_s)[1]
+      full_url = URI.join(fhir_base_url, ref_url).to_s
+
+      new_url = url_map[full_url]
+
+      raise InvalidBundleReferenceException, full_url unless new_url
 
       new_url
-    end
-
-    def update_nested_elements(hash)
-      hash.map { |k, v| update_nested_element(hash, k, v) }
-    end
-
-    def update_nested_element(hash, attribute_name, value) # rubocop:disable Metrics/CyclomaticComplexity
-      case value
-      when String
-        hash[attribute_name] = process_url(value) if attribute_name == 'reference'
-      when Hash
-        value.delete('text') if attribute_name.include?('CodeableConcept') || value.key?('coding')
-        update_nested_elements(value)
-      when Array
-        value.each do |member_element|
-          member_element.delete('display') if attribute_name == 'coding'
-          update_nested_elements(member_element) if member_element.is_a?(Hash)
-        end
-      end
     end
   end
 end
