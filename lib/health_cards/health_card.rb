@@ -84,7 +84,6 @@ module HealthCards
       def allow(klass, attributes)
         allowable[klass] = attributes
 
-        # keys.map ( key.is_a? klass)
       end
 
       # Define disallowed attributes for this HealthCard class
