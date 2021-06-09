@@ -80,6 +80,14 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test 'should return OperationOutcome when no patient exists for $issue endpoint with accept header' do
+    post issue_vc_path(patient_id: 1234), headers: { Accept: 'application/fhir+json' }
+    output = FHIR.from_contents(response.body)
+    assert output.is_a?(FHIR::OperationOutcome)
+    assert output.valid?
+    assert_response :not_found
+  end
+
   test 'empty parameter' do
     post(@fhir_url, params: {}, as: :json)
 
