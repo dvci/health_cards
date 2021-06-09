@@ -83,9 +83,9 @@ class HealthCardTest < ActiveSupport::TestCase
     stripped_bundle = @health_card.strip_fhir_bundle
 
     resource_nums = []
-    new_entries = stripped_bundle['entry']
+    new_entries = stripped_bundle.entry
     new_entries.each do |resource|
-      url = resource['fullUrl']
+      url = resource.fullUrl
       resource, num = url.split(':')
       assert_equal('resource', resource)
       resource_nums.push(num)
@@ -95,44 +95,56 @@ class HealthCardTest < ActiveSupport::TestCase
     assert_equal(resource_nums, inc_array)
   end
 
+  test 'changes to stripped bundle do not affect bundle values' do
+    original_json = @health_card.to_json
+    @health_card.strip_fhir_bundle
+    original_json2 = @health_card.to_json
+    assert_equal original_json, original_json2
+  end
+
   test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
     stripped_bundle = @health_card.strip_fhir_bundle
-    stripped_entries = stripped_bundle['entry']
+    stripped_entries = stripped_bundle.entry
 
     stripped_entries.each do |entry|
-      resource = entry['resource']
-      assert_not(resource.key?('id'))
-      assert_not(resource.key?('text'))
-      assert(!resource.key?('meta') || (resource.key?('meta') && (resource['meta'].keys == ['security'])))
+      resource = entry.resource
+      assert_not(resource.id, "#{resource} has id")
+      assert_not(resource.text, "#{resource} has text")
+      meta = resource.meta
+      if meta
+        assert_equal 1, meta.to_hash.length
+        assert_not_nil meta.security
+      end
     end
   end
 
   test 'update_nested_elements strips any "CodeableConcept.text" and "Coding.display" elements from the FHIR Bundle' do
     stripped_bundle = @health_card.strip_fhir_bundle
-    stripped_resources = stripped_bundle['entry']
+    stripped_resources = stripped_bundle.entry
 
     resource_with_codeable_concept = stripped_resources[2]
-    codeable_concept = resource_with_codeable_concept['resource']['valueCodeableConcept']
-    coding = codeable_concept['coding'][0]
+    codeable_concept = resource_with_codeable_concept.resource.valueCodeableConcept
+    coding = codeable_concept.coding[0]
 
-    assert_not(codeable_concept.key?('text'))
-    assert_not(coding.key?('display'))
+    assert_nil codeable_concept.text
+    assert_nil coding.display
   end
 
   test 'update_nested_elements populates Reference.reference elements with short resource-scheme URIs' do
     stripped_bundle = @health_card.strip_fhir_bundle
-    stripped_resources = stripped_bundle['entry']
+    stripped_resources = stripped_bundle.entry
     resource_with_reference = stripped_resources[2]
 
-    reference = resource_with_reference['resource']['subject']['reference']
-    assert(reference.start_with?('resource:') && (reference.length <= 12))
+    reference = resource_with_reference.resource.subject.reference
+
+    assert_match(/resource:[0-9]+/, reference)
   end
 
   test 'all reference types are replaced with short resource-scheme URIs' do
     bundle = FHIR::Bundle.new(load_json_fixture('example-logical-link-bundle'))
     card = HealthCards::HealthCard.new(issuer: 'http://example.org/fhir', bundle: bundle)
     assert_nothing_raised do
-      new_bundle = FHIR::Bundle.new(card.strip_fhir_bundle)
+      new_bundle = card.strip_fhir_bundle
 
       assert_entry_references_match(new_bundle.entry[0], new_bundle.entry[2].resource.subject) # logical ref
       assert_entry_references_match(new_bundle.entry[0], new_bundle.entry[3].resource.subject) # full url ref
@@ -144,7 +156,7 @@ class HealthCardTest < ActiveSupport::TestCase
     bundle = FHIR::Bundle.new(load_json_fixture('example-logical-link-bundle-bad'))
     card = HealthCards::HealthCard.new(issuer: 'http://example.org/fhir', bundle: bundle)
     assert_raises HealthCards::InvalidBundleReferenceException do
-      FHIR::Bundle.new(card.strip_fhir_bundle)
+      card.strip_fhir_bundle
     end
   end
 

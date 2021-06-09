@@ -37,7 +37,7 @@ class PatientTest < ActiveSupport::TestCase
     hc = rails_issuer.create_health_card(bundle)
 
     assert_nothing_raised do
-      new_bundle = FHIR::Bundle.new(hc.strip_fhir_bundle)
+      new_bundle = hc.strip_fhir_bundle
 
       assert_entry_references_match(new_bundle.entry[0], new_bundle.entry[1].resource.patient)
     end
