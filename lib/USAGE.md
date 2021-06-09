@@ -123,3 +123,30 @@ verifier.add_key(key) # this only requires the public key so `verifier.add_key(k
 ```
 
 The `HealthCard` supports these features as well.
+
+## QR Codes
+
+A QR Code can be created from either a set of encoded strings (from scanning QR Codes) or a JWS (object or string)
+
+```ruby
+
+jws = 'foofoofoo.barbarbar.bazbazbaz'
+
+qr_codes = HealthCards::QRCodes.from_jws(jws)
+
+# Chunks would normally be longer but are truncated here for readability
+chunks = ['shc:/1/2/1234123412341234', 'shc:/2/2/2345234523452345']
+
+qr_codes = Healthcards::QRCodes.new(chunks)
+```
+Each QRCodes object contains an array of 'chunks' which each represent an individual QR Code.
+Each chunk contains an ordinal integer representing their position, along with a chunk of data. These can be converted to images (PNGs) and saved or displayed
+
+```ruby
+
+# Save to File
+qr_codes.chunks.each do |chunk|
+  chunk.image.save("qr-code-#{chunk.ordinal}.png")
+end
+
+```

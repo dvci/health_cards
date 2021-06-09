@@ -28,7 +28,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'create health card PDF' do
-    post(patient_health_card_path(@patient, format: 'pdf'))
+    get(patient_health_card_path(@patient, format: 'pdf'))
     assert_response :success
   end
 
@@ -42,15 +42,6 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     file = fixture_file_upload('test/fixtures/files/example-00-e-file.smart-health-card')
     post(upload_health_cards_path, params: { health_card: file })
     assert_response :success
-  end
-
-  test 'get chunks for QR code generation' do
-    get(chunks_patient_health_card_url(@patient))
-    assert_response :success
-
-    chunks = JSON.parse(response.body)
-    jws = HealthCards::Chunking.assemble_jws chunks
-    assert_jws_bundle_match(jws, @key, @patient, @vax)
   end
 
   test 'issue smart card' do

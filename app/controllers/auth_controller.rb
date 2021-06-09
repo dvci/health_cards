@@ -16,14 +16,15 @@ class AuthController < ApplicationController
   def token
     params = request.parameters
     if params[:code] == Rails.application.config.auth_code
+      time_to_live = 1.hour
       scope = ['launch/patient', 'patient/Immunization.read']
       header = { alg: 'ES256' }
-      payload = { exp: Time.now.to_i + 3600, scope: scope }
+      payload = { exp: Time.now.to_i + time_to_live, scope: scope }
       jws = HealthCards::JWS.new(header: header, payload: payload.to_json, key: Rails.application.config.hc_key)
       render json: {
         access_token: jws.to_s,
         token_type: 'Bearer',
-        expires_in: 3600,
+        expires_in: time_to_live,
         scope: scope,
         patient: Patient.all.first.id
       }

@@ -3,8 +3,6 @@
 module HealthCards
   # Converts a JWS to formats needed by endpoints (e.g. $issue-health-card, download and qr code)
   module Importer
-    extend Chunking
-
     # Import JWS from file upload
     # @param  [String] JSON string containing file upload contents
     # @return [Array<Hash>] An array of Hashes containing JWS payload and verification contents
@@ -20,8 +18,8 @@ module HealthCards
     # @param [Array<String>] Array containing numeric QR chunks
     # @return [Hash] Hash containing the JWS payload and verification contents
     def self.scan(qr_contents)
-      jws_string = assemble_jws qr_contents
-      verify_jws jws_string
+      qr_codes = QRCodes.new(qr_contents)
+      verify_jws qr_codes.to_jws
     end
 
     # Verify JWS signature

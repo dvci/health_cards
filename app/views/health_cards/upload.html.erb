@@ -4,7 +4,7 @@
     <div class="tile is-ancestor box">
       <% @upload_result.each do |result| %>
         <div class="tile is-child">
-        <%= render partial: 'patient', object: create_patient_from_jws(result[:payload]), locals: {payload: result[:payload], verified: result[:verified], error_message: result[:error_message]} %>
+        <%= render partial: 'patients/patient', object: create_patient_from_jws(result[:payload]), locals: {payload: result[:payload], verified: result[:verified], error_message: result[:error_message]} %>
         </div>
       <% end %>
     </div>

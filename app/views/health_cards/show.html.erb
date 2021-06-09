@@ -83,7 +83,7 @@
     
     <div class="card is-fullwidth">
       <header class="card-header">
-        <p class="card-header-title">Numeric QR</p>
+        <p class="card-header-title">Encoded QR Codes</p>
         <a class="card-header-icon card-toggle">
           <i class="fa fa-angle-down"></i>
         </a>
@@ -91,7 +91,9 @@
         <div class="card-content">
           <pre style="white-space:pre-wrap;">
             <div class="content", style="word-wrap: break-word; width: 800px">
-                <p> <%= @qr_code_payload.join(', ') %> </p>
+                <% @qr_code.chunks.each do |ch| %>
+                <p> <%= ch.data %> </p>
+                <% end %>
             </div>
           </pre>
         </div>

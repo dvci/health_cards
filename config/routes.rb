@@ -6,17 +6,18 @@ Rails.application.routes.draw do
 
   resources :patients do
     resources :immunizations
-    resource :health_card do
-      get 'chunks', format: :json
-
+    resource :health_card, except: :upload do
+      member do
+        resources :qr_codes, only: :show
+      end
     end
   end
 
-  resources :health_cards do
+  resources :qr_codes, only: [:new, :create]
+
+  resources :health_cards, only: :upload do
     collection do
-      get 'scan'
-      post 'upload'
-      post 'qr_contents'
+      post :upload
     end
   end
 
