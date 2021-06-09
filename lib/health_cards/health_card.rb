@@ -151,7 +151,7 @@ module HealthCards
       end
 
       def parent_disallowables(base = {})
-        self < HealthCards::HealthCard ? superclass.parent_disallowables(base.merge(superclass.disallowable)) : base
+        self < HealthCards::HealthCard ? base.merge(superclass.disallowable) : base
       end
     end
 
