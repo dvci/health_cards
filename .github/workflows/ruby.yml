@@ -44,8 +44,6 @@ jobs:
       run: ./bin/rake webpacker:install:react
     - name: Run tests
       run: bundle exec rake
-    - name: Codecov
-      uses: codecov/codecov-action@v1.5.2
 
   lint:
     needs: build
