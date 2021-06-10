@@ -83,7 +83,6 @@ module HealthCards
       #  when data is minimized
       def allow(klass, attributes)
         allowable[klass] = attributes
-
       end
 
       # Define disallowed attributes for this HealthCard class
