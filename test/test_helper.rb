@@ -10,6 +10,11 @@ SimpleCov.start do
   add_filter '/config/'
 end
 
+if ENV['GITHUB_ACTIONS']
+  require 'codecov'
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
+
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
