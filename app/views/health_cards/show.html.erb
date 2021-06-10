@@ -1,8 +1,13 @@
 <%= javascript_pack_tag 'details_pg' %>
 <p id="notice"><%= notice %></p>
-<section class="hero is-link">
+<section class="hero is-small is-info">
   <div class="hero-body">
-    <p class="title">Health Card Details</p>
+    <p class="title">
+      <%= link_to patient_path(@patient), 'aria-label': 'Back to patient page' do%>
+        <i class="fa fa-caret-left"></i>
+      <% end %>
+      Health Card Details
+    </p>
   </div>
 </section>
 

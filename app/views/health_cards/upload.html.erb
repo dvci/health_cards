@@ -1,3 +1,14 @@
+<section class="hero is-small is-info">
+  <div class="hero-body">
+    <p class="title">
+      <%= link_to root_path, 'aria-label': 'Back to home page' do%>
+        <i class="fa fa-caret-left"></i>
+      <% end %>
+      Uploaded Health Card
+    </p>
+  </div>
+</section>
+
 <section class="section">
   <div class="container">
     <p class="title"><%= pluralize @upload_result.size, 'credential' %> found in file '<%= @filename %>'</p>
