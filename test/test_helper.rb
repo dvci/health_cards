@@ -64,7 +64,7 @@ module ActiveSupport
     end
 
     def bundle_payload
-      bundle = FHIR::Bundle.new
+      bundle = FHIR::Bundle.new(type: 'collection')
       bundle.entry << FHIR::Bundle::Entry.new(resource: FHIR::Patient.new)
       bundle
     end

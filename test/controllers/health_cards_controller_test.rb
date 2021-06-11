@@ -99,6 +99,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
   test 'invalid parameter' do
     param = FHIR::Parameters::Parameter.new(valueUri: 'https://smarthealth.cards#covid19')
     params = FHIR::Parameters.new(parameter: [param])
+
     post(@fhir_url, params: params.to_hash, as: :json)
 
     output = FHIR.from_contents(response.body)

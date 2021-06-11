@@ -86,11 +86,11 @@ class VerifierTest < ActiveSupport::TestCase
   test 'Verifier throws exception when attempting to verify health card without an accessible public key' do
     stub_request(:get, /jwks.json/).to_return(body: HealthCards::KeySet.new(@public_key).to_jwk)
     verifier = HealthCards::Verifier.new
-    assert_raises HealthCards::MissingPublicKey do
+    assert_raises HealthCards::MissingPublicKeyError do
       verifier.verify @jws
     end
 
-    assert_raises HealthCards::MissingPublicKey do
+    assert_raises HealthCards::MissingPublicKeyError do
       verifier.verify @jws
     end
   end
@@ -106,7 +106,7 @@ class VerifierTest < ActiveSupport::TestCase
     stub_request(:get, /jwks.json/).to_return(body: HealthCards::KeySet.new(@public_key).to_jwk)
 
     verifier = HealthCards::Verifier
-    assert_raises HealthCards::MissingPublicKey do
+    assert_raises HealthCards::MissingPublicKeyError do
       verifier.verify @jws
     end
   end
@@ -135,7 +135,7 @@ class VerifierTest < ActiveSupport::TestCase
     stub_request(:get, /jwks.json/).to_return(status: 200, body: @verifier.keys.to_jwk)
     verifier = HealthCards::Verifier.new
     verifier.resolve_keys = false
-    assert_raises HealthCards::MissingPublicKey do
+    assert_raises HealthCards::MissingPublicKeyError do
       verifier.verify(@jws)
     end
     verifier.resolve_keys = true

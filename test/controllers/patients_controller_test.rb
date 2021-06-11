@@ -55,6 +55,13 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'show fhir patient as json' do
+    get fhir_patient_url(@patient, format: :json)
+    fhir = FHIR.from_contents(response.body)
+    assert fhir.valid?
+    assert_response :success
+  end
+
   test 'should get edit' do
     get edit_patient_url(@patient)
     assert_response :success

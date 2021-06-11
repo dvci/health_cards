@@ -82,7 +82,7 @@ module HealthCards
     def signature
       return @signature if @signature
 
-      raise MissingPrivateKey unless key
+      raise MissingPrivateKeyError unless key
 
       @signature ||= key.sign(jws_signing_input)
     end
@@ -97,7 +97,7 @@ module HealthCards
     #
     # @return [Boolean]
     def verify
-      raise MissingPublicKey unless public_key
+      raise MissingPublicKeyError unless public_key
 
       public_key.verify(jws_signing_input, signature)
     end
