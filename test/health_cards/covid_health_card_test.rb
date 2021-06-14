@@ -48,7 +48,7 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
 
   test 'valid bundle json' do
     assert_nothing_raised do
-      FHIR.from_contents(@card.to_json)
+      assert_fhir(@card.bundle.to_json, type: FHIR::Bundle, validate: false)
     end
   end
 

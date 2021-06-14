@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   end
 
   def handle_fhir_errors
-    if request.format == :fhir_json
+    if request.format.json? || request.format.fhir_json?
       begin
         yield
       rescue StandardError => e
