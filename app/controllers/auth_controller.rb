@@ -9,11 +9,10 @@ class AuthController < ApplicationController
     params = request.params
     if params[:client_id] == Rails.application.config.client_id
       redirect_to "#{params[:redirect_uri]}?code=#{Rails.application.config.auth_code}&state=#{params[:state]}"
-    #remove 401 response entirely?
-    #elsif params.keys.include? :client_id
-    #  render json: { errors: ['Unauthorized client_id'] }, status: :unauthorized
+    elsif params.keys.include? :client_id
+      render json: { error: 'invalid_client' }, status: :bad_request
     else
-      render json: { errors: ['invalid_client'] }, status: :bad_request
+      render json: { error: 'invalid_request' }, status: :bad_request
     end
   end
 
@@ -32,11 +31,10 @@ class AuthController < ApplicationController
         scope: scope,
         patient: Patient.all.first.id
       }
-    #remove 401 response entirely?
-    #elsif params.keys.include? :code
-    #  render json: { errors: ['Unauthorized code'] }, status: :unauthorized
+    elsif params.keys.include? :code
+      render json: { error: ['invalid_client'] }, status: :bad_request
     else
-      render json: { errors: ['invalid_client'] }, status: :bad_request
+      render json: { error: ['invalid_request'] }, status: :bad_request
     end
   end
 
