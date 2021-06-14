@@ -3,13 +3,17 @@
 # AuthController exposes authorization endpoints for users to get access tokens
 class AuthController < ApplicationController
   skip_before_action :verify_authenticity_token, only: :token
+  before_action :set_headers_no_cache
 
   def authorize
     params = request.params
     if params[:client_id] == Rails.application.config.client_id
       redirect_to "#{params[:redirect_uri]}?code=#{Rails.application.config.auth_code}&state=#{params[:state]}"
+    #remove 401 response entirely?
+    #elsif params.keys.include? :client_id
+    #  render json: { errors: ['Unauthorized client_id'] }, status: :unauthorized
     else
-      render json: { errors: ['Unauthorized client_id'] }, status: :unauthorized
+      render json: { errors: ['invalid_client'] }, status: :bad_request
     end
   end
 
@@ -28,8 +32,18 @@ class AuthController < ApplicationController
         scope: scope,
         patient: Patient.all.first.id
       }
+    #remove 401 response entirely?
+    #elsif params.keys.include? :code
+    #  render json: { errors: ['Unauthorized code'] }, status: :unauthorized
     else
-      render json: { errors: ['Unauthorized code'] }, status: :unauthorized
+      render json: { errors: ['invalid_client'] }, status: :bad_request
     end
   end
+
+  private
+
+    def set_headers_no_cache
+      response.set_header 'Cache-Control', 'no-store'
+      response.set_header 'Pargma', 'no-cache'
+    end
 end
