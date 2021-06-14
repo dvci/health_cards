@@ -20,11 +20,11 @@ class ApplicationController < ActionController::Base
       rescue StandardError => e
         case e
         when ActiveRecord::RecordNotFound
-          render_operation_outcome('not-found', e, :not_found)
+          render_operation_outcome(code: 'not-found', http: :not_found, error: e)
         when HealthCards::InvalidParametersError
-          render_operation_outcome(e.code, e, :bad_request)
+          render_operation_outcome(code: e.code, http: :bad_request, error: e)
         else
-          render_operation_outcome('exception', e, :internal_server_error)
+          render_operation_outcome(code: 'exception', http: :internal_server_error, error: e)
         end
       end
     else
@@ -32,8 +32,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def render_operation_outcome(code, error, status)
-    issue = FHIR::OperationOutcome::Issue.new(severity: 'error', code: code, diagnostic: error.message)
-    render json: FHIR::OperationOutcome.new(issue: issue).to_json, status: status
+  def render_operation_outcome(code: nil, http: nil, error: nil, message: nil)
+    diag = error ? error.message : message
+    issue = FHIR::OperationOutcome::Issue.new(severity: 'error', code: code, diagnostic: diag)
+    render json: FHIR::OperationOutcome.new(issue: issue).to_json, status: http
   end
 end
