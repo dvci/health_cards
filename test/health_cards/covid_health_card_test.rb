@@ -52,6 +52,11 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     end
   end
 
+  test 'supports multiple types' do
+    assert HealthCards::COVIDHealthCard.supports_type? ['https://smarthealth.cards#covid19',
+                                                        'https://smarthealth.cards#immunization']
+  end
+
   test 'minified entries' do
     bundle = @card.strip_fhir_bundle
     assert_equal 3, bundle.entry.size

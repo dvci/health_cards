@@ -12,7 +12,9 @@ module HealthCards
       end
 
       # Export JWS for $issue-health-card endpoint
-      # @param [Array<JWS>, String] An array of JWS objects to be exported
+      # @param [FHIR::Parameters] A FHIR::Parameters object
+      # @yields [types] An array of strings representing the types in the FHIR::Parameters.
+      # Expects block to return JWS instances for those types
       # @return [String] JSON string containing a FHIR Parameters resource
       def issue(fhir_params)
         *jws = yield extract_types!(fhir_params)

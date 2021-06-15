@@ -108,6 +108,10 @@ class HealthCardTest < ActiveSupport::TestCase
     end
   end
 
+  test 'support single type' do
+    assert HealthCards::HealthCard.supports_type?('https://smarthealth.cards#health-card')
+  end
+
   test 'update_nested_elements strips any "CodeableConcept.text" and "Coding.display" elements from the FHIR Bundle' do
     stripped_bundle = @health_card.strip_fhir_bundle
     stripped_resources = stripped_bundle.entry
