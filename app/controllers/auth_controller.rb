@@ -29,7 +29,7 @@ class AuthController < ApplicationController
         token_type: 'Bearer',
         expires_in: time_to_live,
         scope: scope,
-        patient: Patient.all.first.id
+        patient: Patient.first&.id
       }
     elsif params.keys.include? :code
       render json: { error: ['invalid_client'] }, status: :bad_request
@@ -41,7 +41,8 @@ class AuthController < ApplicationController
   private
 
     def set_headers_no_cache
-      response.set_header 'Cache-Control', 'no-store'
-      response.set_header 'Pragma', 'no-cache'
+      response.set_header 'cache-control', 'no-store'
+      response.set_header 'pragma', 'no-cache'
+      response.set_header 'BLAH', 'I SET THIS'
     end
 end
