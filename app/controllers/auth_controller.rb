@@ -42,6 +42,6 @@ class AuthController < ApplicationController
 
     def set_headers_no_cache
       response.set_header 'Cache-Control', 'no-store'
-      response.set_header 'Pargma', 'no-cache'
+      response.set_header 'Pragma', 'no-cache'
     end
 end
