@@ -4,7 +4,6 @@ module HealthCards
   # Handles behavior related to removing disallowed attributes from FHIR Resources
   module AttributeFilters
     def self.included(base)
-      base.send :include, InstanceMethods
       base.extend ClassMethods
     end
 
@@ -54,38 +53,34 @@ module HealthCards
       end
     end
 
-    # Disallow attributes on resource instances
-    module InstanceMethods
-      def handle_allowable(resource)
-        # byebug if resource.is_a?(FHIR::Patient)
-        class_allowables = self.class.allowable[resource.class]
+    def handle_allowable(resource)
+      class_allowables = self.class.allowable[resource.class]
 
-        return unless class_allowables
+      return unless class_allowables
 
-        allowed = resource.to_hash.select! { |att| class_allowables.include?(att) }
+      allowed = resource.to_hash.select! { |att| class_allowables.include?(att) }
 
-        resource.from_hash(allowed)
-      end
+      resource.from_hash(allowed)
+    end
 
-      def handle_disallowable(resource)
-        class_disallowable = find_subclass_keys(self.class.disallowable, resource)
+    def handle_disallowable(resource)
+      class_disallowable = find_subclass_keys(self.class.disallowable, resource)
 
-        return if class_disallowable.empty?
+      return if class_disallowable.empty?
 
-        all_disallowed = class_disallowable.map do |disallowed_class|
-          self.class.disallowable[disallowed_class]
-        end.flatten.uniq
+      all_disallowed = class_disallowable.map do |disallowed_class|
+        self.class.disallowable[disallowed_class]
+      end.flatten.uniq
 
-        allowed = resource.to_hash.delete_if { |att| all_disallowed.include?(att) }
+      allowed = resource.to_hash.delete_if { |att| all_disallowed.include?(att) }
 
-        resource.from_hash(allowed)
-      end
+      resource.from_hash(allowed)
+    end
 
-      protected
+    protected
 
-      def find_subclass_keys(hash, resource)
-        hash.keys.filter { |class_key| resource.class <= class_key }
-      end
+    def find_subclass_keys(hash, resource)
+      hash.keys.filter { |class_key| resource.class <= class_key }
     end
   end
 end
