@@ -12,8 +12,8 @@ module HealthCards
     # Checks if obj is the the correct key type or nil
     # @param obj Object that should be of same type as caller or nil
     # @param allow_nil Allow/Disallow key to be nil
-    def self.enforce_valid_key_type!(obj, allow_nil:  false)
-      raise InvalidKeyException.new(self, obj) unless obj.is_a?(self) || (allow_nil && obj.nil?)
+    def self.enforce_valid_key_type!(obj, allow_nil: false)
+      raise InvalidKeyError.new(self, obj) unless obj.is_a?(self) || (allow_nil && obj.nil?)
     end
 
     # Create a key from a JWK
