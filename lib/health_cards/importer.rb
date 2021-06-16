@@ -31,7 +31,7 @@ module HealthCards
       begin
         result[:verified] = Verifier.verify jws
         result[:error_message] = 'Signature Invalid' if result[:verified] == false
-      rescue MissingPublicKey
+      rescue MissingPublicKeyError
         result[:verified] = false
         result[:error_message] = 'Cannot find public key'
       end
