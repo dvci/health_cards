@@ -1,12 +1,16 @@
+# frozen_string_literal: true
+
 require "savon"
 require "ruby-hl7"
 require 'faraday'
-require 'qpd'
+require_relative 'qpd'
 
 module HealthCards
   module QBPClient
+    extend self
+
     def query()
-        service_def = "../assets/service.wsdl"
+        service_def = "lib/assets/service.wsdl"
         puts "WSDL #{service_def}"
         
         client = Savon.client(wsdl: service_def, 
@@ -20,7 +24,7 @@ module HealthCards
         
         puts response
         
-        raw_input = open( "../assets/qbp.hl7" ).readlines
+        raw_input = open( "lib/assets/qbp.hl7" ).readlines
         msg_input = HL7::Message.new( raw_input )
         uid = rand(10000000000).to_s
         
