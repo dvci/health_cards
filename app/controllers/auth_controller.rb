@@ -9,7 +9,7 @@ class AuthController < ApplicationController
     params = request.params
     if params[:client_id] == Rails.application.config.client_id
       redirect_to "#{params[:redirect_uri]}?code=#{Rails.application.config.auth_code}&state=#{params[:state]}"
-    elsif params.has_key? :client_id
+    elsif params.key? :client_id
       render json: { error: 'invalid_client' }, status: :bad_request
     else
       render json: { error: 'invalid_request' }, status: :bad_request
@@ -31,7 +31,7 @@ class AuthController < ApplicationController
         scope: scope,
         patient: Patient.first&.id
       }
-    elsif params.has_key? :code
+    elsif params.key? :code
       render json: { error: 'invalid_client' }, status: :bad_request
     else
       render json: { error: 'invalid_request' }, status: :bad_request
@@ -40,9 +40,9 @@ class AuthController < ApplicationController
 
   private
 
-    def set_headers_no_cache
-      response.set_header 'Cache-Control', 'no-store'
-      response.set_header 'Pragma', 'no-cache'
-      response.set_header 'Last-Modified', Time.now.strftime("%a, %d %b %Y %H:%M:%S %Z")
-    end
+  def set_headers_no_cache
+    response.set_header 'Cache-Control', 'no-store'
+    response.set_header 'Pragma', 'no-cache'
+    response.set_header 'Last-Modified', Time.now.utc.strftime('%a, %d %b %Y %H:%M:%S %Z')
+  end
 end

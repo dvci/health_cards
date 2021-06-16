@@ -7,14 +7,14 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     get(auth_code_path)
     assert_response :bad_request
     assert_no_cache_headers
-    assert_equal @response.body, '{"error":"invalid_request"}'
+    assert_equal('{"error":"invalid_request"}', @response.body)
   end
 
   test 'authorize with incorrect client_id should return 400 invalid_client' do
     get(auth_code_path, params: { client_id: 'bad_id' })
     assert_response :bad_request
     assert_no_cache_headers
-    assert_equal @response.body, '{"error":"invalid_client"}'
+    assert_equal('{"error":"invalid_client"}', @response.body)
   end
 
   test 'authorize with correct client_id redirects with auth_code' do
@@ -30,7 +30,7 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     post(auth_token_path, params: { code: 'bad_code' })
     assert_response :bad_request
     assert_no_cache_headers
-    assert_equal @response.body, '{"error":"invalid_client"}'
+    assert_equal('{"error":"invalid_client"}', @response.body)
   end
 
   test 'token with correct code' do
@@ -40,12 +40,13 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
-    def assert_header( key, value )
-      assert_equal @response.headers[key], value
-    end
 
-    def assert_no_cache_headers
-      assert_header( 'Cache-Control', 'no-store' )
-      assert_header( 'Pragma', 'no-cache' )
-    end
+  def assert_header(key, value)
+    assert_equal @response.headers[key], value
+  end
+
+  def assert_no_cache_headers
+    assert_header('Cache-Control', 'no-store')
+    assert_header('Pragma', 'no-cache')
+  end
 end
