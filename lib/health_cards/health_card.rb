@@ -56,7 +56,7 @@ module HealthCards
         json = decompress_payload(payload)
         bundle_hash = json.dig('vc', 'credentialSubject', 'fhirBundle')
 
-        raise HealthCards::InvalidCredentialException unless bundle_hash
+        raise HealthCards::InvalidCredentialError unless bundle_hash
 
         bundle = FHIR::Bundle.new(bundle_hash)
         new(issuer: json['iss'], bundle: bundle)
@@ -139,7 +139,7 @@ module HealthCards
       # @param type [Array, String] A type as defined by the SMART Health Cards framework
       # @return [Boolean] Whether or not the type param is included in the types supported by the HealthCard (sub)class
       def supports_type?(*type)
-        !types.intersection(type).empty?
+        !types.intersection(type.flatten).empty?
       end
 
       protected
@@ -162,7 +162,7 @@ module HealthCards
     # @param bundle [FHIR::Bundle] VerifiableCredential containing a fhir bundle
     # @param issuer [String] The url from the Issuer of the HealthCard
     def initialize(bundle:, issuer: nil)
-      raise InvalidPayloadException unless bundle.is_a?(FHIR::Bundle)
+      raise InvalidPayloadError unless bundle.is_a?(FHIR::Bundle) # && bundle.valid?
 
       @issuer = issuer
       @bundle = bundle
@@ -294,7 +294,7 @@ module HealthCards
 
       new_url = url_map[full_url]
 
-      raise InvalidBundleReferenceException, full_url unless new_url
+      raise InvalidBundleReferenceError, full_url unless new_url
 
       new_url
     end

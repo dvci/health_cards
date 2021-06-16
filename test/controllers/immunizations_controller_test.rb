@@ -27,9 +27,12 @@ class ImmunizationsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should show immunization' do
     get fhir_immunization_url(@immunization, format: :fhir_json)
-    fhir = FHIR.from_contents(response.body)
-    assert fhir.valid?
+    assert_fhir(response.body, type: FHIR::Immunization)
     assert_response :success
+  end
+
+  test 'show show OperationOutcome for missing immunization' do
+    get fhir_immunization_url(@immunization, format: :fhir_json)
   end
 
   test 'should not create invalid immunization' do

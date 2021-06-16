@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class QRCodesController < ApplicationController
-  before_action :create_exporter, only: :show
+  before_action :find_patient, only: :show
 
   def new; end
 
@@ -13,7 +13,7 @@ class QRCodesController < ApplicationController
   def show
     respond_to do |format|
       format.png do
-        image = @exporter.qr_code_image(params[:id].to_i)
+        image = exporter.qr_code_image(params[:id].to_i)
 
         head :not_found and return unless image
 

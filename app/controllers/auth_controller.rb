@@ -29,7 +29,7 @@ class AuthController < ApplicationController
         patient: Patient.all.first.id
       }
     else
-      render json: { errors: ['Unauthorized code'] }, status: :unauthorized
+      render_operation_outcome(code: 'unknown', http: :unauthorized, message: 'Unauthorized Code')
     end
   end
 end

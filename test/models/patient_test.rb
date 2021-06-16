@@ -34,6 +34,9 @@ class PatientTest < ActiveSupport::TestCase
     assert_not_nil patient.immunizations.first.id
 
     bundle = patient.to_bundle(rails_issuer.url)
+
+    assert bundle.valid?
+
     hc = rails_issuer.create_health_card(bundle)
 
     assert_nothing_raised do
