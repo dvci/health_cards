@@ -26,7 +26,7 @@ module HealthCards
     # @param type [Array, String] A type as defined by the SMART Health Cards framework
     # @return [Boolean] Whether or not the type param is included in the types supported by the HealthCard (sub)class
     def supports_type?(*type)
-      !types.intersection(type).empty?
+      !types.intersection(type.flatten).empty?
     end
   end
 end
