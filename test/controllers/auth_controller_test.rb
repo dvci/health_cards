@@ -26,6 +26,13 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     assert_no_cache_headers
   end
 
+  test 'token with incorrect parameter should return 400 invalid_request' do
+    post(auth_token_path)
+    assert_response :bad_request
+    assert_no_cache_headers
+    assert_equal('{"error":"invalid_request"}', @response.body)
+  end
+
   test 'token with incorrect code should return 400 invalid_client' do
     post(auth_token_path, params: { code: 'bad_code' })
     assert_response :bad_request
