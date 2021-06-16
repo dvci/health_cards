@@ -1,0 +1,159 @@
+<definitions xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:wsp1_2="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsaw="http://www.w3.org/2005/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tns="urn:cdc:iisb:2011" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="urn:cdc:iisb:2011" name="IISServiceNew">
+    <!--  schema for types  -->
+    <types>
+        <xsd:schema elementFormDefault="qualified" targetNamespace="urn:cdc:iisb:2011">
+            <xsd:complexType name="connectivityTestRequestType">
+                <xsd:sequence>
+                    <xsd:element name="echoBack" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="connectivityTestResponseType">
+                <xsd:sequence>
+                    <xsd:element name="return" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="submitSingleMessageRequestType">
+                <xsd:sequence>
+                    <xsd:element name="username" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="true" />
+                    <xsd:element name="password" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="true" />
+                    <xsd:element name="facilityID" type="xsd:string" minOccurs="0" maxOccurs="1" nillable="true" />
+                    <xsd:element name="hl7Message" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="submitSingleMessageResponseType">
+                <xsd:sequence>
+                    <xsd:element name="return" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="true" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="soapFaultType">
+                <xsd:sequence>
+                    <xsd:element name="Code" type="xsd:integer" minOccurs="1" />
+                    <xsd:element name="Reason" type="xsd:string" minOccurs="1" />
+                    <xsd:element name="Detail" type="xsd:string" minOccurs="1" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="UnsupportedOperationFaultType">
+                <xsd:sequence>
+                    <xsd:element name="Code" type="xsd:integer" minOccurs="1" />
+                    <xsd:element name="Reason" fixed="UnsupportedOperation" />
+                    <xsd:element name="Detail" type="xsd:string" minOccurs="1" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="SecurityFaultType">
+                <xsd:sequence>
+                    <xsd:element name="Code" type="xsd:integer" minOccurs="1" />
+                    <xsd:element name="Reason" fixed="Security" />
+                    <xsd:element name="Detail" type="xsd:string" minOccurs="1" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="MessageTooLargeFaultType">
+                <xsd:sequence>
+                    <xsd:element name="Code" type="xsd:integer" minOccurs="1" />
+                    <xsd:element name="Reason" fixed="MessageTooLarge" />
+                    <xsd:element name="Detail" type="xsd:string" minOccurs="1" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="connectivityTest" type="tns:connectivityTestRequestType" />
+            <xsd:element name="connectivityTestResponse" type="tns:connectivityTestResponseType" />
+            <xsd:element name="submitSingleMessage" type="tns:submitSingleMessageRequestType" />
+            <xsd:element name="submitSingleMessageResponse" type="tns:submitSingleMessageResponseType" />
+            <xsd:element name="fault" type="tns:soapFaultType" />
+            <xsd:element name="UnsupportedOperationFault" type="tns:UnsupportedOperationFaultType" />
+            <xsd:element name="SecurityFault" type="tns:SecurityFaultType" />
+            <xsd:element name="MessageTooLargeFault" type="tns:MessageTooLargeFaultType" />
+        </xsd:schema>
+    </types>
+    <!--  Message definitions  -->
+    <message name="connectivityTest_Message">
+        <documentation>connectivity test request</documentation>
+        <part name="parameters" element="tns:connectivityTest" />
+    </message>
+    <message name="connectivityTestResponse_Message">
+        <documentation>connectivity test response</documentation>
+        <part name="parameters" element="tns:connectivityTestResponse" />
+    </message>
+    <message name="submitSingleMessage_Message">
+        <documentation>submit single message request.</documentation>
+        <part name="parameters" element="tns:submitSingleMessage" />
+    </message>
+    <message name="submitSingleMessageResponse_Message">
+        <documentation>submit single message response</documentation>
+        <part name="parameters" element="tns:submitSingleMessageResponse" />
+    </message>
+    <message name="UnknownFault_Message">
+        <part name="fault" element="tns:fault" />
+    </message>
+    <message name="UnsupportedOperationFault_Message">
+        <part name="fault" element="tns:UnsupportedOperationFault" />
+    </message>
+    <message name="SecurityFault_Message">
+        <part name="fault" element="tns:SecurityFault" />
+    </message>
+    <message name="MessageTooLargeFault_Message">
+        <part name="fault" element="tns:MessageTooLargeFault" />
+    </message>
+    <!--  Operation/transaction declarations  -->
+    <portType name="IIS_PortType">
+        <operation name="connectivityTest">
+            <documentation>the connectivity test</documentation>
+            <input message="tns:connectivityTest_Message" wsaw:Action="urn:cdc:iisb:2011:connectivityTest" />
+            <output message="tns:connectivityTestResponse_Message" wsaw:Action="urn:cdc:iisb:2011:connectivityTestResponse" />
+            <fault name="UnknownFault" message="tns:UnknownFault_Message" />
+            <!--  a general soap fault  -->
+            <fault name="UnsupportedOperationFault" message="tns:UnsupportedOperationFault_Message" />
+            <!--  The UnsupportedOperation soap fault  -->
+        </operation>
+        <operation name="submitSingleMessage">
+            <documentation>submit single message</documentation>
+            <input message="tns:submitSingleMessage_Message" wsaw:Action="urn:cdc:iisb:2011:submitSingleMessage" />
+            <output message="tns:submitSingleMessageResponse_Message" wsaw:Action="urn:cdc:iisb:2011:submitSingleMessageResponse" />
+            <fault name="UnknownFault" message="tns:UnknownFault_Message" />
+            <!--  a general soap fault  -->
+            <fault name="SecurityFault" message="tns:SecurityFault_Message" />
+            <fault name="MessageTooLargeFault" message="tns:MessageTooLargeFault_Message" />
+        </operation>
+    </portType>
+    <!--  SOAP 1.2 Binding  -->
+    <binding name="client_Binding_Soap12" type="tns:IIS_PortType">
+        <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <operation name="connectivityTest">
+            <soap12:operation soapAction="urn:cdc:iisb:2011:connectivityTest" />
+            <input>
+                <soap12:body use="literal" />
+            </input>
+            <output>
+                <soap12:body use="literal" />
+            </output>
+            <fault name="UnknownFault">
+                <soap12:fault use="literal" name="UnknownFault" />
+            </fault>
+            <fault name="UnsupportedOperationFault">
+                <soap12:fault use="literal" name="UnsupportedOperationFault" />
+            </fault>
+        </operation>
+        <operation name="submitSingleMessage">
+            <soap12:operation soapAction="urn:cdc:iisb:2011:submitSingleMessage" />
+            <input>
+                <soap12:body use="literal" />
+            </input>
+            <output>
+                <soap12:body use="literal" />
+            </output>
+            <fault name="UnknownFault">
+                <soap12:fault use="literal" name="UnknownFault" />
+            </fault>
+            <fault name="SecurityFault">
+                <soap12:fault use="literal" name="SecurityFault" />
+            </fault>
+            <fault name="MessageTooLargeFault">
+                <soap12:fault use="literal" name="MessageTooLargeFault" />
+            </fault>
+        </operation>
+    </binding>
+    <!--  Service definition  -->
+    <service name="client_Service">
+        <port binding="tns:client_Binding_Soap12" name="client_Port_Soap12">
+            <soap12:address location="http://localhost:8282/wsdl-demo" />
+        </port>
+    </service>
+</definitions>

@@ -80,3 +80,8 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 gem 'rack-cors'
+
+# QBP client
+gem 'savon', '~> 2.0'
+gem 'ruby-hl7', '~> 1.2'
+gem 'faraday'
