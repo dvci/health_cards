@@ -124,7 +124,7 @@ class Patient < FHIRRecord
   end
 
   def to_bundle(base_url)
-    bundle = FHIR::Bundle.new
+    bundle = FHIR::Bundle.new(type: 'collection')
     patient_url = "#{base_url}/Patient/#{json.id}"
     bundle.entry[0] = FHIR::Bundle::Entry.new(fullUrl: patient_url, resource: json)
     immunizations.each do |imm|

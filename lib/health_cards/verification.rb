@@ -15,7 +15,10 @@ module HealthCards
       key_set.add_keys(resolve_key(jws)) if resolve_keys && key_set.find_key(jws.kid).nil?
 
       key = key_set.find_key(jws.kid)
-      raise MissingPublicKey, 'Verifier does not contain public key that is able to verify this signature' unless key
+      unless key
+        raise MissingPublicKeyError,
+              'Verifier does not contain public key that is able to verify this signature'
+      end
 
       jws.public_key = key
       jws.verify
