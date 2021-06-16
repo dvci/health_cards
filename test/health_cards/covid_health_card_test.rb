@@ -13,7 +13,7 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'includes correct types' do
-    HealthCards::COVIDHealthCard.types.include?(HealthCards::HealthCard::VC_TYPE[0])
+    HealthCards::COVIDHealthCard.types.include?(HealthCards::CardTypes::VC_TYPE[0])
     HealthCards::COVIDHealthCard.types.include?('https://smarthealth.cards#covid19')
   end
 
@@ -21,7 +21,7 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     hash = @card.to_hash
     type = hash.dig(:vc, :type)
     assert_not_nil type
-    assert_includes type, HealthCards::HealthCard::VC_TYPE[0]
+    assert_includes type, HealthCards::CardTypes::VC_TYPE[0]
     assert_includes type, 'https://smarthealth.cards#covid19'
     assert_includes type, 'https://smarthealth.cards#immunization'
 
