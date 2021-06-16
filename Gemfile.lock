@@ -70,6 +70,9 @@ GEM
       zeitwerk (~> 2.3)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
+    akami (1.3.1)
+      gyoku (>= 0.4.0)
+      nokogiri
     american_date (1.1.1)
     ast (2.4.2)
     bcp47 (0.3.3)
@@ -107,6 +110,19 @@ GEM
     erubi (1.10.0)
     faker (2.17.0)
       i18n (>= 1.6, < 2)
+    faraday (1.4.2)
+      faraday-em_http (~> 1.0)
+      faraday-em_synchrony (~> 1.0)
+      faraday-excon (~> 1.1)
+      faraday-net_http (~> 1.0)
+      faraday-net_http_persistent (~> 1.1)
+      multipart-post (>= 1.2, < 3)
+      ruby2_keywords (>= 0.0.4)
+    faraday-em_http (1.0.0)
+    faraday-em_synchrony (1.0.0)
+    faraday-excon (1.1.0)
+    faraday-net_http (1.0.1)
+    faraday-net_http_persistent (1.1.0)
     ffi (1.15.0)
     fhir_models (4.1.1)
       bcp47 (>= 0.3)
@@ -117,7 +133,12 @@ GEM
       railties (>= 3.2, < 7)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
+    gyoku (1.3.1)
+      builder (>= 2.1.2)
     hashdiff (1.0.1)
+    httpi (2.4.5)
+      rack
+      socksify
     i18n (1.8.9)
       concurrent-ruby (~> 1.0)
     jbuilder (2.11.2)
@@ -142,10 +163,12 @@ GEM
     mini_portile2 (2.5.0)
     minitest (5.14.4)
     msgpack (1.4.2)
+    multipart-post (2.1.1)
     nio4r (2.5.7)
     nokogiri (1.11.2)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
+    nori (2.6.0)
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
@@ -224,7 +247,9 @@ GEM
       rubocop (>= 0.90.0, < 2.0)
     rubocop-rake (0.5.1)
       rubocop
+    ruby-hl7 (1.3.2)
     ruby-progressbar (1.11.0)
+    ruby2_keywords (0.0.4)
     rubyzip (2.3.0)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
@@ -236,6 +261,14 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    savon (2.12.1)
+      akami (~> 1.2)
+      builder (>= 2.1.2)
+      gyoku (~> 1.2)
+      httpi (~> 2.3)
+      nokogiri (>= 1.8.1)
+      nori (~> 2.4)
+      wasabi (~> 3.4)
     selenium-webdriver (3.142.7)
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
@@ -246,6 +279,7 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.2)
+    socksify (1.7.1)
     spring (2.1.1)
     sprockets (4.0.2)
       concurrent-ruby (~> 1.0)
@@ -263,6 +297,10 @@ GEM
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.0.0)
+    wasabi (3.6.1)
+      addressable
+      httpi (~> 2.0)
+      nokogiri (>= 1.4.2)
     web-console (4.1.0)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -303,6 +341,7 @@ DEPENDENCIES
   codecov
   dotenv-rails
   faker
+  faraday
   fhir_models
   font-awesome-rails
   health_cards!
@@ -318,7 +357,9 @@ DEPENDENCIES
   rubocop-minitest (~> 0.10.1)
   rubocop-rails
   rubocop-rake (~> 0.5.1)
+  ruby-hl7 (~> 1.2)
   sass-rails (>= 6)
+  savon (~> 2.0)
   selenium-webdriver
   simplecov
   spring

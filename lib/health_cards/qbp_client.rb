@@ -1,7 +1,7 @@
 require "savon"
 require "ruby-hl7"
 require 'faraday'
-require '../assets/qpd'
+require 'qpd'
 
 module HealthCards
   module QBPClient
@@ -20,7 +20,7 @@ module HealthCards
         
         puts response
         
-        raw_input = open( "qbp.hl7" ).readlines
+        raw_input = open( "../assets/qbp.hl7" ).readlines
         msg_input = HL7::Message.new( raw_input )
         uid = rand(10000000000).to_s
         
