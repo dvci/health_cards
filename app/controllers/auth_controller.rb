@@ -31,7 +31,7 @@ class AuthController < ApplicationController
         scope: scope,
         patient: Patient.first&.id
       }
-    elsif params.key? :code
+    elsif params.key? :code or params.key? :client_id
       render json: { error: 'invalid_client' }, status: :bad_request
     else
       render json: { error: 'invalid_request' }, status: :bad_request
