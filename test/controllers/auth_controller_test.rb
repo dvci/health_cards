@@ -6,14 +6,12 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
   test 'authorize without client_id should return 400 invalid_request' do
     get(auth_code_path)
     assert_response :bad_request
-    assert_no_cache_headers
     assert_equal('{"error":"invalid_request"}', @response.body)
   end
 
   test 'authorize with incorrect client_id should return 400 invalid_client' do
     get(auth_code_path, params: { client_id: 'bad_id' })
     assert_response :bad_request
-    assert_no_cache_headers
     assert_equal('{"error":"invalid_client"}', @response.body)
   end
 
@@ -23,26 +21,32 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     get(auth_code_path,
         params: { client_id: Rails.application.config.client_id, redirect_uri: redirect_uri, state: state })
     assert_redirected_to "#{redirect_uri}?code=#{Rails.application.config.auth_code}&state=#{state}"
-    assert_no_cache_headers
   end
 
   test 'token with incorrect parameter should return 400 invalid_request' do
     post(auth_token_path)
     assert_response :bad_request
-    assert_no_cache_headers
     assert_equal('{"error":"invalid_request"}', @response.body)
   end
 
   test 'token with incorrect code should return 400 invalid_client' do
     post(auth_token_path, params: { code: 'bad_code' })
     assert_response :bad_request
-    assert_no_cache_headers
     assert_equal('{"error":"invalid_client"}', @response.body)
   end
 
   test 'token with correct code should return 200' do
     post(auth_token_path, params: { code: Rails.application.config.auth_code })
     assert_response :success
+  end
+
+  test 'authorize endpoint should disable caching' do
+    get(auth_code_path)
+    assert_no_cache_headers
+  end
+
+  test 'token endpoint should disable caching' do
+    post(auth_token_path)
     assert_no_cache_headers
   end
 
