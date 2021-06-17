@@ -17,7 +17,7 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     assert_equal('{"error":"invalid_client"}', @response.body)
   end
 
-  test 'authorize with correct client_id redirects with auth_code' do
+  test 'authorize with correct client_id should redirect with auth_code' do
     redirect_uri = 'http://example.com'
     state = 'test_state'
     get(auth_code_path,
@@ -40,7 +40,7 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     assert_equal('{"error":"invalid_client"}', @response.body)
   end
 
-  test 'token with correct code' do
+  test 'token with correct code should return 200' do
     post(auth_token_path, params: { code: Rails.application.config.auth_code })
     assert_response :success
     assert_no_cache_headers
