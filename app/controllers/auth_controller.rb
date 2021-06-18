@@ -31,8 +31,12 @@ class AuthController < ApplicationController
         scope: scope,
         patient: Patient.first&.id
       }
+    elsif params.key?(:code) && params[:client_id] == Rails.application.config.client_id
+      render json: { error: 'invalid_grant' }, status: :bad_request
     elsif params.key?(:code) && params.key?(:client_id)
       render json: { error: 'invalid_client' }, status: :bad_request
+    elsif params.key?(:grant_type) && params[:grant_type] != 'authorization_code'
+      render json: { error: 'invalid_grant_type' }, status: :bad_request
     else
       render json: { error: 'invalid_request' }, status: :bad_request
     end

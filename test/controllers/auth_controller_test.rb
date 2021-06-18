@@ -56,10 +56,16 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     assert_equal('{"error":"invalid_client"}', @response.body)
   end
 
-  test 'token with incorrect code should return 400 invalid_client' do
+  test 'token with incorrect code should return 400 invalid_grant' do
     post(auth_token_path, params: { code: 'bad_code', client_id: Rails.application.config.client_id })
     assert_response :bad_request
-    assert_equal('{"error":"invalid_client"}', @response.body)
+    assert_equal('{"error":"invalid_grant"}', @response.body)
+  end
+
+  test 'token with explicit incorrect grant_type should return 400 invalid_grant_type' do
+    post(auth_token_path, params: { grant_type: 'client_credentials' })
+    assert_response :bad_request
+    assert_equal('{"error":"invalid_grant_type"}', @response.body)
   end
 
   test 'token with correct parameters should return 200' do
