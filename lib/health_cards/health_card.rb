@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'json/minify'
 require 'zlib'
 require 'uri'
 
@@ -134,7 +133,7 @@ module HealthCards
     # A minified JSON string matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
     # @return [String] JSON string
     def to_json(*_args)
-      JSON.minify(to_hash.to_json)
+      to_hash.to_json
     end
 
     # Processes the bundle according to https://smarthealth.cards/#health-cards-are-small and returns
