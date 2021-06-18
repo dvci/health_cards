@@ -18,7 +18,7 @@ class AuthController < ApplicationController
 
   def token
     params = request.parameters
-    if params[:code] == Rails.application.config.auth_code
+    if params[:code] == Rails.application.config.auth_code && params[:client_id] == Rails.application.config.client_id
       time_to_live = 1.hour
       scope = ['launch/patient', 'patient/Immunization.read']
       header = { alg: 'ES256' }
@@ -31,7 +31,7 @@ class AuthController < ApplicationController
         scope: scope,
         patient: Patient.first&.id
       }
-    elsif params.key?(:code) || params.key?(:client_id)
+    elsif params.key?(:code) && params.key?(:client_id)
       render json: { error: 'invalid_client' }, status: :bad_request
     else
       render json: { error: 'invalid_request' }, status: :bad_request
