@@ -3,32 +3,25 @@
 # AuthController exposes authorization endpoints for users to get access tokens
 class AuthController < ApplicationController
   skip_before_action :verify_authenticity_token, only: :token
+  before_action :set_params
   before_action :set_headers_no_cache
 
   def authorize
-    params = request.params
-    if params[:client_id] == Rails.application.config.client_id
-      redirect_to "#{params[:redirect_uri]}?code=#{Rails.application.config.auth_code}&state=#{params[:state]}"
+    if valid_request?
+      redirect_to "#{@params[:redirect_uri]}?code=#{Rails.application.config.auth_code}&state=#{@params[:state]}"
     else
       render json: { error: 'invalid_request' }, status: :bad_request
     end
   end
 
   def token
-    params = request.parameters
-    valid_request      = proc { |p| valid_request?(p)      }
-    invalid_grant      = proc { |p| invalid_grant?(p)      }
-    invalid_client     = proc { |p| invalid_client?(p)     }
-    invalid_grant_type = proc { |p| invalid_grant_type?(p) }
-
-    case params
-    when valid_request
+    if valid_request?
       render_new_token
-    when invalid_client
+    elsif invalid_client?
       render json: { error: 'invalid_client' }, status: :bad_request
-    when invalid_grant
+    elsif invalid_grant?
       render json: { error: 'invalid_grant' }, status: :bad_request
-    when invalid_grant_type
+    elsif invalid_grant_type?
       render json: { error: 'invalid_grant_type' }, status: :bad_request
     else
       render json: { error: 'invalid_request' }, status: :bad_request
@@ -43,24 +36,41 @@ class AuthController < ApplicationController
     response.set_header 'Last-Modified', Time.now.utc.strftime('%a, %d %b %Y %H:%M:%S %Z')
   end
 
-  def valid_request?(params)
-    params[:client_id] == Rails.application.config.client_id && params[:code] == Rails.application.config.auth_code
+  def set_params
+    @params = request.parameters
   end
 
-  def invalid_grant?(params)
-    params[:client_id] && params[:code] && params[:code] != Rails.application.config.auth_code
+  def valid_request?
+    if @params[:action] == 'token'
+      @params[:client_id] == Rails.application.config.client_id &&
+        @params[:code] == Rails.application.config.auth_code &&
+        (@params[:grant_type] == 'authorization_code' || !@params.key?(:grant_type))
+    else
+      @params[:client_id] == Rails.application.config.client_id && @params.key?(:redirect_uri)
+    end
   end
 
-  def invalid_client?(params)
-    params[:client_id] && params[:client_id] != Rails.application.config.client_id && params[:code]
+  # only call for /auth/token
+  def invalid_grant?
+    @params[:client_id] && @params[:code] && @params[:code] != Rails.application.config.auth_code
   end
 
+  def invalid_client?
+    if @params[:action] == 'token'
+      @params[:client_id] && @params[:client_id] != Rails.application.config.client_id && @params[:code]
+    else
+      @params[:client_id] && @params[:client_id] != Rails.application.config.client_id
+    end
+  end
+
+  # only call for /auth/token
   # will only return false if the grant type is explicitly declared incorrectly
   # OAuth2 requires grant type to be specified, but SMART on FHIR does not
-  def invalid_grant_type?(params)
-    params.key?(:grant_type) && params[:grant_type] != 'authorization_code'
+  def invalid_grant_type?
+    @params.key?(:grant_type) && @params[:grant_type] != 'authorization_code'
   end
 
+  # only call for /auth/token
   def render_new_token
     time_to_live = 1.hour
     scope = ['launch/patient', 'patient/Immunization.read']
