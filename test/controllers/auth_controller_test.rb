@@ -9,10 +9,10 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     assert_equal('{"error":"invalid_request"}', @response.body)
   end
 
-  test 'authorize with incorrect client_id should return 400 invalid_client' do
+  test 'authorize with incorrect client_id should return 400 invalid_request' do
     get(auth_code_path, params: { client_id: 'bad_id' })
     assert_response :bad_request
-    assert_equal('{"error":"invalid_client"}', @response.body)
+    assert_equal('{"error":"invalid_request"}', @response.body)
   end
 
   test 'authorize with correct parameters should redirect with auth_code' do
