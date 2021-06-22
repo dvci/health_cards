@@ -40,11 +40,19 @@ class AuthController < ApplicationController
     @params = request.parameters
   end
 
+  def all_parameters?
+    if @params[:action] == 'token'
+      [:code, :client_id, :grant_type, :redirect_uri].all? { |x| @params.key?(x) }
+    else
+      [:response_type, :client_id, :redirect_uri, :scope, :state, :aud].all? { |x| @params.key?(x) }
+    end
+  end
+
   def valid_request?
     if @params[:action] == 'token'
       @params[:client_id] == Rails.application.config.client_id &&
         @params[:code] == Rails.application.config.auth_code &&
-        (@params[:grant_type] == 'authorization_code' || !@params.key?(:grant_type))
+        @params[:grant_type] == 'authorization_code'
     else
       @params[:client_id] == Rails.application.config.client_id && @params.key?(:redirect_uri)
     end
@@ -52,22 +60,16 @@ class AuthController < ApplicationController
 
   # only call for /auth/token
   def invalid_grant?
-    @params[:client_id] && @params[:code] && @params[:code] != Rails.application.config.auth_code
+    all_parameters? && @params[:code] != Rails.application.config.auth_code
   end
 
   def invalid_client?
-    if @params[:action] == 'token'
-      @params[:client_id] && @params[:client_id] != Rails.application.config.client_id && @params[:code]
-    else
-      @params[:client_id] && @params[:client_id] != Rails.application.config.client_id
-    end
+    all_parameters? && @params[:client_id] != Rails.application.config.client_id
   end
 
   # only call for /auth/token
-  # will only return false if the grant type is explicitly declared incorrectly
-  # OAuth2 requires grant type to be specified, but SMART on FHIR does not
   def invalid_grant_type?
-    @params.key?(:grant_type) && @params[:grant_type] != 'authorization_code'
+    all_parameters? && @params[:grant_type] != 'authorization_code'
   end
 
   # only call for /auth/token

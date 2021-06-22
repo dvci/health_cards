@@ -3,9 +3,16 @@
 require 'test_helper'
 
 class AuthControllerTest < ActionDispatch::IntegrationTest
-  good_auth_params = { client_id: Rails.application.config.client_id, redirect_uri: 'http://example.com',
-                       state: 'testing' }
-  good_token_params = { client_id: Rails.application.config.client_id, code: Rails.application.config.auth_code }
+  good_auth_params = { response_type: 'code',
+                       client_id: Rails.application.config.client_id,
+                       redirect_uri: 'http://example.com',
+                       scope: 'launch patient/*.read',
+                       state: 'testing',
+                       aud: 'http://ehr_server.com' }
+  good_token_params = { client_id: Rails.application.config.client_id,
+                        code: Rails.application.config.auth_code,
+                        grant_type: 'authorization_code',
+                        redirect_uri: 'http://example.com' }
 
   test 'authorize without client_id should return 400 invalid_request' do
     get(auth_code_path, params: good_auth_params.reject { |k, _v| k == :client_id })
@@ -45,6 +52,12 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     assert_equal('{"error":"invalid_request"}', @response.body)
   end
 
+  test 'token with missing grant type should return 400 invalid_request' do
+    post(auth_token_path, params: good_token_params.reject { |k, _v| k == :grant_type })
+    assert_response :bad_request
+    assert_equal('{"error":"invalid_request"}', @response.body)
+  end
+
   test 'token with incorrect parameters should return 400 invalid_client' do
     post(auth_token_path, params: good_token_params.merge({ code: 'bad_code', client_id: 'bad_client' }))
     assert_response :bad_request
@@ -63,7 +76,7 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
     assert_equal('{"error":"invalid_grant"}', @response.body)
   end
 
-  test 'token with explicit incorrect grant_type should return 400 invalid_grant_type' do
+  test 'token with incorrect grant_type should return 400 invalid_grant_type' do
     post(auth_token_path, params: good_token_params.merge({ grant_type: 'client_credentials' }))
     assert_response :bad_request
     assert_equal('{"error":"invalid_grant_type"}', @response.body)
