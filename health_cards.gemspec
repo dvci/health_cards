@@ -14,16 +14,16 @@ Gem::Specification.new do |spec|
                         'Priyank Madria',
                         'Shaumik Ashraf']
   spec.email         = ['radamson@mitre.org']
-  spec.summary       = <<EOT
+  spec.summary       = <<TEXT
 Create SMART Health Cards using FHIR and Verifiable Credentials for secure and decentralized 
 presentation of clinical information.
-EOT
-  spec.description   = <<EOT
+TEXT
+  spec.description   = <<TEXT
 Health Cards implements SMART Health Cards, a secure and decentralized framework that allows 
 people to prove their vaccination status or medical test results. It is built on top of FHIR 4 
 healthcare interoperability standards and W3C Verifiable Credentials. It allows conversion of
 medical data into JWS which may then be embedded into QR codes.
-EOT  
+TEXT
   spec.homepage      = 'https://github.com/dvci/health-cards'
   spec.license       = 'Apache 2.0'
   spec.add_runtime_dependency 'fhir_models', '>= 4.0.0'
