@@ -17,3 +17,4 @@ end
 
 FHIR::Patient.class_eval { extend Serializers::FHIRSerializer }
 FHIR::Immunization.class_eval { extend Serializers::FHIRSerializer }
+FHIR::Observation.class_eval { extend Serializers::FHIRSerializer }

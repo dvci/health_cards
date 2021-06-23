@@ -1,10 +1,10 @@
-class LabResult < ApplicationRecord
+class LabResult < FHIRRecord
     attribute :effective, :date
     attribute :lab, :string
   
     belongs_to :patient  
 
-    serialize :json, FHIR::LabResult
+    serialize :json, FHIR::Observation
   
     validates :effective, presence: true
     validates :lab, presence: true

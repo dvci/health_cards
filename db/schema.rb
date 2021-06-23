@@ -23,8 +23,11 @@ ActiveRecord::Schema.define(version: 2021_06_22_174803) do
   end
 
   create_table "lab_results", force: :cascade do |t|
+    t.integer "patient_id"
+    t.string "json"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_lab_results_on_patient_id"
   end
 
   create_table "patients", force: :cascade do |t|
