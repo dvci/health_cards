@@ -8,6 +8,7 @@ module HealthCardsHelper
 
     patient = Patient.new(json: patient_entry.resource)
     create_immunizations(patient, bundle)
+    create_labResult(patient, bundle)
     patient
   end
 
@@ -21,6 +22,18 @@ module HealthCardsHelper
                               vaccine_id: Vaccine.find_by(code: immunization_resource.vaccineCode.coding[0].code).id,
                               lot_number: immunization_resource.lotNumber,
                               occurrence: immunization_resource.occurrenceDateTime
+                            })
+    end
+  end
+
+  def create_labResult(patient, bundle)
+    lab_result = bundle.entry.select { |e| e.resource.is_a?(FHIR::LabResult) }
+    lab_result.each do |i|
+      lab_result_resource = i.resource
+      patient.lab_result.new({
+                              lab_code: Vaccine.find_by(code: lab_result_resource.labCode.coding[0].code).id,
+                              lot_number: lab_result_resource.lotNumber,
+                              effective: lab_result_resource.effectiveDateTime
                             })
     end
   end

@@ -10,8 +10,11 @@ module HealthCards
 
     additional_types 'https://smarthealth.cards#covid19'
     additional_types 'https://smarthealth.cards#immunization'
+    additional_types 'https://smarthealth.cards#labresult'
 
     allow type: FHIR::Patient, attributes: %w[name birthDate]
     allow type: FHIR::Immunization, attributes: %w[status vaccineCode patient occurrenceDateTime]
+    allow type: FHIR::LabResult, attributes: %w[status labCode patient effectiveDateTime]
+
   end
 end
