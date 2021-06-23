@@ -10,7 +10,7 @@ class LabResultsController < ApplicationController
     def edit; end
 
     def create
-        @lab_result = LabResult.new(labResult_params)
+        @lab_result = LabResult.new(lab_result_params)
         @lab_result.patient = @patient
     
         respond_to do |format|
@@ -26,11 +26,9 @@ class LabResultsController < ApplicationController
     
       def show
         @lab_result = LabResult.find(params[:id])
-    
         render json: @lab_result.to_json
       end
     
-      # PATCH/PUT /labResults/1 or /labResults/1.json
       def update
         respond_to do |format|
           if @lab_result.update(lab_result_params)
@@ -46,7 +44,6 @@ class LabResultsController < ApplicationController
         end
       end
     
-      # DELETE /immunizations/1 or /immunizations/1.json
       def destroy
         @lab_result.destroy
         respond_to do |format|
@@ -62,9 +59,8 @@ class LabResultsController < ApplicationController
         @lab_result = @patient.labResults.find(params[:id])
       end
     
-      # Only allow a list of trusted parameters through.
-      def immunization_params
-        params.require(:lab_result).permit(:vaccine_id, :effective, :lot_number)
+      def lab_result_params
+        params.require(:lab_result).permit(:effective)
       end
     
       def find_patient
