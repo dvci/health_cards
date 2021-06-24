@@ -2,4 +2,7 @@
 
 class LandingPageController < ApplicationController
   def index; end
+
+  def fhir_instructions
+  end
 end
