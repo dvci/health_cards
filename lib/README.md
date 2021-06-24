@@ -4,7 +4,7 @@
 ![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)
 ![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)
 
-Health Cards is a Ruby gem that implements [SMART Health Cards](https://smarthealth.cards), a secure and decentralized framework that allows people to prove their vaccination status or medical test results. It is built on top of [FHIR 4](https://hl7.org/FHIR/) healthcare interoperability standards and converts medical data into a [JWS](https://en.wikipedia.org/wiki/JSON_Web_Signature) that is then embedded into a QR code.
+Health Cards is a Ruby gem that implements [SMART Health Cards](https://smarthealth.cards), a secure and decentralized framework that allows people to prove their vaccination status or medical test results. It is built on top of [FHIR R4](https://hl7.org/FHIR/) health data exchange standards and converts clinical data into a [JWS](https://en.wikipedia.org/wiki/JSON_Web_Signature) which may then be embedded into a QR code, exported to a `*.smart-health-card` file, or returned by a `$health-card-issue` FHIR operation.
 
 This library conforms to the [SMART Health Cards: Vaccination & Testing Implementation Guide](http://build.fhir.org/ig/dvci/vaccine-credential-ig/branches/main/), and a reference implementation in rails can be found [here](https://github.com/dvci/health_cards).
 

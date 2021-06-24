@@ -15,14 +15,14 @@ Gem::Specification.new do |spec|
                         'Shaumik Ashraf']
   spec.email         = ['radamson@mitre.org']
   spec.summary       = <<~TEXT
-    Create SMART Health Cards using FHIR and Verifiable Credentials for secure and decentralized#{' '}
+    Create SMART Health Cards using FHIR and Verifiable Credentials for secure and decentralized 
     presentation of clinical information.
   TEXT
   spec.description = <<~TEXT
-    Health Cards implements SMART Health Cards, a secure and decentralized framework that allows#{' '}
-    people to prove their vaccination status or medical test results. It is built on top of FHIR 4#{' '}
-    healthcare interoperability standards and W3C Verifiable Credentials. It allows conversion of
-    medical data into JWS which may then be embedded into QR codes.
+    Health Cards implements SMART Health Cards, a secure and decentralized framework that allows 
+    people to prove their vaccination status or medical test results. It is built on top of FHIR R4 
+    health data exchange standards and W3C Verifiable Credentials. It allows conversion of
+    clinical data into JWS which may then be embedded into QR codes.
   TEXT
   spec.homepage      = 'https://github.com/dvci/health-cards'
   spec.license       = 'Apache 2.0'
@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/dvci/health_cards'
   spec.metadata['changelog_uri'] = 'https://github.com/dvci/health_cards/CHANGELOG.md'
-  spec.files = ['lib/health_cards.rb', 'LICENSE.txt'] + Dir['lib/health_cards/**/*']
+  spec.files = ['lib/health_cards.rb', 'lib/README.md', 'LICENSE.txt'] + Dir['lib/health_cards/**/*']
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
