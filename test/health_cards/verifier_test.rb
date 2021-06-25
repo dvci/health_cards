@@ -142,6 +142,22 @@ class VerifierTest < ActiveSupport::TestCase
     assert verifier.verify(@jws)
   end
 
+  test 'Verifier will raise an error if no valid key is found' do
+    stub_request(:get, /jwks.json/).to_return(status: 404)
+    verifier = HealthCards::Verifier
+    assert_raises HealthCards::UnresolvableKeySetError do
+      verifier.verify(@jws)
+    end
+  end
+
+  test 'Verifier will raise a HealthCard error if key resolution times out' do
+    stub_request(:get, /jwks.json/).to_timeout
+    verifier = HealthCards::Verifier
+    assert_raises HealthCards::UnresolvableKeySetError do
+      verifier.verify(@jws)
+    end
+  end
+
   test 'Verifier class will verify health cards when key is resolvable' do
     stub_request(:get, /jwks.json/).to_return(status: 200, body: @verifier.keys.to_jwk)
     verifier = HealthCards::Verifier
