@@ -35,7 +35,7 @@ gem 'health_cards', path: '.'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 
-gem 'fhir_models'
+gem 'fhir_models', '~> 4.2.0'
 gem 'bulma-rails', '~> 0.9'
 gem 'american_date'
 gem 'font-awesome-rails'
