@@ -3,6 +3,8 @@
 module HealthCards
   # Handles behavior related to removing disallowed attributes from FHIR Resources
   module AttributeFilters
+    ALL_FHIR_RESOURCES = :fhir_resource
+
     def self.included(base)
       base.extend ClassMethods
     end
@@ -13,9 +15,7 @@ module HealthCards
       # @param type [Class] Scopes the attributes to a spefic class. Must be a subclass of FHIR::Model
       # @param attributes [Array] An array of string with the attribute names that will be passed through
       #  when data is minimized
-      def allow(type: nil, attributes: [])
-        raise ArgumentError, 'Must specify a base type for allowable attributes' if type.nil?
-
+      def allow(type:, attributes: [])
         allowable[type] = attributes
       end
 
@@ -24,7 +24,7 @@ module HealthCards
       # To apply a rule to all FHIR types (resources and types), use FHIR::Model as the type
       # @param attributes [Array] An array of string with the attribute names that will be passed through
       #  when data is minimized
-      def disallow(type: nil, attributes: [])
+      def disallow(type: ALL_FHIR_RESOURCES, attributes: [])
         disallowable[type] ||= []
         disallowable[type].concat(attributes)
       end
@@ -83,9 +83,9 @@ module HealthCards
     protected
 
     def find_subclass_keys(hash, resource)
-      subclasses = hash.keys.compact.filter { |class_key| resource.class <= class_key }
+      subclasses = hash.keys.filter { |class_key| class_key.is_a?(Class) && resource.class <= class_key }
       # No great way to determine if this is an actual FHIR resource
-      subclasses << nil if resource.respond_to?(:resourceType)
+      subclasses << ALL_FHIR_RESOURCES if resource.respond_to?(:resourceType)
       subclasses
     end
   end
