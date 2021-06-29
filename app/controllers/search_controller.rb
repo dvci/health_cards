@@ -15,10 +15,14 @@ class SearchController < ApplicationController
   def query
     @matches = Patient.select { |x| x.match?(search_params) }
 
+    puts "======", @matches.to_s, "========"
+
     if @matches.length.zero?
-      redirect_to 'search#form', alert: 'No matches found' and return
+      redirect_to search_form_url, alert: 'No matches found' and return
     elsif @matches.length > 1
-      redirect_to 'search#form', alert: 'Found multiple matches' and return
+      redirect_to search_form_url, alert: 'Found multiple matches' and return
+    else
+      redirect_to @matches.first
     end
   end
 

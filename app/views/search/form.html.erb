@@ -11,6 +11,13 @@
 
 <section class="section">
   <div class="container">
+    <% if alert %>
+      <div class="notification is-danger is-light">
+        <button class="delete"></button>
+        <%= alert %>
+      </div>
+    <% end %>
+
     <h1 class="title">Immunization Information System Record Search</h1>
     <h2 class="subtitle">Consumer Portal</h2>
 

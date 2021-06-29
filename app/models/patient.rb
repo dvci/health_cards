@@ -139,6 +139,7 @@ class Patient < FHIRRecord
     hash.each do |k, v|
       if has_attribute? k
         matching &&= (send(k) == v)
+        # TODO debug here!!!
         break unless matching
       else
         logger.warn "Method #{k} not found for Patient#match?"
