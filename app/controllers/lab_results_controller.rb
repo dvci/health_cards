@@ -4,7 +4,7 @@ class LabResultsController < ApplicationController
     before_action :set_labResult, only: %i[edit update destroy]
     
     def new
-        @lab_result = LabResult.new
+      @lab_result = LabResult.new
     end 
 
     def edit; end
