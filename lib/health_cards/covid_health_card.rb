@@ -10,6 +10,6 @@ module HealthCards
 
     allow FHIR::Patient, %w[name birthDate]
     allow FHIR::Immunization, %w[status vaccineCode patient occurrenceDateTime]
-    allow FHIR::LabResult, %w[status labCode patient effectiveDateTime]
+    allow FHIR::Observation, %w[status labCode patient effectiveDateTime]
   end
 end

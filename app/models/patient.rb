@@ -19,6 +19,7 @@ class Patient < FHIRRecord
   serialize :json, FHIR::Patient
 
   has_many :immunizations, dependent: :destroy
+  has_many :lab_results, dependent: :destroy
 
   GENDERS = FHIR::Patient::METADATA['gender']['valid_codes']['http://hl7.org/fhir/administrative-gender']
 

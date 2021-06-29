@@ -30,6 +30,27 @@
       </div>
 
 
+      <div class="field">
+        <%= form.label :status, class: 'label' %>
+        <div class="control">
+          <% form_with do |f| %>
+          <%= form.text_field :status, class: 'input' %>
+          <%= f.select :status, [['Final','final'],['Ammended','ammended'],['Corrected','corrected']] %>
+          <%= f.submit %>
+          <% end %>
+        </div>
+      </div>
+
+
+        <div class="field">
+        <%= form.label :code, class: 'label' %>
+        <div class="control">
+          <%= form.text_field :code, class: 'input' %>
+        </div>
+      </div>
+
+
+
       <div class="field is-grouped">
         <div class="control">
           <%= form.submit class: 'button is-info' %>

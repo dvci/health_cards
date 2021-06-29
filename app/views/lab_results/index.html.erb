@@ -6,14 +6,20 @@
   <thead>
     <tr>
       <th>Patient</th>
+      <th>Lab Result</th>
+      <th>Effective</th>
+      <th>Status</th>
       <th colspan="3"></th>
     </tr>
   </thead>
 
   <tbody>
-    <% @lab_result.each do |lab_result| %>
+    <% @lab_results.each do |lab_result| %>
       <tr>
 	<td><%= lab_result.patient %></td>
+	<td><%= labresult.code %></td>
+	<td><%= labresult.effective %></td>
+	<td><%= labresult.status %></td>
 	<td><%= link_to 'Show', lab_result %></td>
 	<td><%= link_to 'Edit', edit_lab_result_path(lab_result) %></td>
 	<td><%= link_to 'Destroy', lab_result, method: :delete, data: { confirm: 'Are you sure?' } %></td>

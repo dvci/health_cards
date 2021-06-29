@@ -1,13 +1,14 @@
 class LabResult < FHIRRecord
     attribute :effective, :date
-    attribute :lab, :string
+    attribute :code, :string
+    attribute :status, :string
   
     belongs_to :patient  
 
     serialize :json, FHIR::Observation
   
     validates :effective, presence: true
-    validates :lab, presence: true
+    validates :code, presence: true
     validates :patient, presence: true
 
 
@@ -17,6 +18,10 @@ class LabResult < FHIRRecord
 
   def effective
     from_fhir_time(json.effectiveDateTime)
+  end
+
+  def status
+    json.status
   end
 
   def effective=(eff)
@@ -36,15 +41,29 @@ class LabResult < FHIRRecord
     super(pat)
   end
 
-#   def lab_code=(lc)
-#     code = Lab.find(lc).code
-#     update_lab_code(code)
-#     super(lc)
-#   end
+  def lab_code=(lc)
+    code = Lab.find(lc).code
+    update_lab_code(code)
+    super(lc)
+  end
 
-#   def vaccine=(lab)
-#     update_lab_code(lab.code)
-#     super(lab)
-#   end
+  def vaccine=(lab)
+    update_lab_code(lab.code)
+    super(lab)
+  end
+private 
 
+def update_lab_code(code)
+  json.labCode ||= FHIR::CodeableConcept.new
+  json.labCode.coding[0] = FHIR::Coding.new(system: 'http://loinc.org', code: code)
+end
+
+  def update_patient_reference(pat)
+    if pat
+      json.patient ||= FHIR::Reference.new
+      json.patient.reference = "Patient/#{pat.json.id}"
+    else
+      json.patient = nil
+    end
+  end
 end

@@ -27,12 +27,12 @@ module HealthCardsHelper
   end
 
   def create_labResult(patient, bundle)
-    lab_result = bundle.entry.select { |e| e.resource.is_a?(FHIR::LabResult) }
-    lab_result.each do |i|
+    lab_results = bundle.entry.select { |e| e.resource.is_a?(FHIR::Observation) }
+    lab_results.each do |i|
       lab_result_resource = i.resource
-      patient.lab_result.new({
-                              lab_code: Vaccine.find_by(code: lab_result_resource.labCode.coding[0].code).id,
-                              lot_number: lab_result_resource.lotNumber,
+      patient.lab_results.new({
+                              lab_code: Lab.find_by(code: lab_result_resource.labCode.coding[0].code).id,
+                              status: lab_result_resource.status,
                               effective: lab_result_resource.effectiveDateTime
                             })
     end
