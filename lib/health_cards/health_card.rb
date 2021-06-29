@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
-require 'json/minify'
 require 'zlib'
 require 'uri'
+
+require 'health_cards/attribute_filters'
+require 'health_cards/card_types'
 
 module HealthCards
   # A HealthCard which implements the credential claims specified by https://smarthealth.cards/
   class HealthCard
-    VC_TYPE = [
-      'https://smarthealth.cards#health-card'
-    ].freeze
+    include HealthCards::AttributeFilters
+    extend HealthCards::CardTypes
 
     FHIR_REF_REGEX = %r{((http|https)://([A-Za-z0-9\-\\.:%$]*/)+)?(
       Account|ActivityDefinition|AdverseEvent|AllergyIntolerance|Appointment|AppointmentResponse|AuditEvent|Basic|
@@ -56,7 +57,7 @@ module HealthCards
         json = decompress_payload(payload)
         bundle_hash = json.dig('vc', 'credentialSubject', 'fhirBundle')
 
-        raise HealthCards::InvalidCredentialException unless bundle_hash
+        raise HealthCards::InvalidCredentialError unless bundle_hash
 
         bundle = FHIR::Bundle.new(bundle_hash)
         new(issuer: json['iss'], bundle: bundle)
@@ -77,38 +78,6 @@ module HealthCards
         Zlib::Deflate.new(nil, -Zlib::MAX_WBITS).deflate(payload.to_s, Zlib::FINISH)
       end
 
-      # Define allowed attributes for this HealthCard class
-      # @param klass [Class] Scopes the attributes to a spefic class. Must be a subclass of FHIR::Model
-      # @param attributes [Array] An array of string with the attribute names that will be passed through
-      #  when data is minimized
-      def allow(klass, attributes)
-        allowable[klass] = attributes
-      end
-
-      # Define disallowed attributes for this HealthCard class
-      # @param klass [Class] Scopes the attributes to a spefic class. Must be a subclass of FHIR::Model
-      # @param attributes [Array] An array of string with the attribute names that will be passed through
-      #  when data is minimized
-      def disallow(klass, attributes)
-        disallowable[klass] = attributes
-      end
-
-      # Define allowed attributes for this HealthCard class
-      # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
-      def allowable
-        return @allowable if @allowable
-
-        @allowable = parent_allowables
-      end
-
-      # Define disallowed attributes for this HealthCard class
-      # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
-      def disallowable
-        return @disallowable if @disallowable
-
-        @disallowable = parent_disallowables
-      end
-
       # Sets/Gets the fhir version that will be passed through to the credential created by an instnace of
       # this HealthCard (sub)class
       # @param ver [String] FHIR Version supported by this HealthCard (sub)class. Leaving this param out
@@ -119,50 +88,20 @@ module HealthCards
         @fhir_version ||= ver unless ver.nil?
         @fhir_version
       end
-
-      # Additional type claims this HealthCard class supports
-      # @param types [String, Array] A string or array of string representing the additional type claims or nil
-      # if used as a getter
-      # @return [Array] the additional types added by this classes
-      def additional_types(*add_types)
-        types.concat(add_types) unless add_types.nil?
-        types - VC_TYPE
-      end
-
-      # Type claims supported by this HealthCard subclass
-      # @return [Array] an array of Strings with all the supported type claims
-      def types
-        @types ||= VC_TYPE.dup
-      end
-
-      # Check if this class supports the given type claim(s)
-      # @param type [Array, String] A type as defined by the SMART Health Cards framework
-      # @return [Boolean] Whether or not the type param is included in the types supported by the HealthCard (sub)class
-      def supports_type?(*type)
-        !types.intersection(type).empty?
-      end
-
-      protected
-
-      def parent_allowables(base = {})
-        self < HealthCards::HealthCard ? base.merge(superclass.allowable) : base
-      end
-
-      def parent_disallowables(base = {})
-        self < HealthCards::HealthCard ? base.merge(superclass.disallowable) : base
-      end
     end
 
-    allow FHIR::Meta, %w[security]
-    disallow FHIR::CodeableConcept, %w[text]
-    disallow FHIR::Coding, %w[display]
+    allow type: FHIR::Meta, attributes: %w[security]
+
+    disallow attributes: %w[id text]
+    disallow type: FHIR::CodeableConcept, attributes: %w[text]
+    disallow type: FHIR::Coding, attributes: %w[display]
 
     # Create a HealthCard
     #
     # @param bundle [FHIR::Bundle] VerifiableCredential containing a fhir bundle
     # @param issuer [String] The url from the Issuer of the HealthCard
     def initialize(bundle:, issuer: nil)
-      raise InvalidPayloadException unless bundle.is_a?(FHIR::Bundle)
+      raise InvalidPayloadError unless bundle.is_a?(FHIR::Bundle) # && bundle.valid?
 
       @issuer = issuer
       @bundle = bundle
@@ -181,7 +120,6 @@ module HealthCards
             fhirBundle: strip_fhir_bundle.to_hash
           }
         }
-
       }
     end
 
@@ -195,7 +133,7 @@ module HealthCards
     # A minified JSON string matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
     # @return [String] JSON string
     def to_json(*_args)
-      JSON.minify(to_hash.to_json)
+      to_hash.to_json
     end
 
     # Processes the bundle according to https://smarthealth.cards/#health-cards-are-small and returns
@@ -208,21 +146,18 @@ module HealthCards
       new_bundle = duplicate_bundle
       url_map = redefine_uris(new_bundle)
 
-      new_bundle.entry.map do |entry|
-        walk_resource(entry) do |value, type|
-          case type
+      new_bundle.entry.each do |entry|
+        entry.each_element do |value, metadata, _|
+          case metadata['type']
           when 'Reference'
             value.reference = process_reference(url_map, entry, value)
           when 'Resource'
-            value.id = nil
-            value.text = nil
             value.meta = nil unless value.meta&.security
           end
 
           handle_allowable(value)
           handle_disallowable(value)
         end
-        entry
       end
 
       new_bundle
@@ -247,40 +182,6 @@ module HealthCards
       url_map
     end
 
-    def walk_resource(resource, &block)
-      resource.class::METADATA.each do |field_name, meta|
-        type = meta['type']
-        local_name = meta.fetch :local_name, field_name
-        values = [resource.instance_variable_get("@#{local_name}")].flatten.compact
-        next if values.empty?
-
-        values.each do |value|
-          yield value, type
-          walk_resource value, &block unless FHIR::PRIMITIVES.include? type
-        end
-      end
-    end
-
-    def handle_allowable(resource)
-      allowable = self.class.allowable[resource.class]
-
-      return unless allowable
-
-      allowed = resource.to_hash.select! { |att| allowable.include?(att) }
-
-      resource.from_hash(allowed)
-    end
-
-    def handle_disallowable(resource)
-      disallowable = self.class.disallowable[resource.class]
-
-      return unless disallowable
-
-      allowed = resource.to_hash.delete_if { |att| disallowable.include?(att) }
-
-      resource.from_hash(allowed)
-    end
-
     def process_reference(url_map, entry, ref)
       entry_url = URI(url_map.key(entry.fullUrl))
       ref_url = ref.reference
@@ -294,7 +195,7 @@ module HealthCards
 
       new_url = url_map[full_url]
 
-      raise InvalidBundleReferenceException, full_url unless new_url
+      raise InvalidBundleReferenceError, full_url unless new_url
 
       new_url
     end

@@ -44,6 +44,21 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'upload file with no keys found' do
+    stub_request(:get, 'https://smarthealth.cards/examples/issuer/.well-known/jwks.json').to_return(body: nil,
+                                                                                                    status: 404)
+    file = fixture_file_upload('test/fixtures/files/example-00-e-file.smart-health-card')
+    post(upload_health_cards_path, params: { health_card: file })
+    assert_response :success
+  end
+
+  test 'upload file with keys timeout' do
+    stub_request(:get, 'https://smarthealth.cards/examples/issuer/.well-known/jwks.json').to_timeout
+    file = fixture_file_upload('test/fixtures/files/example-00-e-file.smart-health-card')
+    post(upload_health_cards_path, params: { health_card: file })
+    assert_response :success
+  end
+
   test 'issue smart card' do
     param = FHIR::Parameters::Parameter.new(name: 'credentialType',
                                             valueUri: 'https://smarthealth.cards#covid19')
@@ -53,9 +68,8 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
 
     assert response['Access-Control-Allow-Origin'], '*'
 
-    output = FHIR.from_contents(response.body)
+    output = assert_fhir(response.body, type: FHIR::Parameters)
 
-    assert output.is_a?(FHIR::Parameters)
     cred = output.parameter.find { |par| par.name == 'verifiableCredential' }
 
     jws = HealthCards::JWS.from_jws(cred.valueString)
@@ -74,28 +88,27 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should return OperationOutcome when no patient exists for $issue endpoint' do
     post issue_vc_path(patient_id: 1234, format: :fhir_json)
-    output = FHIR.from_contents(response.body)
-    assert output.is_a?(FHIR::OperationOutcome)
-    assert output.valid?
-    assert_response :not_found
+    assert_operation_outcome(response)
   end
 
-  test 'empty parameter' do
+  test 'should return OperationOutcome when no patient exists for $issue endpoint with accept header' do
+    post issue_vc_path(patient_id: 1234), headers: { Accept: 'application/fhir+json' }
+    assert_operation_outcome(response)
+  end
+
+  test 'no FHIR::Parameters' do
     post(@fhir_url, params: {}, as: :json)
 
-    output = FHIR.from_contents(response.body)
-    assert output.is_a?(FHIR::OperationOutcome)
-    assert output.valid?
+    assert_operation_outcome(response, response_code: :bad_request)
   end
 
-  test 'invalid parameter' do
+  test 'invalid FHIR::Parameters' do
     param = FHIR::Parameters::Parameter.new(valueUri: 'https://smarthealth.cards#covid19')
     params = FHIR::Parameters.new(parameter: [param])
+
     post(@fhir_url, params: params.to_hash, as: :json)
 
-    output = FHIR.from_contents(response.body)
-    assert output.is_a?(FHIR::OperationOutcome)
-    assert output.valid?
+    assert_operation_outcome(response, response_code: :bad_request)
   end
 
   test 'unsupported card type' do
@@ -105,8 +118,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
 
     post(@fhir_url, params: params.to_hash, as: :json)
 
-    output = FHIR.from_contents(response.body)
-    assert output.is_a?(FHIR::Parameters)
+    output = assert_fhir(response.body, type: FHIR::Parameters)
     assert_empty output.parameter
   end
 end

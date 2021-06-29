@@ -24,7 +24,7 @@ class HealthCardTest < ActiveSupport::TestCase
   test 'HealthCard handles empty payloads' do
     compressed_payload = HealthCards::HealthCard.compress_payload(FHIR::Bundle.new.to_json)
     jws = HealthCards::JWS.new(header: {}, payload: compressed_payload, key: rails_private_key)
-    assert_raises HealthCards::InvalidCredentialException do
+    assert_raises HealthCards::InvalidCredentialError do
       HealthCards::HealthCard.from_jws(jws.to_s)
     end
   end
@@ -39,15 +39,15 @@ class HealthCardTest < ActiveSupport::TestCase
   end
 
   test 'HealthCard throws an exception when the payload is not a FHIR Bundle' do
-    assert_raises HealthCards::InvalidPayloadException do
+    assert_raises HealthCards::InvalidPayloadError do
       HealthCards::HealthCard.new(issuer: @issuer, bundle: FHIR::Patient.new)
     end
 
-    assert_raises HealthCards::InvalidPayloadException do
+    assert_raises HealthCards::InvalidPayloadError do
       HealthCards::HealthCard.new(issuer: @issuer, bundle: '{"foo": "bar"}')
     end
 
-    assert_raises HealthCards::InvalidPayloadException do
+    assert_raises HealthCards::InvalidPayloadError do
       HealthCards::HealthCard.new(issuer: @issuer, bundle: 'foo')
     end
   end
@@ -60,7 +60,7 @@ class HealthCardTest < ActiveSupport::TestCase
 
     type = hash.dig('vc', 'type')
     assert_not_nil type
-    assert_includes type, HealthCards::HealthCard::VC_TYPE[0]
+    assert_includes type, HealthCards::CardTypes::VC_TYPE[0]
     bundle = hash.dig('vc', 'credentialSubject', 'fhirBundle')
 
     assert_not_nil bundle
@@ -92,6 +92,11 @@ class HealthCardTest < ActiveSupport::TestCase
     assert_equal original_json, original_json2
   end
 
+  test 'do not strip name.text elements' do
+    stripped_bundle = @health_card.strip_fhir_bundle
+    assert_not_nil stripped_bundle.entry[0].resource.name[0].text
+  end
+
   test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
     stripped_bundle = @health_card.strip_fhir_bundle
     stripped_entries = stripped_bundle.entry
@@ -106,6 +111,10 @@ class HealthCardTest < ActiveSupport::TestCase
         assert_not_nil meta.security
       end
     end
+  end
+
+  test 'support single type' do
+    assert HealthCards::HealthCard.supports_type?('https://smarthealth.cards#health-card')
   end
 
   test 'update_nested_elements strips any "CodeableConcept.text" and "Coding.display" elements from the FHIR Bundle' do
@@ -145,7 +154,7 @@ class HealthCardTest < ActiveSupport::TestCase
   test 'raises error when url refers to resource outside bundle' do
     bundle = FHIR::Bundle.new(load_json_fixture('example-logical-link-bundle-bad'))
     card = HealthCards::HealthCard.new(issuer: 'http://example.org/fhir', bundle: bundle)
-    assert_raises HealthCards::InvalidBundleReferenceException do
+    assert_raises HealthCards::InvalidBundleReferenceError do
       card.strip_fhir_bundle
     end
   end

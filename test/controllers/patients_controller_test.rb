@@ -35,6 +35,18 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to patient_url(new_patient)
   end
 
+  test 'should create patient with empty phone and email' do
+    assert_difference('Patient.count') do
+      post patients_url, params: { patient: @attributes.merge(phone: '', email: '') }
+    end
+    new_patient = Patient.last
+
+    assert_attributes_equal(@patient, new_patient, @attributes.keys)
+    assert_nil @patient.phone
+    assert_nil @patient.email
+    assert_redirected_to patient_url(new_patient)
+  end
+
   test 'should not create patient' do
     assert_no_difference('Patient.count') do
       post patients_url, params: { patient: { gender: 'foo' } }
@@ -50,9 +62,24 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
 
   test 'show fhir patient' do
     get fhir_patient_url(@patient, format: :fhir_json)
-    fhir = FHIR.from_contents(response.body)
-    assert fhir.valid?
+    assert_fhir(response.body, type: FHIR::Patient)
     assert_response :success
+  end
+
+  test 'show fhir patient as json' do
+    get fhir_patient_url(@patient, format: :json)
+    assert_fhir(response.body, type: FHIR::Patient)
+    assert_response :success
+  end
+
+  test 'show OperationOutcome for missing patient' do
+    get fhir_patient_url(@patient.id + 1, format: :fhir_json)
+    assert_operation_outcome(response)
+  end
+
+  test 'show OperationOutcome for missing patient as json' do
+    get fhir_patient_url(@patient.id + 1, format: :json)
+    assert_operation_outcome(response)
   end
 
   test 'should get edit' do

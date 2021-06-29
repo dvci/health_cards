@@ -16,7 +16,7 @@ class IssuerTest < ActiveSupport::TestCase
   end
 
   test 'Issuer raises exception when initializing with public key' do
-    assert_raises HealthCards::InvalidKeyException do
+    assert_raises HealthCards::InvalidKeyError do
       HealthCards::Issuer.new(key: @private_key.public_key)
     end
   end
@@ -47,7 +47,7 @@ class IssuerTest < ActiveSupport::TestCase
   end
 
   test 'Issuer does not allow public key to be added' do
-    assert_raises HealthCards::InvalidKeyException do
+    assert_raises HealthCards::InvalidKeyError do
       @issuer.key = @private_key.public_key
     end
   end
