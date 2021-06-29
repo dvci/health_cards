@@ -337,12 +337,8 @@ DEPENDENCIES
   codecov
   dotenv-rails
   faker
-<<<<<<< HEAD
   faraday
-  fhir_models
-=======
   fhir_models (~> 4.2.0)
->>>>>>> main
   font-awesome-rails
   health_cards!
   jbuilder (~> 2.7)
