@@ -8,7 +8,7 @@ This repository includes a Ruby gem for [SMART Health Cards](https://smarthealth
 
 ## Reference Implementation
 
-The reference implementation here is a Ruby on Rails application that showcases both the Issuer side for creating SMART Health Cards and the Verifier side for confirming someone's vaccination status or laboratory test result. There are three endpoints for the representation and communication of a SMART Health Card. One is a QR Code that may digital (in pdf format) or printed for physical handout. On the verifier side the QR code may be scanned and verified by a webcam. The second endpoint is a `*.smart-health-card` file that may be digitally transferred and used by other SMART-compatable applications. The third endpoint is a `$health-card-issue` FHIR operation that other FHIR v4.0.1 compatable applications can use as a microservice API call.
+The reference implementation here is a Ruby on Rails application that showcases both the Issuer side for creating SMART Health Cards and the Verifier side for confirming someone's vaccination status or laboratory test result. There are three endpoints for the representation and communication of a SMART Health Card. One is a QR Code that may be digital (in PDF format) or printed for physical handout. On the verifier side the QR code may be scanned and verified by a webcam. The second endpoint is a `*.smart-health-card` file that may be digitally transferred and used by other SMART-compatable applications. The third endpoint is a `$health-card-issue` FHIR operation that other FHIR v4.0.1 compatable applications can use as a microservice API call.
 
 ### Dependencies
  - Ruby 2.7 (prior versions may work but are not tested for)

@@ -22,7 +22,8 @@ Gem::Specification.new do |spec|
     Health Cards implements SMART Health Cards, a secure and decentralized framework that allows 
     people to prove their vaccination status or medical test results. It is built on top of FHIR R4 
     health data exchange standards and W3C Verifiable Credentials. It allows conversion of
-    clinical data into JWS which may then be embedded into QR codes.
+    clinical data into JWS which may then be embedded into QR codes, exported to smart-health-card files, or
+    returned by a $health-card-issue FHIR operation.
   TEXT
   spec.homepage      = 'https://github.com/dvci/health-cards'
   spec.license       = 'Apache 2.0'

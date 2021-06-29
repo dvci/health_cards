@@ -36,8 +36,8 @@ private_key = HealthCards::Key.generate_key
 issuer = HealthCards::Issuer.new(key: private_key)
 
 # Create health card
-medical_data = FHIR::Bundle.new # populate with patient data
-health_card = issuer.create_health_card(medical_data)
+clinical_data = FHIR::Bundle.new # populate with patient data
+health_card = issuer.create_health_card(clinical_data)
 
 # Issue JWS
 jws = issuer.issue_jws(medical_data)
