@@ -59,4 +59,30 @@ class PatientTest < ActiveSupport::TestCase
     patient.reload
     assert_equal given, patient.given
   end
+
+  test 'valid patient match' do
+    birthday = Time.zone.today
+    patient = Patient.create(given: 'Foo', family: 'Bar', birth_date: birthday)
+    assert patient.match?({ given: 'Foo', family: 'Bar', birth_date: birthday })
+  end
+
+  test 'valid patient match with minimal parameters' do
+    patient = Patient.create(given: 'Goo', family: 'Bar', birth_date: Time.zone.today)
+    assert patient.match?({ given: 'Goo' })
+  end
+
+  test 'invalid patient match' do
+    patient = Patient.create(given: 'Hoo', family: 'Bar', birth_date: Time.zone.today)
+    assert_not patient.match?({ given: 'Does', family: 'Not Exist', birth_date: Time.zone.tomorrow })
+  end
+
+  test 'patient select' do
+    3.times do |i|
+      Patient.create(given: i.to_s, family: 'Nar', birth_date: Time.zone.yesterday)
+    end
+    selection = Patient.select { |p| p.match?({ family: 'Nar' }) }
+    assert_not_nil selection
+    assert_equal 3, selection.length
+    selection.each { |p| assert_equal 'Nar', p.family }
+  end
 end

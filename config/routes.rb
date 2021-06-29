@@ -31,4 +31,8 @@ Rails.application.routes.draw do
 
   get "/auth/authorize", to: "auth#authorize", as: :auth_code
   post "/auth/token", to: "auth#token", as: :auth_token
+
+  get 'search/form'
+  post 'search/query'
+
 end

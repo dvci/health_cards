@@ -133,6 +133,20 @@ class Patient < FHIRRecord
     bundle
   end
 
+  # compares model's fhir attributes to the key-value pairs in hash
+  def match?(hash)
+    matching = true
+    hash.each do |k, v|
+      if has_attribute? k
+        matching &&= (send(k) == v)
+        break unless matching
+      else
+        logger.warn "Method #{k} not found for Patient#match?"
+      end
+    end
+    matching
+  end
+
   private
 
   def phone_contact

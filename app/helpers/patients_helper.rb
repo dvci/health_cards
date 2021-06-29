@@ -29,4 +29,9 @@ module PatientsHelper
                  birth_date: birth_date, phone: phone, email: email, street_line1: street_line1,
                  street_line2: street_line2, city: city, state: state, zip_code: zip_code } }
   end
+
+  def real_patient_params
+    patient = Patient.first
+    { patient: { given: patient.given, family: patient.family, birth_date: patient.birth_date } }
+  end
 end
