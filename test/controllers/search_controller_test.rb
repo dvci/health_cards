@@ -32,9 +32,15 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select 'form' do
-      assert_select 'div.field div.control input#patient_given'
-      assert_select 'div.field div.control input#patient_family'
-      assert_select 'div.field div.control input#patient_birth_date'
+      assert_select 'input#patient_given'
+      assert_select 'input#patient_family'
+      assert_select 'input#patient_birth_date'
+    end
+
+    assert_select "input.input" do |elements|
+      elements.each do |element|
+        assert_match /\svalue="[^"]+"\s/, element.to_s
+      end
     end
   end
 
