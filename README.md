@@ -8,7 +8,15 @@ This repository includes a Ruby gem for [SMART Health Cards](https://smarthealth
 
 ## Reference Implementation
 
-The reference implementation here is a Ruby on Rails application that showcases both the Issuer side for creating SMART Health Cards and the Verifier side for confirming someone's vaccination status or laboratory test result. There are three endpoints for the representation and communication of a SMART Health Card. One is a QR Code that may be digital (in PDF format) or printed for physical handout. On the verifier side the QR code may be scanned and verified by a webcam. The second endpoint is a `*.smart-health-card` file that may be digitally transferred and used by other SMART-compatable applications. The third endpoint is a `$health-card-issue` FHIR operation that other FHIR v4.0.1 compatable applications can use as a microservice API call.
+The reference implementation is a Ruby on Rails application with Issuer capabilities for creating SMART Health Cards and Verifier capabilities for confirming an individual's vaccination status or laboratory test results.
+
+This Issuer supports the three defined [methods of retrieving a SMART Health Card](https://spec.smarthealth.cards/#user-retrieves-health-cards):
+
+* via a `*.smart-health-card` file
+* via a QR code
+* via FHIR `$health-card-issue` operation
+
+The Verifier supports scanning QR codes.
 
 ### System Requirements
  - Ruby 2.7 (prior versions may work but are not tested)
@@ -18,9 +26,12 @@ The reference implementation here is a Ruby on Rails application that showcases 
 
 ### Quick Start
 
-Clone and cd into this repository:
+Clone and change directory into the repository:
 
-`git clone https://github.com/dvci/health_cards.git && cd health_cards`
+```bash
+git clone https://github.com/dvci/health_cards.git
+cd health_cards
+```
 
 Setup environment:
 
@@ -59,28 +70,11 @@ Or install it yourself as:
  $ gem install health_cards
 ```
 
-### Usage
+### Documentation
 
-```ruby
-# Create issuer
-private_key = HealthCards::Key.generate_key
-issuer = HealthCards::Issuer.new(key: private_key)
+See usage examples in [USAGE.md](https://github.com/dvci/health_cards/blob/master/lib/USAGE.md). 
 
-# Create health card
-medical_data = FHIR::Bundle.new # populate with patient data
-health_card = issuer.create_health_card(medical_data)
-
-# Issue JWS
-jws = issuer.issue_jws(medical_data)
-
-# Create verifier
-verifier = HealthCards::Verifier.new
-
-# Verify JWS
-verifier.verify(jws) # => true
-```
-
-See more usage examples in [USAGE.md](https://github.com/dvci/health_cards/blob/master/lib/USAGE.md). See full documentation in [API.md](https://github.com/dvci/health_cards/blob/master/lib/API.md).
+See full documentation in [API.md](https://github.com/dvci/health_cards/blob/master/lib/API.md).
 
 ## Development
 
