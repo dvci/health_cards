@@ -138,8 +138,10 @@ class Patient < FHIRRecord
     matching = true
     hash.each do |k, v|
       if has_attribute? k
-        matching &&= (send(k) == v)
-        # TODO debug here!!!
+        h = send(k)
+        #print k, '|', h, "(#{h.class})", '|', v, "(#{v.class})", '|', (h.to_s == v.to_s),"\n"
+        matching &&= (send(k).to_s == v.to_s)
+        #puts matching
         break unless matching
       else
         logger.warn "Method #{k} not found for Patient#match?"

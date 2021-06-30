@@ -16,7 +16,10 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     patient2 = Patient.create!(given: 'Goo', family: 'Bar', birth_date: birthday)
     patient2.immunizations.create!(vaccine: moderna, occurrence: Time.zone.today - 1.week)
 
-    @good_query_params = { patient: { given: @patient1.given, family: @patient1.family, birth_date: @patient1.birth_date } }
+    @good_query_params = { patient: { given: @patient1.given,
+                                      family: @patient1.family,
+                                      birth_date: @patient1.birth_date.to_s } }
+    @vague_query_params = { patient: { family: 'Bar' } }
   end
 
   test 'should get search form' do
@@ -28,10 +31,10 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     get search_form_url, params: { 'autofill' => 'yes' }
     assert_response :success
 
-    assert_select 'form input' do
-      assert_select '#patient_given[value=?]', /.+/
-      assert_select '#patient_family[value=?]', /.+/
-      assert_select '#patient_birth_date[value=?]', /.+/
+    assert_select 'form' do
+      assert_select 'div.field div.control input#patient_given'
+      assert_select 'div.field div.control input#patient_family'
+      assert_select 'div.field div.control input#patient_birth_date'
     end
   end
 
@@ -41,7 +44,7 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'vague query params should redirect to search form' do
-    post search_query_url, { params: @good_query_params.reject { |k, _v| k == :given } }
+    post(search_query_url, { params: @vague_query_params })
     assert_redirected_to search_form_url
   end
 end
