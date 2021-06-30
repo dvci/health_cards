@@ -14,8 +14,7 @@ Gem::Specification.new do |spec|
                         'Shaumik Ashraf']
   spec.email         = ['radamson@mitre.org']
   spec.summary       = <<~TEXT
-    Create SMART Health Cards using FHIR and Verifiable Credentials for secure and decentralized 
-    presentation of clinical information.
+    Create verifiable clinical data using SMART Health Cards.
   TEXT
   spec.description = <<~TEXT
     Health Cards implements SMART Health Cards, a secure and decentralized framework that allows 
