@@ -28,8 +28,12 @@ module HealthCards
     # @param jws [HealthCards::JWS, String] The JWS for which to resolve keys
     # @return [HealthCards::KeySet]
     def resolve_key(jws)
-      res = Net::HTTP.get(URI("#{HealthCard.from_jws(jws.to_s).issuer}/.well-known/jwks.json"))
+      jwks_uri = URI("#{HealthCard.from_jws(jws.to_s).issuer}/.well-known/jwks.json")
+      res = Net::HTTP.get(jwks_uri)
       HealthCards::KeySet.from_jwks(res)
+    # Handle response if key is malformed or unreachable
+    rescue StandardError => e
+      raise HealthCards::UnresolvableKeySetError, "Unable resolve a valid key from uri #{jwks_uri}: #{e.message}"
     end
   end
 end

@@ -20,6 +20,12 @@ class PatientTest < ActiveSupport::TestCase
     end
   end
 
+  test 'use name.text if no given name' do
+    text = 'Foo'
+    pat = Patient.new(json: FHIR::Patient.new(name: [{ text: text }]))
+    assert_equal text, pat.given
+  end
+
   test 'invalid fhir json' do
     patient = Patient.create(json: FHIR::Patient.new(gender: 'INVALID GENDER'))
     assert patient.new_record?
