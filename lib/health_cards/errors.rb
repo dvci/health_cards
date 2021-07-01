@@ -58,6 +58,15 @@ module HealthCards
     end
   end
 
+  # Errors Related to IIS-Sandbox
+
+  # Exception thrown when an invalid payload is provided
+    class InvalidSandboxCredentialsError < HealthCardError
+      def initialize(msg = 'IIS Sandbox Credentials is missing a valid string username, password, or facilityID')
+        super(msg)
+      end
+    end
+
   # Other errors
 
   # Exception thrown when an invalid key (public or private) is provided
