@@ -7,6 +7,8 @@ module HealthCards
 
   class HealthCardError < HealthCardsError; end
 
+  class QBPClientError < HealthCardsError; end
+
   #  Errors related to JWS
 
   # Exception thrown when a private key is expected or required
@@ -58,10 +60,10 @@ module HealthCards
     end
   end
 
-  # Errors Related to IIS-Sandbox
+  # Errors Related to QBP Client for IIS-Sandbox
 
   # Exception thrown when an invalid payload is provided
-    class InvalidSandboxCredentialsError < HealthCardError
+    class InvalidSandboxCredentialsError < QBPClientError
       def initialize(msg = 'IIS Sandbox Credentials is missing a valid string username, password, or facilityID')
         super(msg)
       end

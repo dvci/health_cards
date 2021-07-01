@@ -4,12 +4,34 @@ require 'test_helper'
 require 'health_cards/qbp_client'
 
 class QBPClientTest < ActiveSupport::TestCase
+  setup do
+    # Do setup stuff
+  end
+
   test 'does it run' do
     WebMock.allow_net_connect!
     v2_response_body = HealthCards::QBPClient.query(nil)
     fhir_response_body = HealthCards::QBPClient.tranlate(v2_response_body)
     WebMock.disable_net_connect!
   end
+
+  test 'raises error if sandbox credentials are incorrectly formatted' do
+    user_sandbox_credentials = { username: "test_user", password: "test_password", facilityID: "test_facilityID" }
+
+    missing_credential = user_sandbox_credentials.except(:password)
+    assert_raises HealthCards::InvalidSandboxCredentialsError do
+      response = HealthCards::QBPClient.query(nil, missing_credential)
+    end
+
+    non_string_credential = user_sandbox_credentials
+    non_string_credential[:password] = 1
+    assert_raises HealthCards::InvalidSandboxCredentialsError do
+      response = HealthCards::QBPClient.query(nil, non_string_credential)
+    end
+
+  end
+
+
 end
 
 # Connectivity Test Works (Connect to endpoint)

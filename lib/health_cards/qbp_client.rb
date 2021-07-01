@@ -18,11 +18,12 @@ module HealthCards
     def query(patient_info,
               sandbox_credentials = { username: Rails.application.config.username,
                              password: Rails.application.config.password,
-                             facilityID: Rails.application.config.facilityID }
+                             facilityID: Rails.application.config.facilityID 
+                            }
             )
 
         unless validCredentials?(sandbox_credentials)
-            raise InvalidSandboxCredentialsError
+            raise HealthCards::InvalidSandboxCredentialsError
         end
 
         service_def = "lib/assets/service.wsdl"
@@ -110,9 +111,9 @@ module HealthCards
         return msg_output.to_hl7
     end
         
-    # Create a HealthCard from a compressed payload
-    # @param payload [String]
-    # @return [HealthCards::HealthCard]
+    # Translate relevant info from V2 Response message into a FHIR Bundle
+    # @param v2_response [String] V2 message returned from the IIS-Sandbox 
+    # @return [String] FHIR Bundle representation of the V2 message
     def tranlate(v2_response)
         fhir_response = Faraday.post('http://localhost:3000/api/v0.1.0/convert/text',
             v2_response,
