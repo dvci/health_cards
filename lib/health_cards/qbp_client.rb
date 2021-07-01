@@ -9,7 +9,22 @@ module HealthCards
   module QBPClient
     extend self
 
-    def query()
+    # Create a HealthCard from a compressed payload
+    # @param patient_info [Hash] Patient Demographic info sent from the IIS Consumer Portal
+    # @param credentials [Hash] User Id, Password, and Facility Id for the IIS Sandbox login
+    # @return [Hash]
+        # response_status: [Symbol] The status 
+        # response: [String] The HL7 V2 Response message from the IIS-Sandbox, represented as a string
+    def query(patient_info,
+              sandbox_credentials = { username: Rails.application.config.username,
+                             password: Rails.application.config.password,
+                             facilityID: Rails.application.config.facilityID }
+            )
+
+        unless validCredentials?(sandbox_credentials)
+            raise InvalidSandboxCredentialsError
+        end
+
         service_def = "lib/assets/service.wsdl"
         puts "WSDL #{service_def}"
         
@@ -80,21 +95,50 @@ module HealthCards
         
         # Make this it's own function?
         response = client.call(:submit_single_message) do
-            message username: "mitre", password: "mitre", facilityID: "MITRE Healthcare", hl7Message: msg_input
+            message **sandbox_credentials, hl7Message: msg_input
         end
         
         msg_output = HL7::Message.new(response.body[:submit_single_message_response][:return])
+
+        # getResponseStatus(msg_output)
+
         puts "RESPONSE:"
-        puts msg_output.to_hl7
+        puts msg_output.to_hl7 # Printing response for testing purposes
+
+
+
+        return msg_output.to_hl7
+    end
         
+    # Create a HealthCard from a compressed payload
+    # @param payload [String]
+    # @return [HealthCards::HealthCard]
+    def tranlate(v2_response)
         fhir_response = Faraday.post('http://localhost:3000/api/v0.1.0/convert/text',
-            msg_output.to_hl7,
+            v2_response,
             "Content-Type" => "text/plain")
         puts "FHIR:"
 
-        puts fhir_response.body
+        puts fhir_response.body # Printing response for testing purposes
 
         return fhir_response.body
     end
+
+    private
+
+    def getResponseStatus(msg_response)
+        # Get QAK.2
+    end
+
+    def validCredentials?(credentials)
+        credentials.each do |k,v|
+            unless (v.is_a? String)
+                return false
+            end
+        end
+        credentials.keys.sort == [:username, :password, :facilityID].sort 
+    end
+
   end
 end
+

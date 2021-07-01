@@ -6,7 +6,8 @@ require 'health_cards/qbp_client'
 class QBPClientTest < ActiveSupport::TestCase
   test 'does it run' do
     WebMock.allow_net_connect!
-    fhir_response_body = HealthCards::QBPClient.query()
+    v2_response_body = HealthCards::QBPClient.query(nil)
+    fhir_response_body = HealthCards::QBPClient.tranlate(v2_response_body)
     WebMock.disable_net_connect!
   end
 end
