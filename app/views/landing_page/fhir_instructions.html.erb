@@ -1,0 +1,55 @@
+<section class="hero is-small is-info">
+  <div class="hero-body">
+    <p class="title">
+      <%= link_to root_path, 'aria-label': 'Back to home page' do %>
+        <i class="fa fa-caret-left"></i>
+      <% end %>
+      FHIR Instructions
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="content is-medium">
+      <p class="title">FHIR Operation</p>
+      <p>
+        This server supports the
+        <%= link_to 'https://spec.smarthealth.cards/#via-fhir-health-cards-issue-operation' do %>
+          FHIR <code>$health-cards-issue</code> operation.
+        <% end %>
+      </p>
+      <p>
+        To retrieve a health card via this FHIR operation, POST a
+        <%= link_to 'Parameters resource', 'https://www.hl7.org/fhir/parameters.html' %> to
+        <code><%= root_url %>Patient/PATIENT_ID/$health-cards-issue</code>,
+        replacing `PATIENT_ID` with an actual patient id as shown below.
+      </p>
+      <p>
+        <pre>
+POST <%= issue_vc_url(patient_id: 1) %>
+Content-Type: application/fhir+json
+Accept: application/fhir+json
+{
+  "resourceType": "Parameters",
+  "parameter": [{
+    "name": "credentialType",
+    "valueUri": "https://smarthealth.cards#covid19"
+  }]
+}
+        </pre>
+      </p>
+      <p class="title">SMART on FHIR</p>
+      <p>
+        This server supports, but does not require, the
+        <%= link_to 'SMART on FHIR standalone app launch', 'http://hl7.org/fhir/smart-app-launch/index.html' %>
+        for granting access to the <code>$health-cards-issue</code> operation.
+        Note that this is a non-production implementation that does not perform
+        any actual user authentication.
+        The standalone app workflow supports public apps using
+        <code><%= Rails.application.config.client_id %></code>
+        as the client id.
+      </p>
+    </div>
+  </div>
+</section>
