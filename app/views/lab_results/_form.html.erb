@@ -33,11 +33,7 @@
       <div class="field">
         <%= form.label :status, class: 'label' %>
         <div class="control">
-          <% form_with do |f| %>
-          <%= form.text_field :status, class: 'input' %>
-          <%= f.select :status, [['Final','final'],['Ammended','ammended'],['Corrected','corrected']] %>
-          <%= f.submit %>
-          <% end %>
+          <%= form.select :status, [['Final','final'],['Ammended','ammended'],['Corrected','corrected']] %>
         </div>
       </div>
 
