@@ -1,8 +1,6 @@
 # HealthCards
 
 ![Build](https://github.com/dvci/health_cards/actions/workflows/ruby.yml/badge.svg)
-![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)
-![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)
 
 This repository includes a Ruby gem for [SMART Health Cards](https://smarthealth.cards/) **and** a reference implementation for the [SMART Health Cards: Vaccination & Testing Implementation Guide](https://vci.org/ig/vaccination-and-testing). Go to the [Health Card Gem](#health-card-gem) section to read about the Ruby library or go to the [Reference Implementation](#reference-implementation) section to try a ready-to-use rails application.
 
