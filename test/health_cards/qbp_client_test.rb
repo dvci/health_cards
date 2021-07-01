@@ -31,4 +31,15 @@ end
   # Proper message returns Z32
   # Need to Refine - Z31
   # Error - Z33
+  
+# Checks for Proper Response
+  # Check if each V2 Segment is there in the response
+  # There should be no errors
+  # There should be a vaccine
+  # QAK should have proper query response status (OK) - Also should have proper status for errors as well
+  # Same QPD should be returned
 
+# Check that message is ackn olwedged (MSA1 = AA)
+# Check that there are not query errors (QAK2 != AE or AR)
+# Add ToDo for handling PD and TM
+# Check that Data is found, not found (QAK2 = OF, NF)
