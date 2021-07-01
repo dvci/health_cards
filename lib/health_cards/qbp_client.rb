@@ -71,7 +71,11 @@ module HealthCards
         phone_home[6] = '2499010' # local number
         qpd.phone_home = phone_home.join(msg_input.item_delim)
         
-        puts "request:"
+        # Upload Patient
+        # upload_raw_input = open( "lib/assets/vxu.hl7" ).readlines
+        # upload_msg_input = HL7::Message.new( upload_raw_input )
+
+        puts "REQUEST:"
         puts msg_input.to_hl7
         
         # Make this it's own function?
@@ -80,13 +84,14 @@ module HealthCards
         end
         
         msg_output = HL7::Message.new(response.body[:submit_single_message_response][:return])
-        puts "response:"
+        puts "RESPONSE:"
         puts msg_output.to_hl7
         
         fhir_response = Faraday.post('http://localhost:3000/api/v0.1.0/convert/text',
             msg_output.to_hl7,
             "Content-Type" => "text/plain")
-        puts "fhir:"
+        puts "FHIR:"
+
         puts fhir_response.body
 
         return fhir_response.body

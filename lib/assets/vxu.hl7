@@ -1,0 +1,11 @@
+MSH|^~\&|||||20210616112823-0600||VXU^V04^VXU_V04|O60A4.11w|P|2.5.1|||ER|AL|||||Z22^CDCPHINVS|
+PID|1||PMB1SMHF4WFY^^^IIS^SR~J19X5^^^AIRA-TEST^MR||WeilAIRA^BethesdaAIRA^Delvene^^^^L|ClearfieldAIRA^^^^^^M|20170610|F|||1113 Wollands Kroon Ave^^Hamburg^MI^48139^USA^P||^PRN^PH^^^810^2499010||||||||||||
+PD1|||||||||||02^Reminder/Recall - any method^HL70215|||||A|20210616|20210616|
+NK1|1|RichardsonAIRA^TarraAIRA^^^^^L|MTH^Mother^HL70063|1951 Suggereren Cir^^Ossineke^MI^49766^USA^P|^PRN^PH^^^989^9725233|
+ORC|RE||O60A4.3^AIRA|||||||I-23432^Burden^Donna^A^^^^^NIST-AA-1^^^^PRN||57422^RADON^NICHOLAS^^^^^^NIST-AA-1^L^^^PRN|
+RXA|0|1|20210616||94^MMRV^CVX|0.5|mL^milliliters^UCUM||00^Administered^NIP001||||||L6696AE||MSD^Merck and Co^MVX|||CP|A|
+RXR|C38299^^NCIT|RA^^HL70163|
+OBX|1|CE|64994-7^Vaccine funding program eligibility category^LN|1|V02^VFC eligible - Medicaid/Medicaid Managed Care^HL70064||||||F|||20210616|||VXC40^Eligibility captured at the immunization level^CDCPHINVS|
+OBX|2|CE|30956-7^Vaccine Type^LN|2|94^MMRV^CVX||||||F|
+OBX|3|TS|29768-9^Date vaccine information statement published^LN|2|20100521||||||F|
+OBX|4|TS|29769-7^Date vaccine information statement presented^LN|2|20210616||||||F|
