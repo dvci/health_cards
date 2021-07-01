@@ -15,7 +15,7 @@ class LabResultsController < ApplicationController
     
         respond_to do |format|
           if @lab_result.save
-            format.html { redirect_to @patient, notice: 'Lab Result was successfully created.' }
+            format.html { redirect_to patient_path(@patient), notice: 'Lab Result was successfully created.' }
             format.json { render :show, status: :created, location: @lab_result }
           else
             format.html { render :new, status: :unprocessable_entity }
@@ -47,7 +47,7 @@ class LabResultsController < ApplicationController
       def destroy
         @lab_result.destroy
         respond_to do |format|
-          format.html { redirect_to @patient, notice: 'Lab Result was successfully destroyed.' }
+          format.html { redirect_to patient_path(@patient), notice: 'Lab Result was successfully destroyed.' }
           format.json { head :no_content }
         end
       end

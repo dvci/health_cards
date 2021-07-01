@@ -60,10 +60,10 @@ end
 
   def update_patient_reference(pat)
     if pat
-      json.patient ||= FHIR::Reference.new
-      json.patient.reference = "Patient/#{pat.json.id}"
+      json.subject ||= FHIR::Reference.new
+      json.subject.reference = "Patient/#{pat.json.id}"
     else
-      json.patient = nil
+      json.subject = nil
     end
   end
 end
