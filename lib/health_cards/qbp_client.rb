@@ -74,6 +74,7 @@ module HealthCards
         puts "request:"
         puts msg_input.to_hl7
         
+        # Make this it's own function?
         response = client.call(:submit_single_message) do
             message username: "mitre", password: "mitre", facilityID: "MITRE Healthcare", hl7Message: msg_input
         end
