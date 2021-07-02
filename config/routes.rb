@@ -33,6 +33,6 @@ Rails.application.routes.draw do
   post "/auth/token", to: "auth#token", as: :auth_token
 
   get 'search/form'
-  post 'search/query'
+  post 'search/query', to: "search#foo"
 
 end
