@@ -4,16 +4,30 @@ require_relative 'lib/health_cards/version'
 Gem::Specification.new do |spec|
   spec.name          = 'health_cards'
   spec.version       = HealthCards::VERSION
-  spec.authors       = ['Reece Adamson']
+  spec.authors       = ['Reece Adamson',
+                        'Samuel Sayer',
+                        'Stephen MacVicar',
+                        'Neelima Karipineni',
+                        'Daniel Lee',
+                        "Mick O'Hanlon",
+                        'Priyank Madria',
+                        'Shaumik Ashraf']
   spec.email         = ['radamson@mitre.org']
-  spec.summary       = 'Create Health Cards using FHIR and Verifiable Credentials'
-  spec.description   = 'Create Health Cards using FHIR and Verifiable Credentials'
+  spec.summary       = <<~TEXT
+    Create verifiable clinical data using SMART Health Cards.
+  TEXT
+  spec.description = <<~TEXT
+    Health Cards implements SMART Health Cards, a secure and decentralized framework that allows 
+    people to prove their vaccination status or medical test results. It is built on top of FHIR R4 
+    health data exchange standards and W3C Verifiable Credentials. It allows conversion of
+    clinical data into JWS which may then be embedded into QR codes, exported to smart-health-card files, or
+    returned by a $health-card-issue FHIR operation.
+  TEXT
   spec.homepage      = 'https://github.com/dvci/health-cards'
   spec.license       = 'Apache-2.0'
   spec.add_runtime_dependency 'fhir_models', '>= 4.0.0'
   spec.add_runtime_dependency 'rqrcode'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.7.0')
-  spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/dvci/health_cards'
   spec.metadata['changelog_uri'] = 'https://github.com/dvci/health_cards/CHANGELOG.md'
