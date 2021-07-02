@@ -139,9 +139,9 @@ class Patient < FHIRRecord
     hash.each do |k, v|
       if has_attribute? k
         h = send(k)
-        #print k, '|', h, "(#{h.class})", '|', v, "(#{v.class})", '|', (h.to_s == v.to_s),"\n"
+        # print k, '|', h, "(#{h.class})", '|', v, "(#{v.class})", '|', (h.to_s == v.to_s),"\n"
         matching &&= (send(k).to_s == v.to_s)
-        #puts matching
+        # puts matching
         break unless matching
       else
         logger.warn "Method #{k} not found for Patient#match?"

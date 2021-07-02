@@ -32,8 +32,8 @@ module PatientsHelper
 
   def real_patient_params
     patient = Patient.take
-    { patient: { given: patient.given, 
-                 family: patient.family, 
+    { patient: { given: patient.given,
+                 family: patient.family,
                  birth_date: patient.birth_date } }
   end
 end
