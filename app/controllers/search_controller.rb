@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class SearchController < ApplicationController
-  # include PatientHelper
 
   # GET /search/form
   # renders IIS consumer portal search form
@@ -10,21 +9,10 @@ class SearchController < ApplicationController
   end
 
   # POST /search/query
-  # currently searches local db only
-  # will later call QBP client (TODO)
   def query
-    <<-COMMENT
-    @matches = Patient.select { |x| x.match?(search_params) }
-
-    if @matches.length.zero?
-      redirect_to search_form_url, alert: 'No matches found' and return
-    elsif @matches.length > 1
-      redirect_to search_form_url, alert: 'Found multiple matches' and return
-    else
-      redirect_to @matches.first
-    end
-    COMMENT
-
+    puts "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+    puts "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+    puts "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
     results = query(search_params)
 
     case results[:code]
@@ -45,6 +33,8 @@ class SearchController < ApplicationController
     else
       raise StandardError.new("QBP client code #{results[:code]} not recognized");
     end
+
+    raise StandartError('wtf')
   end
 
   private
@@ -52,15 +42,32 @@ class SearchController < ApplicationController
     if params[:action] == 'form'
       params[:autofill] ? helpers.real_patient_params[:patient] : {}
     else
-      params.require(:patient).permit([:given, :family, :birth_date])
+      patient_params = params.require(:patient).permit([:given, :family, :second, :suffix, 
+                                       :birth_date, :gender, :phone,
+                                       :list_id, :assigning_authority, :identifier_type_code,
+                                       :mother_maiden_given_name, :mother_maiden_family_name,
+                                       :street_line1, :street_line2, :city, :state, :zip_code]).to_hash
+      query_params = {
+        :patient_name => patient_params.slice(:given, :family, :second, :suffix),
+        :patient_dob => patient_params[:birth_date].split('/').reverse.join(''),
+        :patient_list => patient_params.slice(:assigning_authority, :identifier_type_code).merge!({id: patient_params[:list_id]}),
+        :mother_maiden_name => { family: patient_params[:mother_maiden_family_name], given: patient_params[:mother_maiden_given_name] },
+        :sex => patient_params[:gender],
+        :address => patient_params.slice(:city, :state).merge!({zip: patient_params[:zip_code]}),
+        :phone => { area_code: patient_params[:phone].split('-')[0], local_number: patient_params[:phone].split('-')[1..3].join('') }
+      }
+      query_params[:address][:street] = patient_params[:street_line1].strip + ', ' + patient_params[:street_line2].strip
+      #omitting: :address => { :address_type }
+      #omitting: :multiple_birth_indicator, :birth_order, :client_last_updated_date, :client_last_update_facility
+      query_params
     end
   end
 
-  def query
-    raise NotImplemented.new("Call QBP Client");
+  def query(p)
+    raise NotImplemented.new("Call QBP Client - parameter: #{p}");
   end
 
-  def translate
-    raise NotImplemented.new("Call QBP Client");
+  def translate(p)
+    raise NotImplemented.new("Call QBP Client - parameter: #{p}");
   end
 end
