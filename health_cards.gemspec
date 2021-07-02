@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
     returned by a $health-card-issue FHIR operation.
   TEXT
   spec.homepage      = 'https://github.com/dvci/health-cards'
-  spec.license       = 'Apache 2.0'
+  spec.license       = 'Apache-2.0'
   spec.add_runtime_dependency 'fhir_models', '>= 4.0.0'
   spec.add_runtime_dependency 'rqrcode'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.7.0')
