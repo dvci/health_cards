@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/dvci/health_cards'
   spec.metadata['changelog_uri'] = 'https://github.com/dvci/health_cards/CHANGELOG.md'
-  spec.files = ['lib/health_cards.rb', 'lib/README.md', 'LICENSE.txt'] + Dir['lib/health_cards/**/*']
+  spec.files = ['lib/health_cards.rb', 'LICENSE.txt'] + Dir['lib/health_cards/**/*']
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
