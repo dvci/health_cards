@@ -15,8 +15,7 @@ class SearchController < ApplicationController
     when :AE # Application Error
       # TODO
     when :AR  # Application Rejected
-      raise StandardError,
-            'QBP client application rejected - QBP client should already have authorization with IIS server'
+      render 'rejected.html.erb'
     when :NF  # No Data Found
       render 'no_data.html.erb'
     when :OK  # Data Found (No Errors)
