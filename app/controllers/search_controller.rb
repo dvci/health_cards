@@ -2,7 +2,6 @@
 
 class SearchController < ApplicationController
   # GET /search/form
-  # renders IIS consumer portal search form
   def form
     @patient = Patient.new(search_params)
   end
@@ -13,18 +12,20 @@ class SearchController < ApplicationController
 
     case results[:code]
     when :AE # Application Error
-      # TODO
+      logger.error 'QBP client returned Application Error'
+      redirect_to search_form_url, alert: 'Sorry there was an error, please try again. If problem persists contact system administrator.'
     when :AR  # Application Rejected
+      logger.error 'QBP client returned Application Rejected'
       render 'rejected.html.erb'
     when :NF  # No Data Found
       render 'no_data.html.erb'
     when :OK  # Data Found (No Errors)
       json_bundle = translate(results[:patient])
-      # TODO: - validation
-      if create_patient(json_bundle)
+      if validate(json_bundle) && create_patient(json_bundle)
         redirect_to @patient
       else
-        # TODO: - validation/patient creation failed...
+        logger.error "Failed to validate patient from FHIR translation of QBP response"
+        redirect_to search_form_url, alert: 'Information from IIS could not be validated.'
       end
     when :PD  # Protected Data
       render 'protected.html.erb'
@@ -82,26 +83,33 @@ class SearchController < ApplicationController
     query_params
   end
 
-  # TODO: this function needs work:
   def create_patient(json)
     bundle = FHIR.from_contents(json)
+    @patient = Patient.new({json: nil})
 
-    @patient = Patient.new
-    bundle.each do |value, _m, _p|
-      if value.resourceType == 'patient'
-        @patient.json = value
-      elsif value.resourceType == 'immunization'
-        @patient.build_immunization(json: value)
+    bundle.entry.each do |entry|
+      case entry.resource.resourceType.upcase
+      when "PATIENT"
+        @patient.json = entry.resource.to_json
+      when "IMMUNIZATION"
+        @patient.immunizations.build({json: entry.resource.to_json})
+      else
+        logger.warn "Unexpected resource #{entry.resource.resourceType} found in bundle from QBP client"
       end
     end
+
     @patient.save
   end
 
-  def qbp_query(p)
-    raise NotImplementedError, "Call QBP Client - parameter: #{p}"
+  def qbp_query(query_hash)
+    raise NotImplementedError, "Calling QBP Client w/ parameter: #{query_hash}"
   end
 
-  def translate(p)
-    raise NotImplementedError, "Call QBP Client - parameter: #{p}"
+  def translate(hl7v2_text)
+    raise NotImplementedError, "Calling QBP Client w/ parameter: #{hl7v2_text}"
+  end
+
+  def validate(fhir_json)
+    raise NotImplementedError, "Calling validation on QBP response w/ parameter #{fhir_json}"
   end
 end
