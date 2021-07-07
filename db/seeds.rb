@@ -19,3 +19,8 @@ Vaccine.find_or_create_by(code: '212') do |vaccine|
   vaccine.name = 'Janssen COVID-19 Vaccine'
   vaccine.doses_required = 1
 end
+
+
+#get valueset object as json and create a new valueset injected as a new object
+#ValueSet.get_code_from_valueset(valueset)
+#read the json and stick into the json attribute (under lab_codes)

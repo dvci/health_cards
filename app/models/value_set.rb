@@ -6,6 +6,4 @@ def get_code_from_valueset (valueset)
     
 end
 
-#
-
 end
