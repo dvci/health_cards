@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'json'
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
@@ -21,6 +22,6 @@ Vaccine.find_or_create_by(code: '212') do |vaccine|
 end
 
 
-#get valueset object as json and create a new valueset injected as a new object
-#ValueSet.get_code_from_valueset(valueset)
-#read the json and stick into the json attribute (under lab_codes)
+valueset_json = File.read('ValueSet-qualitative-lab-result-findings.json')
+hash = JSON.parse(valueset_json)
+ValueSet.get_code_from_valueset(hash)
