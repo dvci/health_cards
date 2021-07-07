@@ -26,6 +26,9 @@ module HealthCards
             raise HealthCards::InvalidSandboxCredentialsError
         end
 
+        puts "PATIENT HASH: "
+        puts patient_info
+
         service_def = "lib/assets/service.wsdl"
         puts "WSDL #{service_def}"
         
@@ -124,6 +127,8 @@ module HealthCards
 
         return fhir_response.body
     end
+
+    # TODO: Add a function to upload a patient to an IIS
 
     private
 
