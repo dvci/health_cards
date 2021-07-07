@@ -41,13 +41,93 @@
   "compose": {
     "include": [
       {
-        "valueSet": [
-          "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1114.10"
+        "system": "http://snomed.info/sct",
+        "concept": [
+          {
+            "code": "10828004",
+            "display": "Positive (qualifier value)"
+          },
+          {
+            "code": "125154007",
+            "display": "Specimen unsatisfactory for evaluation (finding)"
+          },
+          {
+            "code": "260373001",
+            "display": "Detected (qualifier value)"
+          },
+          {
+            "code": "260385009",
+            "display": "Negative (qualifier value)"
+          },
+          {
+            "code": "260408008",
+            "display": "Weakly positive (qualifier value)"
+          },
+          {
+            "code": "260415000",
+            "display": "Not detected (qualifier value)"
+          },
+          {
+            "code": "419984006",
+            "display": "Inconclusive (qualifier value)"
+          },
+          {
+            "code": "42425007",
+            "display": "Equivocal (qualifier value)"
+          },
+          {
+            "code": "455371000124106",
+            "display": "Invalid result (qualifier value)"
+          },
+          {
+            "code": "720735008",
+            "display": "Presumptive positive (qualifier value)"
+          },
+          {
+            "code": "82334004",
+            "display": "Indeterminate (qualifier value)"
+          }
         ]
       },
       {
-        "valueSet": [
-          "http://hl7.org/fhir/uv/smarthealthcards-vaccination/ValueSet/qualitative-lab-results-loinc"
+        "system": "http://loinc.org",
+        "concept": [
+          {
+            "code": "LA11882-0",
+            "display": "Detected"
+          },
+          {
+            "code": "LA11883-8",
+            "display": "Not detected"
+          },
+          {
+            "code": "LA11885-3",
+            "display": "Equivocal"
+          },
+          {
+            "code": "LA9663-1",
+            "display": "Inconclusive"
+          },
+          {
+            "code": "LA13548-5",
+            "display": "Specimen unsatisfactory for evaluation"
+          },
+          {
+            "code": "LA6577-6",
+            "display": "Negative"
+          },
+          {
+            "code": "LA4259-3",
+            "display": "Borderline"
+          },
+          {
+            "code": "LA6576-8",
+            "display": "Positive"
+          },
+          {
+            "code": "LA18996-1",
+            "display": "Strong positive"
+          }
         ]
       }
     ]

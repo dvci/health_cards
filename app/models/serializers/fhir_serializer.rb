@@ -15,7 +15,4 @@ module Serializers
   end
 end
 
-FHIR::Patient.class_eval { extend Serializers::FHIRSerializer }
-FHIR::Immunization.class_eval { extend Serializers::FHIRSerializer }
-FHIR::Observation.class_eval { extend Serializers::FHIRSerializer }
-
+[FHIR::Patient, FHIR::Immunization, FHIR::Observation, FHIR::ValueSet].each { |c| c.class_eval { extend Serializers::FHIRSerializer } }
