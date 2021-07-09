@@ -24,4 +24,4 @@ end
 
 valueset_json = File.read('ValueSet-qualitative-lab-result-findings.json')
 hash = JSON.parse(valueset_json)
-ValueSet.get_code_from_valueset(hash)
+ValueSet.get_info_from_valueset(hash)
