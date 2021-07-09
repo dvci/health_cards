@@ -156,7 +156,8 @@ class Patient < FHIRRecord
       when 'PATIENT'
         patient.json = entry.resource.to_json
       when 'IMMUNIZATION'
-        patient.immunizations.build({ json: entry.resource.to_json })
+        #patient.immunizations.build({ json: FHIR::Immunization.new(entry.resource).to_json })
+        patient.immunizations.build({ json: FHIR::Immunization(entry.resource).to_json })
       else
         logger.warn "Unexpected resource #{entry.resource.resourceType} found in bundle"
       end
