@@ -37,15 +37,14 @@
         </div>
       </div>
 
-
-        <div class="field">
+      <div class="field">
         <%= form.label :code, class: 'label' %>
         <div class="control">
-          <%= form.text_field :code, class: 'input' %>
+          <div class="select">
+            <%= form.select :valueset_code, options_for_select([:valueset_code]) %>
+          </div>
         </div>
       </div>
-
-
 
       <div class="field is-grouped">
         <div class="control">

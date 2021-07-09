@@ -60,7 +60,7 @@ class LabResultsController < ApplicationController
       end
     
       def lab_result_params
-        params.require(:lab_result).permit(:effective)
+        params.require(:lab_result).permit(:effective, :status,  :lab_code)
       end
     
       def find_patient
