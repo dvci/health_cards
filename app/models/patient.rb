@@ -147,6 +147,25 @@ class Patient < FHIRRecord
     matching
   end
 
+  def self.create_from_bundle!(json)
+    bundle = FHIR.from_contents(json)
+    patient = Patient.new
+
+    bundle.entry.each do |entry|
+      case entry.resource.resourceType.upcase
+      when 'PATIENT'
+        patient.json = entry.resource.to_json
+      when 'IMMUNIZATION'
+        patient.immunizations.build({ json: entry.resource.to_json })
+      else
+        logger.warn "Unexpected resource #{entry.resource.resourceType} found in bundle"
+      end
+    end
+
+    patient.save!
+    patient
+  end
+
   private
 
   def phone_contact

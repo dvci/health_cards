@@ -85,4 +85,12 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal 3, selection.length
     selection.each { |p| assert_equal 'Nar', p.family }
   end
+
+  test 'create patient from fhir bundle' do
+    assert_difference ['Patient.count', 'Immunization.count'] do
+      json = Rails.root.join('test', 'fixtures', 'files', 'covid-bundle.json')
+      patient = Patient.create_from_bundle!(json)
+      assert_not_nil patient
+    end
+  end
 end
