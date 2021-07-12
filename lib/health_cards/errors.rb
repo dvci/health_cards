@@ -63,11 +63,11 @@ module HealthCards
   # Errors Related to QBP Client for IIS-Sandbox
 
   # Exception thrown when an invalid payload is provided
-    class InvalidSandboxCredentialsError < QBPClientError
-      def initialize(msg = 'IIS Sandbox Credentials is missing a valid string username, password, or facilityID')
-        super(msg)
-      end
+  class InvalidSandboxCredentialsError < QBPClientError
+    def initialize(msg = 'IIS Sandbox Credentials is missing a valid string username, password, or facilityID')
+      super(msg)
     end
+  end
 
   # Other errors
 
