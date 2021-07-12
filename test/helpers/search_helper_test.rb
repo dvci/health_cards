@@ -75,7 +75,7 @@ class SearchHelperTest < ActiveSupport::TestCase
   end
 
   test 'build minimal query for QBP client' do
-    final = build_query( transform_hash( sanitize_input( ActionController::Parameters.new(@minimal_input) ) ) )
+    final = build_query(transform_hash(sanitize_input(ActionController::Parameters.new(@minimal_input))))
     assert final
     assert final.key? :patient_name
     assert_kind_of Hash, final[:patient_name]
@@ -84,16 +84,13 @@ class SearchHelperTest < ActiveSupport::TestCase
   end
 
   test 'build full query for QBP client' do
-    final = build_query( transform_hash( sanitize_input( ActionController::Parameters.new(@full_input) ) ) )
+    final = build_query(transform_hash(sanitize_input(ActionController::Parameters.new(@full_input))))
     assert final
 
     assert final.key? :patient_name
     assert_kind_of Hash, final[:patient_name]
 
     assert final.key? :patient_dob
-    puts "===="
-    puts final
-    puts "===="
     assert_kind_of String, final[:patient_dob]
 
     assert final.key? :patient_list

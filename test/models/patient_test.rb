@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'serializers/fhir_serializer'
 
 class PatientTest < ActiveSupport::TestCase
   test 'json serialization' do

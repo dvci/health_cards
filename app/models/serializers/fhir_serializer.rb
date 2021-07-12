@@ -8,14 +8,9 @@ module Serializers
     end
 
     def dump(model)
-      begin
-        raise ActiveRecord::SerializationTypeMismatch unless model.class.module_parent == FHIR
-      rescue ActiveRecord::SerializationTypeMismatch
-        puts model, model.class, model.class.module_parent
-        raise StandardError, "Debugging Serialization Failed"
-      else
-        model.to_json
-      end
+      raise ActiveRecord::SerializationTypeMismatch unless model.class.module_parent == FHIR
+
+      model.to_json
     end
   end
 end

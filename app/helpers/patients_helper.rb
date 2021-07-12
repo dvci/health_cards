@@ -30,10 +30,9 @@ module PatientsHelper
                  street_line2: street_line2, city: city, state: state, zip_code: zip_code } }
   end
 
-  def real_patient_params
-    patient = Patient.take
-    { patient: { given: patient.given,
-                 family: patient.family,
-                 birth_date: patient.birth_date } }
+  def iis_patient_params
+    { patient: { given: 'BethesdaAIRA',
+                 family: 'WeilAIRA',
+                 birth_date: '06/10/2017' } }
   end
 end

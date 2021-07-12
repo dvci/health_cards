@@ -156,8 +156,15 @@ class Patient < FHIRRecord
       when 'PATIENT'
         patient.json = entry.resource.to_json
       when 'IMMUNIZATION'
-        #patient.immunizations.build({ json: FHIR::Immunization.new(entry.resource).to_json })
-        patient.immunizations.build({ json: FHIR::Immunization(entry.resource).to_json })
+
+        puts "\n====="
+        puts entry.resource
+        puts entry.resource.class # => FHIR::Immunization
+        puts entry.resource.class.respond_to? :parent_module # => false
+        puts "=====\n"
+
+        patient.immunizations.build({ json: entry.resource })
+        # patient.immunizations.build({ json: entry.resource.to_json }) # => Also raises MismatchError
       else
         logger.warn "Unexpected resource #{entry.resource.resourceType} found in bundle"
       end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'serializers/fhir_serializer'
+
 # Maps FHIR Immunization to Web UI. Represents a dose of an immunization, actual
 # vaccine info is stored in Vaccine. These are composited when mapping to FHIR
 class Immunization < FHIRRecord
