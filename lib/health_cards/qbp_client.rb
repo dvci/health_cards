@@ -6,10 +6,10 @@ require 'faraday'
 require_relative 'qpd'
 
 module HealthCards
+  # Send, receive, and translate HL7 V2 messages from the QBP client of the IIS sandbox
   module QBPClient
     extend self
-
-    # Create a HealthCard from a compressed payload
+    # Query a patient's Immunization history from the IIS Sandbox
     # @param patient_info [Hash] Patient Demographic info sent from the IIS Consumer Portal
     # @param credentials [Hash] User Id, Password, and Facility Id for the IIS Sandbox login
     # @return [Hash]
@@ -19,25 +19,28 @@ module HealthCards
               sandbox_credentials = { username: Rails.application.config.username,
                                       password: Rails.application.config.password,
                                       facilityID: Rails.application.config.facilityID })
+      # Rubocop: This method needs to be shorter
 
-      raise HealthCards::InvalidSandboxCredentialsError unless validCredentials?(sandbox_credentials)
+      raise HealthCards::InvalidSandboxCredentialsError unless valid_credentials?(sandbox_credentials)
 
-      puts 'PATIENT HASH: ' ## Logging the input for testing purposes.
-      puts patient_info
+      logger = ActiveSupport::Logger.new($stdout) # Initializing Logger for testing purposes
+      logger.info 'PATIENT HASH: ' ## Logging the input for testing purposes.
+      logger.info patient_info
 
       service_def = 'lib/assets/service.wsdl'
-      puts "WSDL #{service_def}" # Logging Service Definition for Testing Purposes
+      logger.info "WSDL #{service_def}" # Logging Service Definition for Testing Purposes
 
       client = Savon.client(wsdl: service_def,
                             endpoint: 'http://localhost:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
-      puts client.operations # Logging the possible client operations. Make this a test to make sure that a single message can be submitted
+      # Logging the possible client operations. Make this a test to make sure that a single message can be submitted
+      logger.info client.operations
 
       response = client.call(:connectivity_test) do
         message echoBack: '?'
       end
 
-      puts response # Returning connectivity_test - make this a test to ensure that the endpoint is ready
+      logger.info response # Returning connectivity_test - make this a test to ensure that the endpoint is ready
 
       # Put this in it's own function: build_hl7_message()
       raw_input = open('lib/assets/qbp.hl7').readlines
@@ -91,8 +94,8 @@ module HealthCards
       # upload_raw_input = open( "lib/assets/vxu.hl7" ).readlines
       # upload_msg_input = HL7::Message.new( upload_raw_input )
 
-      puts 'REQUEST:'
-      puts msg_input.to_hl7
+      logger.info 'REQUEST:'
+      logger.info msg_input.to_hl7
 
       # Make this it's own function?
       response = client.call(:submit_single_message) do
@@ -101,7 +104,7 @@ module HealthCards
 
       msg_output = HL7::Message.new(response.body[:submit_single_message_response][:return])
 
-      # getResponseStatus(msg_output)
+      # get_response_status(msg_output)
 
       # {response: status: } # This should be what is returned.
       msg_output.to_hl7
@@ -122,11 +125,11 @@ module HealthCards
 
     private
 
-    def getResponseStatus(msg_response)
+    def get_response_status(msg_response)
       # Get QAK.2
     end
 
-    def validCredentials?(credentials)
+    def valid_credentials?(credentials)
       credentials.each do |_k, v|
         return false unless v.is_a? String
       end

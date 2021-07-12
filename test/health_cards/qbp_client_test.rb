@@ -26,8 +26,6 @@ class QBPClientTest < ActiveSupport::TestCase
                                local_number: '2499010' } }
 
     # TODO: Test with minimal and verbose data
-    # patient_info_minimal = {:patient_name=>{:given=>"Eleni", :family=>"Labadie", :second=>"", :suffix=>""}, :patient_dob=>"19802908", :patient_list=>{:assigning_authority=>"", :identifier_type_code=>"", :id=>""}, :mother_maiden_name=>{:family=>"", :given=>""}, :sex=>"", :address=>{:city=>"", :state=>"", :zip=>"", :street=>", "}}
-    # patient_info_verbose = {:patient_name=>{:given=>"John", :family=>"Smith", :second=>"S", :suffix=>"Jr"}, :patient_dob=>"19802908", :patient_list=>{:assigning_authority=>"Dont", :identifier_type_code=>"Know", :id=>"I"}, :mother_maiden_name=>{:family=>"Hill", :given=>"Jill"}, :sex=>"male", :address=>{:city=>"Bedford", :state=>"MA", :zip=>"54321", :street=>"1111 2nd Ave, Apt 3D"}, :phone=>{:area_code=>"800", :local_number=>"7654321"}}
 
     WebMock.allow_net_connect!
   end
@@ -48,13 +46,13 @@ class QBPClientTest < ActiveSupport::TestCase
 
     missing_credential = user_sandbox_credentials.except(:password)
     assert_raises HealthCards::InvalidSandboxCredentialsError do
-      response = HealthCards::QBPClient.query(nil, missing_credential)
+      HealthCards::QBPClient.query(nil, missing_credential)
     end
 
     non_string_credential = user_sandbox_credentials
     non_string_credential[:password] = 1
     assert_raises HealthCards::InvalidSandboxCredentialsError do
-      response = HealthCards::QBPClient.query(nil, non_string_credential)
+      HealthCards::QBPClient.query(nil, non_string_credential)
     end
   end
 

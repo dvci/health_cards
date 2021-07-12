@@ -1,4 +1,7 @@
-class HL7::Message::Segment::QPD < HL7::Message::Segment
+# frozen_string_literal: true
+
+# QPD Segment
+class HL7::Message::Segment::QPD < HL7::Message::Segment # rubocop:disable Style/ClassAndModuleChildren
   weight 1
   add_field :message_query_name
   add_field :query_tag
