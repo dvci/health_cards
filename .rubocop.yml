@@ -17,6 +17,7 @@ AllCops:
     - 'db/schema.rb'
     - 'db/migrate/*'
     - 'Gemfile'
+    - 'health_cards.gemspec'
 
 Style/Documentation:
   Exclude:

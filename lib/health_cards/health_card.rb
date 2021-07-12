@@ -92,8 +92,8 @@ module HealthCards
 
     allow type: FHIR::Meta, attributes: %w[security]
 
-    disallow attributes: %w[id]
-    disallow attributes: %w[text]
+    disallow attributes: %w[id text]
+    disallow type: FHIR::CodeableConcept, attributes: %w[text]
     disallow type: FHIR::Coding, attributes: %w[display]
 
     # Create a HealthCard
@@ -146,9 +146,9 @@ module HealthCards
       new_bundle = duplicate_bundle
       url_map = redefine_uris(new_bundle)
 
-      new_bundle.entry.map do |entry|
-        walk_resource(entry) do |value, type|
-          case type
+      new_bundle.entry.each do |entry|
+        entry.each_element do |value, metadata, _|
+          case metadata['type']
           when 'Reference'
             value.reference = process_reference(url_map, entry, value)
           when 'Resource'
@@ -158,7 +158,6 @@ module HealthCards
           handle_allowable(value)
           handle_disallowable(value)
         end
-        entry
       end
 
       new_bundle
@@ -181,20 +180,6 @@ module HealthCards
         resource_count += 1
       end
       url_map
-    end
-
-    def walk_resource(resource, &block)
-      resource.class::METADATA.each do |field_name, meta|
-        type = meta['type']
-        local_name = meta.fetch :local_name, field_name
-        values = [resource.instance_variable_get("@#{local_name}")].flatten.compact
-        next if values.empty?
-
-        values.each do |value|
-          yield value, type
-          walk_resource value, &block unless FHIR::PRIMITIVES.include? type
-        end
-      end
     end
 
     def process_reference(url_map, entry, ref)
