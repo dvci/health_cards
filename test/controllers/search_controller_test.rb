@@ -88,16 +88,18 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
 
   test 'QBP client ok response should redirect to patient' do
     post(search_query_url, { params: @qbp_ok })
+    patient_json = nil
 
-    bundle = FHIR.from_contents(@qbp_ok[:patient])
+    bundle = FHIR.from_contents(@qbp_ok[:qbp_response][:patient])
     bundle.entry.each do |entry|
-      if rentry.resource.resourceType.upcase == 'PATIENT'
-        patient_json = entry.resource.to_json
+      if entry.resource.resourceType.upcase == 'PATIENT'
+        patient_json = entry.resource
         break
       end
     end
 
-    assert_redirected_to Patient.find_by!(json: FHIR.from_contents(patient_json))
+    assert_not_nil patient_json
+    assert_redirected_to Patient.find_by!(json: patient_json)
   end
 
   test 'QBP client protected data response should return forbidden with protected page' do

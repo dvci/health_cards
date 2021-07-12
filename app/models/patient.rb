@@ -163,7 +163,11 @@ class Patient < FHIRRecord
         # puts entry.resource.class.module_parent # => FHIR
         # puts "=====\n"
 
-        patient.immunizations.build({ json: entry.resource })
+        raise NotImplementedError if entry.resource.vaccineCode.coding[0].system != Vaccine::SYSTEM
+
+        vax_code = entry.resource.vaccineCode.coding[0].code
+        occurred_at = DateTime.parse(entry.resource.occurrenceDateTime)
+        patient.immunizations.build({ vaccine: Vaccine.find_by!(code: vax_code), occurrence: occurred_at })
       else
         logger.warn "Unexpected resource #{entry.resource.resourceType} found in bundle"
       end
