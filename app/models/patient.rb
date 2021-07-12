@@ -154,17 +154,16 @@ class Patient < FHIRRecord
     bundle.entry.each do |entry|
       case entry.resource.resourceType.upcase
       when 'PATIENT'
-        patient.json = entry.resource.to_json
+        patient.json = entry.resource
       when 'IMMUNIZATION'
 
-        puts "\n====="
-        puts entry.resource
-        puts entry.resource.class # => FHIR::Immunization
-        puts entry.resource.class.respond_to? :parent_module # => false
-        puts "=====\n"
+        # puts "\n====="
+        # puts entry.resource.inspect
+        # puts entry.resource.class # => FHIR::Immunization
+        # puts entry.resource.class.module_parent # => FHIR
+        # puts "=====\n"
 
         patient.immunizations.build({ json: entry.resource })
-        # patient.immunizations.build({ json: entry.resource.to_json }) # => Also raises MismatchError
       else
         logger.warn "Unexpected resource #{entry.resource.resourceType} found in bundle"
       end
