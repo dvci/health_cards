@@ -92,6 +92,11 @@ class HealthCardTest < ActiveSupport::TestCase
     assert_equal original_json, original_json2
   end
 
+  test 'do not strip name.text elements' do
+    stripped_bundle = @health_card.strip_fhir_bundle
+    assert_not_nil stripped_bundle.entry[0].resource.name[0].text
+  end
+
   test 'update_elements strips resource-level "id", "meta", and "text" elements from the FHIR Bundle' do
     stripped_bundle = @health_card.strip_fhir_bundle
     stripped_entries = stripped_bundle.entry

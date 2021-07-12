@@ -35,6 +35,18 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to patient_url(new_patient)
   end
 
+  test 'should create patient with empty phone and email' do
+    assert_difference('Patient.count') do
+      post patients_url, params: { patient: @attributes.merge(phone: '', email: '') }
+    end
+    new_patient = Patient.last
+
+    assert_attributes_equal(@patient, new_patient, @attributes.keys)
+    assert_nil @patient.phone
+    assert_nil @patient.email
+    assert_redirected_to patient_url(new_patient)
+  end
+
   test 'should not create patient' do
     assert_no_difference('Patient.count') do
       post patients_url, params: { patient: { gender: 'foo' } }

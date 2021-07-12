@@ -44,6 +44,21 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'upload file with no keys found' do
+    stub_request(:get, 'https://smarthealth.cards/examples/issuer/.well-known/jwks.json').to_return(body: nil,
+                                                                                                    status: 404)
+    file = fixture_file_upload('test/fixtures/files/example-00-e-file.smart-health-card')
+    post(upload_health_cards_path, params: { health_card: file })
+    assert_response :success
+  end
+
+  test 'upload file with keys timeout' do
+    stub_request(:get, 'https://smarthealth.cards/examples/issuer/.well-known/jwks.json').to_timeout
+    file = fixture_file_upload('test/fixtures/files/example-00-e-file.smart-health-card')
+    post(upload_health_cards_path, params: { health_card: file })
+    assert_response :success
+  end
+
   test 'issue smart card' do
     param = FHIR::Parameters::Parameter.new(name: 'credentialType',
                                             valueUri: 'https://smarthealth.cards#covid19')
