@@ -41,7 +41,7 @@
         <%= form.label :code, class: 'label' %>
         <div class="control">
           <div class="select">
-            <%= form.select :valueset_code, options_for_select([:valueset_code]) %>
+            <%= form.collection_select :value_set_id, ValueSet.all, :id, :display %>
           </div>
         </div>
       </div>

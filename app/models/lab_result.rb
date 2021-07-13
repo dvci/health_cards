@@ -4,11 +4,12 @@ class LabResult < FHIRRecord
     attribute :status, :string
   
     belongs_to :patient  
+    belongs_to :value_set
 
     serialize :json, FHIR::Observation
   
     validates :effective, presence: true
-    validates :code, presence: true
+    validates :value_set, presence: true
     validates :patient, presence: true
 
 
@@ -47,7 +48,7 @@ class LabResult < FHIRRecord
     super(lc)
   end
 
-  def vaccine=(lab)
+  def lab_codes=(lab)
     update_lab_code(lab.code)
     super(lab)
   end
