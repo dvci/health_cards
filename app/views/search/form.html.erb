@@ -122,8 +122,9 @@
             oninput: 'this.setCustomValidity("")'
         %>
       </div>
-
-      <h3>Address</h3>
+      <br />
+      
+      <h3 class="subtitle">Address</h3>
       <div class="field">
         <%= form.label :street_line1, 'Street address, P.O Box, etc.', class: "label" %>
         <%= form.text_field :street_line1, class: "input" %>
@@ -145,8 +146,9 @@
         <%= form.label :zip_code, class: "label" %>
         <%= form.text_field :zip_code, class: "input" %>
       </div>
-
-      <h3>Fill out the following if you know your registration in IIS Patient List</h3>
+      <br />
+      
+      <h3 class="subtitle">Fill out the following if you know your registration in IIS Patient List</h3>
       <div class="field">
         <%= form.label :list_id, class: "label" %>
         <%= form.text_field :list_id, class: "input" %>
