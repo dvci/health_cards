@@ -99,7 +99,10 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_not_nil patient_json
-    assert_redirected_to Patient.find_by!(json: patient_json)
+    #binding.pry
+    assert_redirected_to Patient.all.select { |p| p.match?({
+      family: patient_json.name[0].family, 
+    }) }
   end
 
   test 'QBP client protected data response should return forbidden with protected page' do
