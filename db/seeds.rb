@@ -24,4 +24,6 @@ end
 
 value_set_json = File.read('db/lab_codes/ValueSet-qualitative-lab-result-findings.json')
 hash = JSON.parse(value_set_json)
-ValueSet.get_info_from_valueset(hash)
+list_results = ValueSet.get_info_from_valueset(hash)
+
+#ValueSet.new({code: list_results[0], display: list_results[1]})

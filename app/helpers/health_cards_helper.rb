@@ -31,7 +31,7 @@ module HealthCardsHelper
     lab_results.each do |i|
       lab_result_resource = i.resource
       patient.lab_results.new({
-                              value_set_id: Lab.find_by(code: lab_result_resource.labCode.coding[0].code).id,
+                              value_set_code: ValueSet.find_by(code: lab_result_resource.labCode.coding[0].code).code,
                               status: lab_result_resource.status,
                               effective: lab_result_resource.effectiveDateTime
                             })
