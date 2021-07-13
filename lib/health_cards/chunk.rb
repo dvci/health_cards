@@ -4,29 +4,25 @@
 module HealthCards
   # Represents a single QRCode in a sequence. This class is a shim to the RQRCode library
   # to enable multimode encoding
-  class Chunk < RQRCode::QRCode
-    attr_reader :ordinal
+  class Chunk
+    attr_reader :ordinal, :data
 
     SINGLE_REGEX = %r{shc:/}.freeze
     MULTI_REGEX = %r{shc:/[0-9]*/[0-9]*/}.freeze
-    
-    def data
-      @qrcode.data
-    end
 
     def initialize(ordinal: 1, input:)
       @ordinal = ordinal
-
+      @data = input
       multi = MULTI_REGEX.match(input)
 
       prefix = multi ? multi.to_s : SINGLE_REGEX.match(input).to_s
       content = input.delete_prefix(prefix)
-      
-      @qrcode = RQRCode::QRCode.new([{mode: :byte_8bit, data: prefix}, mode: :number, data: content], mode: :multi, max_size: 22, level: :l)
+
+      @qrcode = RQRCode::QRCode.new([{mode: :byte_8bit, data: prefix}, {mode: :number, data: content}], mode: :multi, max_size: 22, level: :l)
     end
 
     def image
-      as_png(module_px_size: 2)
+      @qrcode.as_png(module_px_size: 2)
     end
   end
 
