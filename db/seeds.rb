@@ -22,6 +22,6 @@ Vaccine.find_or_create_by(code: '212') do |vaccine|
 end
 
 
-valueset_json = File.read('db/lab_codes/ValueSet-qualitative-lab-result-findings.json')
-hash = JSON.parse(valueset_json)
+value_set_json = File.read('db/lab_codes/ValueSet-qualitative-lab-result-findings.json')
+hash = JSON.parse(value_set_json)
 ValueSet.get_info_from_valueset(hash)

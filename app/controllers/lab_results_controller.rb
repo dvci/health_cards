@@ -2,6 +2,8 @@ class LabResultsController < ApplicationController
 
     before_action :find_patient, except: :show
     before_action :set_labResult, only: %i[edit update destroy]
+    before_action :find_lab_codes, only: %i[new edit create update]
+
     
     def new
       @lab_result = LabResult.new
@@ -36,7 +38,7 @@ class LabResultsController < ApplicationController
             format.json { render :show, status: :ok, location: @lab_result }
           else
             format.html do
-              #find_vaccines
+              find_lab_codes
               render :edit, status: :unprocessable_entity
             end
             format.json { render json: @lab_result.errors, status: :unprocessable_entity }
@@ -60,11 +62,17 @@ class LabResultsController < ApplicationController
       end
     
       def lab_result_params
-        params.require(:lab_result).permit(:effective, :status,  :valueset_code)
+        params.require(:lab_result).permit(:effective, :status,  :value_set_code)
       end
     
       def find_patient
         @patient = Patient.find(params[:patient_id])
       end
+
+      def find_lab_codes
+        @allLabCodes = Lab.all
+        puts @allLabCodes
+      end
+      #binding.pry
     
 end
