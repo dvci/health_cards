@@ -71,8 +71,6 @@ class LabResultsController < ApplicationController
 
       def find_lab_codes
         @allLabCodes = Lab.all
-        puts @allLabCodes
       end
-      #binding.pry
     
 end

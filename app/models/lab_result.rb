@@ -1,10 +1,10 @@
 class LabResult < FHIRRecord
     attribute :effective, :date
-    attribute :code, :string
+    attribute :lab_code, :string
     attribute :status, :string
   
     belongs_to :patient  
-    belongs_to :value_set
+    belongs_to :lab
 
     serialize :json, FHIR::Observation
   
