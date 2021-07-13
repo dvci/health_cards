@@ -8,7 +8,7 @@ class SearchController < ApplicationController
 
   # POST /search/query
   def query
-    results = qbp_query(params)
+    results = qbp_query(query_params)
 
     case results[:code]
     when 'AE'
@@ -60,8 +60,8 @@ class SearchController < ApplicationController
   # from qbp-client branch
   def qbp_query(query_hash)
     return params[:qbp_response] if Rails.env.test? && params[:qbp_response]
-
-    # QBPClient.query( query_params )
+  
+    # QBPClient.query( query_hash )
     raise NotImplementedError, "Calling QBP Client w/ parameter: #{query_hash}"
   end
 

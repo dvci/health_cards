@@ -5,16 +5,16 @@ require 'test_helper'
 class SearchControllerTest < ActionDispatch::IntegrationTest
   setup do
     # Mock QBP client responses
-    @qbp_application_error = { qbp_response: { code: :AE } }
-    @qbp_application_rejected = { qbp_response: { code: :AR } }
-    @qbp_not_found = { qbp_response: { code: :NF } }
+    @qbp_application_error = { qbp_response: { code: :AE }, patient: { given: 'fake-input' } }
+    @qbp_application_rejected = { qbp_response: { code: :AR }, patient: { given: 'fake-input' } }
+    @qbp_not_found = { qbp_response: { code: :NF }, patient: { given: 'fake-input' } }
     @qbp_ok = { qbp_response: {
       code: :OK,
       patient: File.read(Rails.root.join('test', 'fixtures', 'files', 'covid-bundle.json'))
-    } }
-    @qbp_protected_data = { qbp_response: { code: :PD } }
-    @qbp_too_much = { qbp_response: { code: :TM } }
-    @qbp_bad_code = { qbp_response: { code: :bad } }
+    }, patient: { given: 'fake-input' } }
+    @qbp_protected_data = { qbp_response: { code: :PD }, patient: { given: 'fake-input' } }
+    @qbp_too_much = { qbp_response: { code: :TM }, patient: { given: 'fake-input' } }
+    @qbp_bad_code = { qbp_response: { code: :bad }, patient: { given: 'fake-input' } }
 
     # The variables below need to be updated to match IIS sandbox
     @good_query_params = { patient: { given: 'BethesdaAIRA',
@@ -24,7 +24,7 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     @vague_query_params = { patient: { family: 'WeilAIRA',
                                        birth_date: '06/10/2017' } }
 
-    @negative_query_parans = { patient: { given: 'Not',
+    @negative_query_params = { patient: { given: 'Not',
                                           second: 'In',
                                           family: 'IIS',
                                           birth_date: '02/31/2000' } }
