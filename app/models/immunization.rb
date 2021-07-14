@@ -72,7 +72,7 @@ class Immunization < FHIRRecord
     occurred_at = DateTime.parse(fhir_resource.occurrenceDateTime)
     Immunization.new({ vaccine: vax, occurrence: occurred_at, patient: patient })
   end
-  
+
   private
 
   def update_vax_code(code)
@@ -88,5 +88,4 @@ class Immunization < FHIRRecord
       json.patient = nil
     end
   end
-
 end
