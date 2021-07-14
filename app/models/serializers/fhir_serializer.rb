@@ -18,15 +18,6 @@ module Serializers
     end
 
     def dump_one(model)
-      # unless model.class.module_parent == FHIR
-      #   puts "\n---------"
-      #   puts model.length if model.instance_of?(Array)
-      #   puts model.class.to_s
-      #   puts model.class.module_parent.to_s
-      #   puts model.class.module_parent.class.to_s
-      #   puts '-----------'
-      #   raise ActiveRecord::SerializationTypeMismatch
-      # end
       raise ActiveRecord::SerializationTypeMismatch unless model.class.module_parent == FHIR
 
       model.to_json

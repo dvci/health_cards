@@ -94,7 +94,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'create patient from fhir bundle' do
-    assert_difference ->{ Patient.count } => 1, ->{ Immunization.count } => 2  do
+    assert_difference -> { Patient.count } => 1, -> { Immunization.count } => 2 do
       json = File.read(Rails.root.join('test', 'fixtures', 'files', 'covid-bundle.json'))
       patient = Patient.create_from_bundle!(json)
       assert_not_nil patient
