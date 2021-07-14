@@ -7,13 +7,13 @@ class SearchHelperTest < ActiveSupport::TestCase
 
   setup do
     @minimal_input = { patient: { given: 'John', family: 'Smith',
-                                  birth_date: '10/21/1990' } }
-    @full_input = { patient: { given: 'John',
+                                  birth_date: '10/21/1990', gender: 'male' } }
+    @full_input = { patient: { given: 'Jane',
                                family: 'Smith',
                                second: 'A.',
                                suffix: 'Jr.',
                                birth_date: '11/15/2000',
-                               gender: 'M',
+                               gender: 'female',
                                phone: '800-765-4321',
                                list_id: 'I',
                                assigning_authority: 'dun',
@@ -45,7 +45,7 @@ class SearchHelperTest < ActiveSupport::TestCase
   end
 
   test 'format patient name for QBP client' do
-    correct = { given: 'John', family: 'Smith', second: 'A.', suffix: 'Jr.' }
+    correct = { given: 'Jane', family: 'Smith', second: 'A.', suffix: 'Jr.' }
     assert_equal correct, format_patient_name(@full_input[:patient])
   end
 
@@ -81,6 +81,8 @@ class SearchHelperTest < ActiveSupport::TestCase
     assert_kind_of Hash, final[:patient_name]
     assert final.key? :patient_dob
     assert_kind_of String, final[:patient_dob]
+    assert final.key? :sex
+    assert_kind_of String, final[:sex]
   end
 
   test 'build full query for QBP client' do
@@ -100,7 +102,7 @@ class SearchHelperTest < ActiveSupport::TestCase
     assert_kind_of Hash, final[:mother_maiden_name]
 
     assert final.key? :sex
-    assert_equal 'M', final[:sex]
+    assert_equal 'F', final[:sex]
 
     assert final.key? :address
     assert_kind_of Hash, final[:address]

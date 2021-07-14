@@ -33,6 +33,7 @@ module PatientsHelper
   def iis_patient_params
     { patient: { given: 'BethesdaAIRA',
                  family: 'WeilAIRA',
-                 birth_date: '06/10/2017' } }
+                 birth_date: '06/10/2017',
+                 gender: 'M' } }
   end
 end

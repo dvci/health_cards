@@ -90,10 +90,10 @@
       </div>
 
       <div class="field">
-        <%= form.label :gender, class: 'label' %>
+        <%= form.label :gender, class: 'label-inline' %><span class="has-text-danger">*</span>
         <div class="control">
           <div class="select">
-            <%= form.select :gender, options_for_select(Patient::GENDERS), include_blank: true %>
+            <%= form.select :gender, options_for_select(Patient::GENDERS), include_blank: true, required: true %>
           </div>
         </div>
       </div>

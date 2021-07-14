@@ -9,6 +9,8 @@ module SearchHelper
   # - query[:client_last_updated_date]
   # - query[:client_last_updated_facility]
 
+  FHIR_TO_HL7_SEX = { 'male' => 'M', 'female' => 'F', 'other' => 'U', 'unknown' => 'U' }.freeze
+
   def sanitize_input(action_params)
     action_params.require(:patient).permit([
                                              :given,
@@ -74,7 +76,7 @@ module SearchHelper
       patient_dob: format_dob(hash),
       patient_list: format_patient_list(hash),
       mother_maiden_name: { family: hash[:mother_maiden_family_name], given: hash[:mother_maiden_given_name] },
-      sex: hash[:gender],
+      sex: FHIR_TO_HL7_SEX[hash[:gender]],
       address: format_address(hash),
       phone: format_phone_number(hash)
     }
