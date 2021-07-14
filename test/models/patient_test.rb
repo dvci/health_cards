@@ -4,6 +4,10 @@ require 'test_helper'
 require 'serializers/fhir_serializer'
 
 class PatientTest < ActiveSupport::TestCase
+  setup do
+    Vaccine.seed
+  end
+
   test 'json serialization' do
     p1 = Patient.create(given: 'Foo', family: 'Bar', gender: 'male',
                         birth_date: Time.zone.today)

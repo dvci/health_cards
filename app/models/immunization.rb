@@ -64,6 +64,15 @@ class Immunization < FHIRRecord
     super(vax)
   end
 
+  def self.create_from_resource!(fhir_resource, patient = nil)
+    raise StandardError unless fhir_resource.resourceType.upcase == 'IMMUNIZATION'
+    raise NotImplementedError if fhir_resource.vaccineCode.coding[0].system != Vaccine::CVX
+
+    vax = Vaccine.find_by!(fhir_resource.vaccineCode.coding[0].code)
+    occurred_at = DateTime.parse(fhir_resource.occurrenceDateTime)
+    Immunization.new({ vaccine: vax, occurrence: occurred_at, patient: patient })
+  end
+  
   private
 
   def update_vax_code(code)
@@ -80,13 +89,4 @@ class Immunization < FHIRRecord
     end
   end
 
-  def self.create_from_resource!(fhir_resource, patient=nil)
-    raise StandardError unless fhir_resource.resourceType.upcase == 'IMMUNIZATION'
-    raise NotImplementedError if fhir_resource.vaccineCode.coding[0].system != Vaccine::CVX
-
-    vax = Vaccine.find_by!(fhir_resource.vaccineCode.coding[0].code)
-    occurred_at = DateTime.parse(fhir_resource.occurrenceDateTime)
-    Immunization.new({vaccine: vax, occrrence: occurred_at, patient: patient})
-  end
-  
 end

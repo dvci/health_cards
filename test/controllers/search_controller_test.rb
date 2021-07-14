@@ -4,6 +4,8 @@ require 'test_helper'
 
 class SearchControllerTest < ActionDispatch::IntegrationTest
   setup do
+    Vaccine.seed
+
     # Mock QBP client responses
     @qbp_application_error = { qbp_response: { code: :AE }, patient: { given: 'fake-input' } }
     @qbp_application_rejected = { qbp_response: { code: :AR }, patient: { given: 'fake-input' } }
@@ -99,12 +101,7 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_not_nil patient_json
-    # binding.pry
-    assert_redirected_to Patient.all.select do |p|
-      p.match?({
-                 family: patient_json.name[0].family
-               })
-    end
+    assert_redirected_to(Patient.all.select { |p| p.match?({ family: patient_json.name[0].family }) })
   end
 
   test 'QBP client protected data response should return forbidden with protected page' do

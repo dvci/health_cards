@@ -157,6 +157,7 @@ class Patient < FHIRRecord
         patient.json = entry.resource
       when 'IMMUNIZATION'
         raise NotImplementedError if entry.resource.vaccineCode.coding[0].system != Vaccine::CVX
+
         patient.immunizations << Immunization.create_from_resource!(entry.resource, patient)
       else
         logger.warn "Unexpected resource #{entry.resource.resourceType} found in bundle"
