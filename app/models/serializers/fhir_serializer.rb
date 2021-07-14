@@ -7,17 +7,7 @@ module Serializers
       json ? FHIR.from_contents(json) : new
     end
 
-    def dump(model_or_array)
-      if model_or_array.instance_of?(Array)
-        ret = []
-        model_or_array.each { |model| ret << dump_one(model) }
-        ret
-      else
-        dump_one(model_or_array)
-      end
-    end
-
-    def dump_one(model)
+    def dump(model)
       raise ActiveRecord::SerializationTypeMismatch unless model.class.module_parent == FHIR
 
       model.to_json
