@@ -34,6 +34,6 @@ module PatientsHelper
     { patient: { given: 'BethesdaAIRA',
                  family: 'WeilAIRA',
                  birth_date: '06/10/2017',
-                 gender: 'M' } }
+                 gender: 'male' } }
   end
 end

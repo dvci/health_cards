@@ -3,8 +3,6 @@
 require 'test_helper'
 
 class VaccineTest < ActiveSupport::TestCase
-  self.use_instantiated_fixtures = true
-
   setup do
     Vaccine.seed
   end

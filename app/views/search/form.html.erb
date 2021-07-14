@@ -93,7 +93,7 @@
         <%= form.label :gender, class: 'label-inline' %><span class="has-text-danger">*</span>
         <div class="control">
           <div class="select">
-            <%= form.select :gender, options_for_select(Patient::GENDERS), include_blank: true, required: true %>
+            <%= form.select :gender, options_for_select(Patient::GENDERS), { include_blank: true }, { required: true } %>
           </div>
         </div>
       </div>
@@ -150,7 +150,7 @@
       
       <h3 class="subtitle">Fill out the following if you know your registration in IIS Patient List</h3>
       <div class="field">
-        <%= form.label :list_id, class: "label" %>
+        <%= form.label :list_id, 'ID', class: "label" %>
         <%= form.text_field :list_id, class: "input" %>
       </div>
 
