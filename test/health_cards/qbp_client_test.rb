@@ -25,9 +25,53 @@ class QBPClientTest < ActiveSupport::TestCase
                       phone: { area_code: '810',
                                local_number: '2499010' } }
 
+    @empty_hash = {
+             patient_list: { id: '',
+              assigning_authority: '',
+              identifier_type_code: '' },
+      patient_name: { family_name: 'Not In Sandbox',
+              given_name: 'Patient',
+              second_or_further_names: '',
+              suffix: '' },
+      mothers_maiden_name: { family_name: '',
+                    given_name: '',
+                    name_type_code: '' },
+      patient_dob: '20200101',
+      admin_sex: '',
+      address: { street: '',
+        city: '',
+        state: '',
+        zip: '',
+        address_type: '' },
+      phone: { area_code: '81',
+      local_number: '' } }
+
+          @no_data = {
+             patient_list: { id: '',
+              assigning_authority: '',
+              identifier_type_code: '' },
+      patient_name: { family_name: '',
+              given_name: '',
+              second_or_further_names: '',
+              suffix: '' },
+      mothers_maiden_name: { family_name: '',
+                    given_name: '',
+                    name_type_code: '' },
+      patient_dob: '',
+      admin_sex: '',
+      address: { street: '',
+        city: '',
+        state: '',
+        zip: '',
+        address_type: '' },
+      phone: { area_code: '',
+      local_number: '' } }
+
+
     # TODO: Test with minimal and verbose data
 
     WebMock.allow_net_connect!
+    # TODO: If patient doesn't exist, upload him to the sandbox
   end
 
   def teardown
@@ -36,12 +80,19 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # General Functionality Tests
 
-  # test 'does it run' do
-  #   v2_response_body = HealthCards::QBPClient.query(nil)
-  #   fhir_response_body = HealthCards::QBPClient.tranlate(v2_response_body)
-  # end
+  test 'query() method successfully returns an HL7 Message' do
+    v2_response_body = HealthCards::QBPClient.query(@no_data)
+    assert_instance_of(HL7::Message, v2_response_body)
+  end
 
-  test 'raises error if sandbox credentials are incorrectly formatted' do
+  test 'translate() method successfully returns a JSON object' do
+    v2_response_body = HealthCards::QBPClient.query(@no_data)
+    fhir_response_body = HealthCards::QBPClient.translate(v2_response_body)
+    parsed_fhir_response = JSON.parse(fhir_response_body) rescue nil
+    assert_not_nil(parsed_fhir_response)
+  end
+
+  test 'raises error if inputted sandbox credentials are incorrectly formatted' do
     user_sandbox_credentials = { username: 'test_user', password: 'test_password', facilityID: 'test_facilityID' }
 
     missing_credential = user_sandbox_credentials.except(:password)
@@ -56,19 +107,69 @@ class QBPClientTest < ActiveSupport::TestCase
     end
   end
 
+  # Client Connectivity Tests
+
+  test 'Connectivity Test Works (Successfully connected to IIS Sandbox endpoint)' do
+    service_def = 'lib/assets/service.wsdl'
+    client = Savon.client(wsdl: service_def,
+                          endpoint: 'http://localhost:8081/iis-sandbox/soap',
+                          pretty_print_xml: true)
+    assert_nothing_raised do
+      HealthCards::QBPClient.check_client_connectivity(client) if client.operations.include?(:connectivity_test)
+    end
+  end
+
+
+
+  # SOAP Faults
+  
+  test 'SecurityFault - bad credentials' do
+    user_sandbox_credentials = { username: 'test_user', password: 'test_password', facilityID: 'test_facilityID' }
+    HealthCards::QBPClient.query(@patient_hash, user_sandbox_credentials)
+  end
+
+
+
+  # Check Response Status
+  test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)"' do
+    response = HealthCards::QBPClient.query(@patient_hash)
+    status = HealthCards::QBPClient.get_response_status(response)
+    assert_equal(:OK, status)
+  end
+
+  test 'Patient not in sandbox returns a response status of NF - "Data found, no errors (this is the default)"' do
+    response = HealthCards::QBPClient.query(@empty_hash)
+    status = HealthCards::QBPClient.get_response_status(response)
+    assert_equal(:NF, status)
+  end
+
+  test 'Patient without required data fields returns a response status of AE - "Applicaiton Error"' do
+    response = HealthCards::QBPClient.query(@no_data)
+    status = HealthCards::QBPClient.get_response_status(response)
+    assert_equal(:AE, status)
+  end
+
+  ## TODO: Add 2 similar patients to test :TM
+
+
+
+  # Temporary Test to log things
   test 'patient parameters are properly converted to HL7 V2 elements' do
-    v2_response_body = HealthCards::QBPClient.query(@patient_hash)
+    v2_response_body = HealthCards::QBPClient.query(@no_data)
 
     puts 'RESPONSE:'
     puts(v2_response_body) # Printing response for testing purposes
-    fhir_response_body = HealthCards::QBPClient.tranlate(v2_response_body)
+    fhir_response_body = HealthCards::QBPClient.translate(v2_response_body)
 
+    puts ''
     puts 'FHIR:'
     puts fhir_response_body # Printing response for testing purposes
   end
 end
 
-# Connectivity Test Works (Connect to endpoint)
+
+
+# NOTES / FUTURE TESTS
 
 # MSH Propertly Added
 #   Time is a time

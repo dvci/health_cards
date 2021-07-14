@@ -23,24 +23,14 @@ module HealthCards
 
       raise HealthCards::InvalidSandboxCredentialsError unless valid_credentials?(sandbox_credentials)
 
-      logger = ActiveSupport::Logger.new($stdout) # Initializing Logger for testing purposes
-      logger.info 'PATIENT HASH: ' ## Logging the input for testing purposes.
-      logger.info patient_info
-
       service_def = 'lib/assets/service.wsdl'
-      logger.info "WSDL #{service_def}" # Logging Service Definition for Testing Purposes
-
       client = Savon.client(wsdl: service_def,
                             endpoint: 'http://localhost:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
-      # Logging the possible client operations. Make this a test to make sure that a single message can be submitted
-      logger.info client.operations
 
-      response = client.call(:connectivity_test) do
-        message echoBack: '?'
-      end
-
-      logger.info response # Returning connectivity_test - make this a test to ensure that the endpoint is ready
+      #Check if client is configured properly
+      raise HealthCards::OperationNotSupportedError unless client.operations.include?(:submit_single_message)
+      check_client_connectivity(client) if client.operations.include?(:connectivity_test)
 
       # Put this in it's own function: build_hl7_message()
       raw_input = open('lib/assets/qbp.hl7').readlines
@@ -94,40 +84,49 @@ module HealthCards
       # upload_raw_input = open( "lib/assets/vxu.hl7" ).readlines
       # upload_msg_input = HL7::Message.new( upload_raw_input )
 
-      logger.info 'REQUEST:'
-      logger.info msg_input.to_hl7
 
       # Make this it's own function?
       response = client.call(:submit_single_message) do
         message(**sandbox_credentials, hl7Message: msg_input)
       end
 
-      msg_output = HL7::Message.new(response.body[:submit_single_message_response][:return])
-
-      # get_response_status(msg_output)
-
-      # {response: status: } # This should be what is returned.
-      msg_output.to_hl7
+      raw_response_message = response.body[:submit_single_message_response][:return]
+      response_segments = raw_response_message.to_s.split("\n")
+      msg_output = HL7::Message.new(response_segments)
+  
+      # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
+      return msg_output
     end
 
     # Translate relevant info from V2 Response message into a FHIR Bundle
     # @param v2_response [String] V2 message returned from the IIS-Sandbox
     # @return [String] FHIR Bundle representation of the V2 message
-    def tranlate(v2_response)
+    def translate(v2_response)
       fhir_response = Faraday.post('http://localhost:3000/api/v0.1.0/convert/text',
-                                   v2_response,
+                                   v2_response.to_hl7,
                                    'Content-Type' => 'text/plain')
-
       fhir_response.body
+    end
+
+
+
+    # Methods That Parse HL7 V2 Message
+    # Get QAK.2 
+    def get_response_status(msg_response)
+      msg_response[:QAK][2].to_sym
     end
 
     # TODO: Add a function to upload a patient to an IIS
 
-    private
-
-    def get_response_status(msg_response)
-      # Get QAK.2
+    def check_client_connectivity(client)
+      response = client.call(:connectivity_test) do
+          message echoBack: '?'
+      end
+      conncectivity_response = response.body[:connectivity_test_response][:return]
+      throw HealthCards::BadClientConnectionError unless conncectivity_response == 'End-point is ready. Echoing: ?'
     end
+
+    private
 
     def valid_credentials?(credentials)
       credentials.each do |_k, v|

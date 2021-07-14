@@ -69,6 +69,20 @@ module HealthCards
     end
   end
 
+  # Exception thrown when the client does not support the submitSingleMessage operation
+  class OperationNotSupportedError < QBPClientError
+    def initialize(msg = 'SOAP Client does not support the submitSingleMessage operation')
+      super(msg)
+    end
+  end
+
+  # Exception thrown when the SOAP client fails the connectivity test
+  class BadClientConnectionError < QBPClientError
+    def initialize(msg = 'Unable to establish a good connection with the SOAP client')
+      super(msg)
+    end
+  end
+
   # Other errors
 
   # Exception thrown when an invalid key (public or private) is provided
