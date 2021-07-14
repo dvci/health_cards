@@ -25,48 +25,50 @@ class QBPClientTest < ActiveSupport::TestCase
                       phone: { area_code: '810',
                                local_number: '2499010' } }
 
+    # TODO: Create These Other ones using functions
     @empty_hash = {
-             patient_list: { id: '',
-              assigning_authority: '',
-              identifier_type_code: '' },
+      patient_list: { id: '',
+                      assigning_authority: '',
+                      identifier_type_code: '' },
       patient_name: { family_name: 'Not In Sandbox',
-              given_name: 'Patient',
-              second_or_further_names: '',
-              suffix: '' },
+                      given_name: 'Patient',
+                      second_or_further_names: '',
+                      suffix: '' },
       mothers_maiden_name: { family_name: '',
-                    given_name: '',
-                    name_type_code: '' },
+                             given_name: '',
+                             name_type_code: '' },
       patient_dob: '20200101',
       admin_sex: '',
       address: { street: '',
-        city: '',
-        state: '',
-        zip: '',
-        address_type: '' },
+                 city: '',
+                 state: '',
+                 zip: '',
+                 address_type: '' },
       phone: { area_code: '81',
-      local_number: '' } }
+               local_number: '' }
+    }
 
-          @no_data = {
-             patient_list: { id: '',
-              assigning_authority: '',
-              identifier_type_code: '' },
+    @no_data = {
+      patient_list: { id: '',
+                      assigning_authority: '',
+                      identifier_type_code: '' },
       patient_name: { family_name: '',
-              given_name: '',
-              second_or_further_names: '',
-              suffix: '' },
+                      given_name: '',
+                      second_or_further_names: '',
+                      suffix: '' },
       mothers_maiden_name: { family_name: '',
-                    given_name: '',
-                    name_type_code: '' },
+                             given_name: '',
+                             name_type_code: '' },
       patient_dob: '',
       admin_sex: '',
       address: { street: '',
-        city: '',
-        state: '',
-        zip: '',
-        address_type: '' },
+                 city: '',
+                 state: '',
+                 zip: '',
+                 address_type: '' },
       phone: { area_code: '',
-      local_number: '' } }
-
+               local_number: '' }
+    }
 
     # TODO: Test with minimal and verbose data
 
@@ -88,7 +90,11 @@ class QBPClientTest < ActiveSupport::TestCase
   test 'translate() method successfully returns a JSON object' do
     v2_response_body = HealthCards::QBPClient.query(@no_data)
     fhir_response_body = HealthCards::QBPClient.translate(v2_response_body)
-    parsed_fhir_response = JSON.parse(fhir_response_body) rescue nil
+    parsed_fhir_response = begin
+      JSON.parse(fhir_response_body)
+    rescue StandardError
+      nil
+    end
     assert_not_nil(parsed_fhir_response)
   end
 
@@ -119,16 +125,12 @@ class QBPClientTest < ActiveSupport::TestCase
     end
   end
 
-
-
   # SOAP Faults
-  
+
   test 'SecurityFault - bad credentials' do
     user_sandbox_credentials = { username: 'test_user', password: 'test_password', facilityID: 'test_facilityID' }
     HealthCards::QBPClient.query(@patient_hash, user_sandbox_credentials)
   end
-
-
 
   # Check Response Status
   test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)"' do
@@ -151,8 +153,6 @@ class QBPClientTest < ActiveSupport::TestCase
 
   ## TODO: Add 2 similar patients to test :TM
 
-
-
   # Temporary Test to log things
   test 'patient parameters are properly converted to HL7 V2 elements' do
     v2_response_body = HealthCards::QBPClient.query(@no_data)
@@ -166,8 +166,6 @@ class QBPClientTest < ActiveSupport::TestCase
     puts fhir_response_body # Printing response for testing purposes
   end
 end
-
-
 
 # NOTES / FUTURE TESTS
 

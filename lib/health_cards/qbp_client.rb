@@ -28,8 +28,9 @@ module HealthCards
                             endpoint: 'http://localhost:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
 
-      #Check if client is configured properly
+      # Check if client is configured properly
       raise HealthCards::OperationNotSupportedError unless client.operations.include?(:submit_single_message)
+
       check_client_connectivity(client) if client.operations.include?(:connectivity_test)
 
       # Put this in it's own function: build_hl7_message()
@@ -44,6 +45,7 @@ module HealthCards
 
       qpd.query_tag = uid
 
+      # To Do -> condense by making a variable. Default to empty string
       patient_id_list = HL7::MessageParser.split_by_delimiter(qpd.patient_id_list, msg_input.item_delim)
       patient_id_list[1] = patient_info[:patient_list][:id] # ID
       patient_id_list[4] = patient_info[:patient_list][:assigning_authority] # assigning authority
@@ -84,7 +86,6 @@ module HealthCards
       # upload_raw_input = open( "lib/assets/vxu.hl7" ).readlines
       # upload_msg_input = HL7::Message.new( upload_raw_input )
 
-
       # Make this it's own function?
       response = client.call(:submit_single_message) do
         message(**sandbox_credentials, hl7Message: msg_input)
@@ -92,10 +93,9 @@ module HealthCards
 
       raw_response_message = response.body[:submit_single_message_response][:return]
       response_segments = raw_response_message.to_s.split("\n")
-      msg_output = HL7::Message.new(response_segments)
-  
+      HL7::Message.new(response_segments)
+
       # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
-      return msg_output
     end
 
     # Translate relevant info from V2 Response message into a FHIR Bundle
@@ -108,10 +108,8 @@ module HealthCards
       fhir_response.body
     end
 
-
-
     # Methods That Parse HL7 V2 Message
-    # Get QAK.2 
+    # Get QAK.2
     def get_response_status(msg_response)
       msg_response[:QAK][2].to_sym
     end
@@ -120,7 +118,7 @@ module HealthCards
 
     def check_client_connectivity(client)
       response = client.call(:connectivity_test) do
-          message echoBack: '?'
+        message echoBack: '?'
       end
       conncectivity_response = response.body[:connectivity_test_response][:return]
       throw HealthCards::BadClientConnectionError unless conncectivity_response == 'End-point is ready. Echoing: ?'
