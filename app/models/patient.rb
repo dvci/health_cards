@@ -140,8 +140,6 @@ class Patient < FHIRRecord
       if has_attribute? k
         matching &&= (send(k).to_s == v.to_s)
         break unless matching
-      else
-        logger.warn "Method #{k} not found for Patient#match?"
       end
     end
     matching

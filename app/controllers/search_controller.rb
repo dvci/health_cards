@@ -47,13 +47,6 @@ class SearchController < ApplicationController
 
   def render_patient(json)
     @patient = Patient.create_from_bundle!(json)
-  rescue ActiveRecord::RecordInvalid
-    redirect_to(search_form_url,
-                { alert: 'Information from IIS could not be validated.' })
-  rescue ActiveRecord::RecordNotSaved
-    redirect_to(search_form_url,
-                { alert: 'Patient record could not be saved and rendered.' })
-  else
     redirect_to(@patient)
   end
 
