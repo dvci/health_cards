@@ -24,13 +24,14 @@ module HealthCards
       raise HealthCards::InvalidSandboxCredentialsError unless valid_credentials?(sandbox_credentials)
 
       service_def = 'lib/assets/service.wsdl'
+      # TODO: Set up with MITRE hosted VCI VM
       client = Savon.client(wsdl: service_def,
-                            endpoint: 'http://localhost:8081/iis-sandbox/soap',
+                            # endpoint: 'http://localhost:8081/iis-sandbox/soap',
+                            endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
 
       # Check if client is configured properly
       raise HealthCards::OperationNotSupportedError unless client.operations.include?(:submit_single_message)
-
       check_client_connectivity(client) if client.operations.include?(:connectivity_test)
 
       # Put this in it's own function: build_hl7_message()
@@ -91,9 +92,14 @@ module HealthCards
         message(**sandbox_credentials, hl7Message: msg_input)
       end
 
+      # TODO: Check for SOAP Faults
+      # TODO: Check for Response Error Cases
+
       raw_response_message = response.body[:submit_single_message_response][:return]
       response_segments = raw_response_message.to_s.split("\n")
-      HL7::Message.new(response_segments)
+      response_message = HL7::Message.new(response_segments)
+      # check_response_profile_errors(response_message)
+      return response_message
 
       # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
     end
@@ -102,7 +108,8 @@ module HealthCards
     # @param v2_response [String] V2 message returned from the IIS-Sandbox
     # @return [String] FHIR Bundle representation of the V2 message
     def translate(v2_response)
-      fhir_response = Faraday.post('http://localhost:3000/api/v0.1.0/convert/text',
+      # TODO: Set up with Hosted VM
+      fhir_response = Faraday.post('http://vci.mitre.org:3000/api/v0.1.0/convert/text',
                                    v2_response.to_hl7,
                                    'Content-Type' => 'text/plain')
       fhir_response.body
@@ -124,6 +131,18 @@ module HealthCards
       throw HealthCards::BadClientConnectionError unless conncectivity_response == 'End-point is ready. Echoing: ?'
     end
 
+    # TODO: Check Response Profile Errors
+    def check_response_profile_errors(msg_response)
+      profile = msg_response[:MSH][20][0..2].to_i
+      case profile
+      when 32
+        puts "Handle Z32 Profile Errors"
+      when 33
+        puts "Handle Z33 Profile Errors"
+      end
+    end
+
+
     private
 
     def valid_credentials?(credentials)
@@ -134,3 +153,4 @@ module HealthCards
     end
   end
 end
+

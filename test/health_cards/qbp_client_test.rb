@@ -80,6 +80,7 @@ class QBPClientTest < ActiveSupport::TestCase
     WebMock.disable_net_connect!
   end
 
+
   # General Functionality Tests
 
   test 'query() method successfully returns an HL7 Message' do
@@ -113,6 +114,8 @@ class QBPClientTest < ActiveSupport::TestCase
     end
   end
 
+
+
   # Client Connectivity Tests
 
   test 'Connectivity Test Works (Successfully connected to IIS Sandbox endpoint)' do
@@ -125,12 +128,16 @@ class QBPClientTest < ActiveSupport::TestCase
     end
   end
 
+
+
   # SOAP Faults
 
   test 'SecurityFault - bad credentials' do
     user_sandbox_credentials = { username: 'test_user', password: 'test_password', facilityID: 'test_facilityID' }
     HealthCards::QBPClient.query(@patient_hash, user_sandbox_credentials)
   end
+
+
 
   # Check Response Status
   test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)"' do
@@ -153,9 +160,11 @@ class QBPClientTest < ActiveSupport::TestCase
 
   ## TODO: Add 2 similar patients to test :TM
 
+
+
   # Temporary Test to log things
   test 'patient parameters are properly converted to HL7 V2 elements' do
-    v2_response_body = HealthCards::QBPClient.query(@no_data)
+    v2_response_body = HealthCards::QBPClient.query(@patient_hash)
 
     puts 'RESPONSE:'
     puts(v2_response_body) # Printing response for testing purposes
@@ -166,6 +175,8 @@ class QBPClientTest < ActiveSupport::TestCase
     puts fhir_response_body # Printing response for testing purposes
   end
 end
+
+
 
 # NOTES / FUTURE TESTS
 
