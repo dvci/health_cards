@@ -1,5 +1,5 @@
 MSH|^~\&|Test EHR Application|X68||NIST Test Iz Reg|20210715082240-0500||VXU^V04^VXU_V04|NIST-IZ-001.00|P|2.5.1|||ER|AL|||||Z22^CDCPHINVS
-PID|1||DUPLICATE_PATIENT^^^NIST MPI^MR||PlatteAIRA^ZaraAIRA^J^^^^L|CrawfordAIRA^RishonaAIRA^^^^^M|20160605|F|||1864 Blphen aan den Rijn Cir^^Wellston^MI^49689^USA^L^^49503||^PRN^PH^^^231^9573155|||||||||2186-5^non Hispanic or Latino^CDCREC
+PID|1||DUPLICATE_PATIENT^^^NIST MPI^MR||PlatteAIRA^ZaraAIRA^J^^^^L|CrawfordAIRA^RishonaAIRA^^^^^M|20160605|F|||1 Immunization Way^^Bedford^MA^49689^USA^L^^49503||^PRN^PH^^^231^9573155|||||||||2186-5^non Hispanic or Latino^CDCREC
 PD1|||||||||||02^Reminder/Recall - any method^HL70215|||||A|20210715|20210715
 NK1|1|PlatteAIRA^CrawfordAIRA^^^^^L|MTH^Mother^HL70063|1864 Blphen aan den Rijn Cir^^Wellston^MI^49689^USA^L|^PRN^PH^^^231^9573155
 ORC|RE||BV44S13.1^NDA|||||||I-23432^Burden^Donna^A^^^^^NIST-AA-1^^^^PRN||57422^RADON^NICHOLAS^^^^^^NIST-AA-1^L^^^MD
