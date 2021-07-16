@@ -1,0 +1,11 @@
+MSH|^~\&|Test EHR Application|X68||NIST Test Iz Reg|20210715082240-0500||VXU^V04^VXU_V04|NIST-IZ-001.00|P|2.5.1|||ER|AL|||||Z22^CDCPHINVS
+PID|1||V44S13^^^NIST MPI^MR||PlatteAIRA^ZaraAIRA^J^^^^L|CrawfordAIRA^RishonaAIRA^^^^^M|20160605|F|||1864 Blphen aan den Rijn Cir^^Wellston^MI^49689^USA^L^^49503||^PRN^PH^^^231^9573155|||||||||2186-5^non Hispanic or Latino^CDCREC
+PD1|||||||||||02^Reminder/Recall - any method^HL70215|||||A|20210715|20210715
+NK1|1|PlatteAIRA^CrawfordAIRA^^^^^L|MTH^Mother^HL70063|1864 Blphen aan den Rijn Cir^^Wellston^MI^49689^USA^L|^PRN^PH^^^231^9573155
+ORC|RE||BV44S13.1^NDA|||||||I-23432^Burden^Donna^A^^^^^NIST-AA-1^^^^PRN||57422^RADON^NICHOLAS^^^^^^NIST-AA-1^L^^^MD
+RXA|0|1|20210715||900^COVID Vaccine A^CVX^99999-9999-00^COVID Vaccine A^NDC|0.5|mL^MilliLiter [SI Volume Units]^UCUM||00^New immunization record^NIP001|60500^Kiwi^Harold^Thomas^^^^^NIST-AA-1^^^^PRN^^^^^^^^RN|^^^X68||||A9999-16|20220505|AAA^Vaccine Manufacture A^MVX|||CP|A
+RXR|C38276^Intravenous^NCIT|RA^right arm^HL70163
+OBX|1|CE|64994-7^Vaccine funding program eligibility category^LN|1|V05^VFC eligible - Federally Qualified Health Center Patient (under-insured)^HL70064||||||F|||20210715|||VXC40^Eligibility captured at the immunization level^CDCPHINVS
+OBX|2|CE|30956-7^vaccine type^LN|2|88^Influenza, unspecified formulation^CVX||||||F
+OBX|3|TS|29768-9^Date vaccine information statement published^LN|2|20120702||||||F
+OBX|4|TS|29769-7^Date vaccine information statement presented^LN|2|20210715||||||F
