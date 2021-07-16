@@ -70,6 +70,29 @@ class QBPClientTest < ActiveSupport::TestCase
                local_number: '' }
     }
 
+    @duplicate_hash = {
+      patient_list: { id: '',
+                      assigning_authority: '',
+                      identifier_type_code: '' },
+      patient_name: { family_name: 'PlatteAIRA',
+                      given_name: 'ZaraAIRA',
+                      second_or_further_names: '',
+                      suffix: '' },
+      mothers_maiden_name: { family_name: '',
+                             given_name: '',
+                             name_type_code: '' },
+      patient_dob: '20160605',
+      admin_sex: '',
+      address: { street: '',
+                 city: '',
+                 state: '',
+                 zip: '',
+                 address_type: '' },
+      phone: { area_code: '',
+               local_number: '' }
+
+    }
+
     # TODO: Test with minimal and verbose data
 
     WebMock.allow_net_connect!
@@ -79,7 +102,6 @@ class QBPClientTest < ActiveSupport::TestCase
   def teardown
     WebMock.disable_net_connect!
   end
-
 
   # General Functionality Tests
 
@@ -114,8 +136,6 @@ class QBPClientTest < ActiveSupport::TestCase
     end
   end
 
-
-
   # Client Connectivity Tests
 
   test 'Connectivity Test Works (Successfully connected to IIS Sandbox endpoint)' do
@@ -128,16 +148,12 @@ class QBPClientTest < ActiveSupport::TestCase
     end
   end
 
-
-
   # SOAP Faults
 
   test 'SecurityFault - bad credentials' do
     user_sandbox_credentials = { username: 'test_user', password: 'test_password', facilityID: 'test_facilityID' }
     HealthCards::QBPClient.query(@patient_hash, user_sandbox_credentials)
   end
-
-
 
   # Check Response Status
   test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)"' do
@@ -160,8 +176,6 @@ class QBPClientTest < ActiveSupport::TestCase
 
   ## TODO: Add 2 similar patients to test :TM
 
-
-
   # Temporary Test to log things
   test 'patient parameters are properly converted to HL7 V2 elements' do
     v2_response_body = HealthCards::QBPClient.query(@patient_hash)
@@ -175,15 +189,12 @@ class QBPClientTest < ActiveSupport::TestCase
     puts fhir_response_body # Printing response for testing purposes
   end
 
+  # # WARNING: Running tests with this test uncommented could upload a patient to the sandbox and resultingly affect other tests
   # # Temporary Test to upload a patient
   # test 'Uploading a patient' do
   #   HealthCards::QBPClient.upload_patient("lib/assets/vxu_fixtures/vxu_2_2.hl7")
   # end
-
 end
-
-
-
 
 # NOTES / FUTURE TESTS
 

@@ -32,6 +32,7 @@ module HealthCards
 
       # Check if client is configured properly
       raise HealthCards::OperationNotSupportedError unless client.operations.include?(:submit_single_message)
+
       check_client_connectivity(client) if client.operations.include?(:connectivity_test)
 
       # Put this in it's own function: build_hl7_message()
@@ -83,7 +84,6 @@ module HealthCards
       phone_home[6] = patient_info[:phone][:local_number] # local number
       qpd.phone_home = phone_home.join(msg_input.item_delim)
 
-
       # Make this it's own function?
       response = client.call(:submit_single_message) do
         message(**sandbox_credentials, hl7Message: msg_input)
@@ -96,7 +96,7 @@ module HealthCards
       response_segments = raw_response_message.to_s.split("\n")
       response_message = HL7::Message.new(response_segments)
       check_response_profile_errors(response_message)
-      return response_message
+      response_message
 
       # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
     end
@@ -110,16 +110,14 @@ module HealthCards
                             pretty_print_xml: true)
       # Upload Patient from Fixture
       upload_raw_input = open(patient_path).readlines
-      upload_msg_input = HL7::Message.new( upload_raw_input )
+      upload_msg_input = HL7::Message.new(upload_raw_input)
       response = client.call(:submit_single_message) do
-        message({username: Rails.application.config.username,
-                password: Rails.application.config.password,
-                facilityID: Rails.application.config.facilityID,
-                hl7Message: upload_msg_input})
+        message({ username: Rails.application.config.username,
+                  password: Rails.application.config.password,
+                  facilityID: Rails.application.config.facilityID,
+                  hl7Message: upload_msg_input })
       end
     end
-
-
 
     # Translate relevant info from V2 Response message into a FHIR Bundle
     # @param v2_response [String] V2 message returned from the IIS-Sandbox
@@ -156,11 +154,8 @@ module HealthCards
         handle_Z31_errors(msg_response)
       when :Z33
         handle_Z31_errors(msg_response)
-      else
-        return nil
       end
     end
-    
 
     private
 
@@ -174,24 +169,21 @@ module HealthCards
     # Methods to Handle Profile Specific Errors
 
     # PROFILE Z32 RESPONSE PROFILE – RETURN COMPLETE IMMUNIZATION HISTORY
-    def handle_Z32_errors(msg)
+    def handle_Z32_errors(_msg)
       # TODO: Handle RSP K11 Z32 test cases
-      return nil
+      nil
     end
 
     # PROFILE Z31 -- RETURN A LIST OF CANDIDATES PROFILE
-    def handle_Z31_errors(msg)
+    def handle_Z31_errors(_msg)
       # TODO: Handle RSP K11 Z31 test cases
-      return nil
+      nil
     end
 
     # PROFILE Z33 --RETURN AN ACKNOWLEDGEMENT WITH NO PERSON RECORDS (ERRORS)
-    def handle_Z33_errors(msg)
+    def handle_Z33_errors(_msg)
       # TODO: Handle RSP K11 Z323 test cases
-      return nil
-    end 
-
-
+      nil
+    end
   end
 end
-
