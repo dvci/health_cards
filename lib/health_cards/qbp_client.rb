@@ -83,9 +83,6 @@ module HealthCards
       phone_home[6] = patient_info[:phone][:local_number] # local number
       qpd.phone_home = phone_home.join(msg_input.item_delim)
 
-      # Upload Patient
-      # upload_raw_input = open( "lib/assets/vxu.hl7" ).readlines
-      # upload_msg_input = HL7::Message.new( upload_raw_input )
 
       # Make this it's own function?
       response = client.call(:submit_single_message) do
@@ -98,11 +95,31 @@ module HealthCards
       raw_response_message = response.body[:submit_single_message_response][:return]
       response_segments = raw_response_message.to_s.split("\n")
       response_message = HL7::Message.new(response_segments)
-      # check_response_profile_errors(response_message)
+      check_response_profile_errors(response_message)
       return response_message
 
       # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
     end
+
+    def upload_patient(patient_path)
+      # Define client
+      service_def = 'lib/assets/service.wsdl'
+      client = Savon.client(wsdl: service_def,
+                            # endpoint: 'http://localhost:8081/iis-sandbox/soap',
+                            endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
+                            pretty_print_xml: true)
+      # Upload Patient from Fixture
+      upload_raw_input = open(patient_path).readlines
+      upload_msg_input = HL7::Message.new( upload_raw_input )
+      response = client.call(:submit_single_message) do
+        message({username: Rails.application.config.username,
+                password: Rails.application.config.password,
+                facilityID: Rails.application.config.facilityID,
+                hl7Message: upload_msg_input})
+      end
+    end
+
+
 
     # Translate relevant info from V2 Response message into a FHIR Bundle
     # @param v2_response [String] V2 message returned from the IIS-Sandbox
@@ -121,8 +138,6 @@ module HealthCards
       msg_response[:QAK][2].to_sym
     end
 
-    # TODO: Add a function to upload a patient to an IIS
-
     def check_client_connectivity(client)
       response = client.call(:connectivity_test) do
         message echoBack: '?'
@@ -133,15 +148,19 @@ module HealthCards
 
     # TODO: Check Response Profile Errors
     def check_response_profile_errors(msg_response)
-      profile = msg_response[:MSH][20][0..2].to_i
+      profile = msg_response[:MSH][20][0..2].to_sym
       case profile
-      when 32
-        puts "Handle Z32 Profile Errors"
-      when 33
-        puts "Handle Z33 Profile Errors"
+      when :Z32
+        handle_Z32_errors(msg_response)
+      when :Z31
+        handle_Z31_errors(msg_response)
+      when :Z33
+        handle_Z31_errors(msg_response)
+      else
+        return nil
       end
     end
-
+    
 
     private
 
@@ -151,6 +170,28 @@ module HealthCards
       end
       credentials.keys.sort == [:username, :password, :facilityID].sort
     end
+
+    # Methods to Handle Profile Specific Errors
+
+    # PROFILE Z32 RESPONSE PROFILE – RETURN COMPLETE IMMUNIZATION HISTORY
+    def handle_Z32_errors(msg)
+      # TODO: Handle RSP K11 Z32 test cases
+      return nil
+    end
+
+    # PROFILE Z31 -- RETURN A LIST OF CANDIDATES PROFILE
+    def handle_Z31_errors(msg)
+      # TODO: Handle RSP K11 Z31 test cases
+      return nil
+    end
+
+    # PROFILE Z33 --RETURN AN ACKNOWLEDGEMENT WITH NO PERSON RECORDS (ERRORS)
+    def handle_Z33_errors(msg)
+      # TODO: Handle RSP K11 Z323 test cases
+      return nil
+    end 
+
+
   end
 end
 

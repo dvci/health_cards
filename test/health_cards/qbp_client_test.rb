@@ -174,7 +174,14 @@ class QBPClientTest < ActiveSupport::TestCase
     puts 'FHIR:'
     puts fhir_response_body # Printing response for testing purposes
   end
+
+  # # Temporary Test to upload a patient
+  # test 'Uploading a patient' do
+  #   HealthCards::QBPClient.upload_patient("lib/assets/vxu_2_2.hl7")
+  # end
+
 end
+
 
 
 
