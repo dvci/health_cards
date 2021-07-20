@@ -55,17 +55,17 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'good query should redirect to found patient' do
-    assert_raises(NotImplementedError) { post(search_query_url, { params: @good_query_params }) }
+    assert_raises(StandardError) { post(search_query_url, { params: @good_query_params }) }
     # assert_redirected_to @patient1
   end
 
   test 'vague query params should redirect to search form' do
-    assert_raises(NotImplementedError) { post(search_query_url, { params: @vague_query_params }) }
+    assert_raises(StandardError) { post(search_query_url, { params: @vague_query_params }) }
     # assert_redirected_to search_form_url
   end
 
   test 'negative query params should return no data page' do
-    assert_raises(NotImplementedError) { post(search_query_url, { params: @negative_query_params }) }
+    assert_raises(StandardError) { post(search_query_url, { params: @negative_query_params }) }
     # assert_response :success
     # assert @response.body
     # assert_not_empty @response.body

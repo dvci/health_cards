@@ -55,13 +55,13 @@ class SearchController < ApplicationController
     return params[:qbp_response] if Rails.env.test? && params[:qbp_response]
 
     # QBPClient.query( query_hash )
-    raise NotImplementedError, "Calling QBP Client w/ parameter: #{query_hash}"
+    raise StandardError, "Calling QBP Client w/ parameter: #{query_hash}"
   end
 
   # from qbp-client branch
   def translate(hl7v2_text)
     # QBPClient.translate(hl7v2_text)
-    raise NotImplementedError, "Calling QBP Client w/ parameter: #{hl7v2_text}" unless Rails.env.test?
+    raise StandardError, "Calling QBP Client w/ parameter: #{hl7v2_text}" unless Rails.env.test?
 
     hl7v2_text # pass through results[:patient] for testing
   end
