@@ -29,11 +29,4 @@ module PatientsHelper
                  birth_date: birth_date, phone: phone, email: email, street_line1: street_line1,
                  street_line2: street_line2, city: city, state: state, zip_code: zip_code } }
   end
-
-  def iis_patient_params
-    { patient: { given: 'BethesdaAIRA',
-                 family: 'WeilAIRA',
-                 birth_date: '06/10/2017',
-                 gender: 'male' } }
-  end
 end

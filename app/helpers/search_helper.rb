@@ -81,4 +81,11 @@ module SearchHelper
       phone: format_phone_number(hash)
     }
   end
+
+  def iis_patient_params
+    { patient: { given: 'BethesdaAIRA',
+                 family: 'WeilAIRA',
+                 birth_date: '06/10/2017',
+                 gender: 'male' } }
+  end
 end
