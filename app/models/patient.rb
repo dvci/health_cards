@@ -135,14 +135,7 @@ class Patient < FHIRRecord
 
   # compares model's fhir attributes to the key-value pairs in hash
   def match?(hash)
-    matching = true
-    hash.each do |k, v|
-      if has_attribute? k
-        matching &&= (send(k).to_s == v.to_s)
-        break unless matching
-      end
-    end
-    matching
+    hash.select { |key, _| has_attribute? key }.all? { |key, value| send(key) == value }
   end
 
   def self.create_from_bundle!(json)
