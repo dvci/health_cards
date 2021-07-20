@@ -43,8 +43,7 @@ class SearchController < ApplicationController
 
   # only for search#query
   def query_params
-    hash = helpers.sanitize_input(params)
-    hash = helpers.transform_hash(hash)
+    hash = helpers.transform_hash(params.require(:patient).permit(helpers.search_form_inputs))
     helpers.build_query(hash)
   end
 

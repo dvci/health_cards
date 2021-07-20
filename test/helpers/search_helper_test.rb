@@ -25,17 +25,6 @@ class SearchHelperTest < ActiveSupport::TestCase
                                city: 'Bedford',
                                state: 'MA',
                                zip_code: '55555' } }
-    @bad_input = @minimal_input.merge({ other: 'stuff', that: { doesnt: 'belong' } })
-  end
-
-  test 'IIS search helper input sanitization' do
-    sanitized_params = sanitize_input(ActionController::Parameters.new(@bad_input))
-    assert sanitized_params[:given]
-    assert sanitized_params[:family]
-    assert sanitized_params[:birth_date]
-    assert_nil sanitized_params[:other]
-    assert_nil sanitized_params[:that]
-    assert_nil sanitized_params[:doesnt]
   end
 
   test 'transform hash to symbolize keys and nil empty values' do
@@ -75,7 +64,9 @@ class SearchHelperTest < ActiveSupport::TestCase
   end
 
   test 'build minimal query for QBP client' do
-    final = build_query(transform_hash(sanitize_input(ActionController::Parameters.new(@minimal_input))))
+    params = ActionController::Parameters.new(@minimal_input)
+    params = params[:patient].permit!
+    final = build_query(transform_hash(params))
     assert final
     assert final.key? :patient_name
     assert_kind_of Hash, final[:patient_name]
@@ -86,7 +77,9 @@ class SearchHelperTest < ActiveSupport::TestCase
   end
 
   test 'build full query for QBP client' do
-    final = build_query(transform_hash(sanitize_input(ActionController::Parameters.new(@full_input))))
+    params = ActionController::Parameters.new(@full_input)
+    params = params[:patient].permit!
+    final = build_query(transform_hash(params))
     assert final
 
     assert final.key? :patient_name

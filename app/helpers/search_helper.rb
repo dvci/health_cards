@@ -11,32 +11,34 @@ module SearchHelper
 
   FHIR_TO_HL7_SEX = { 'male' => 'M', 'female' => 'F', 'other' => 'U', 'unknown' => 'U' }.freeze
 
-  def sanitize_input(action_params)
-    action_params.require(:patient).permit([
-                                             :given,
-                                             :family,
-                                             :second,
-                                             :suffix,
-                                             :birth_date,
-                                             :gender,
-                                             :phone,
-                                             :list_id,
-                                             :assigning_authority,
-                                             :identifier_type_code,
-                                             :mother_maiden_given_name,
-                                             :mother_maiden_family_name,
-                                             :street_line1,
-                                             :street_line2,
-                                             :city,
-                                             :state,
-                                             :zip_code
-                                           ])
+  SEARCH_FORM_INPUTS = [
+    :given,
+    :family,
+    :second,
+    :suffix,
+    :birth_date,
+    :gender,
+    :phone,
+    :list_id,
+    :assigning_authority,
+    :identifier_type_code,
+    :mother_maiden_given_name,
+    :mother_maiden_family_name,
+    :street_line1,
+    :street_line2,
+    :city,
+    :state,
+    :zip_code
+  ].freeze
+
+  def search_form_inputs
+    SEARCH_FORM_INPUTS
   end
 
   def transform_hash(action_params)
     h = action_params.to_hash
     h.transform_keys!(&:to_sym)
-    h.transform_values!(&:strip)
+    h.transform_values! { |v| v.strip if v.respond_to? :strip }
     h.transform_values! { |v| v.empty? ? nil : v }
     h
   end
