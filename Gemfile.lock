@@ -16,7 +16,7 @@ GIT
 PATH
   remote: .
   specs:
-    health_cards (0.0.1)
+    health_cards (0.0.2)
       fhir_models (>= 4.0.0)
 
 GEM
@@ -341,7 +341,7 @@ DEPENDENCIES
   wkhtmltopdf-binary
 
 RUBY VERSION
-   ruby 2.7.2p137
+   ruby 2.7.3p183
 
 BUNDLED WITH
    2.2.17

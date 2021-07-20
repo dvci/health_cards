@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        ruby-version: [ 2.7.2 ]
+        ruby-version: [ 2.7.3 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ['2.7.2']
+        ruby-version: ['2.7.3']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby
@@ -44,13 +44,16 @@ jobs:
       run: ./bin/rake webpacker:install:react
     - name: Run tests
       run: bundle exec rake
+    - name: Codecov
+      uses: codecov/codecov-action@v1.5.2
+
 
   lint:
     needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ['2.7.2']
+        ruby-version: ['2.7.3']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby
