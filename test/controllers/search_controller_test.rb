@@ -71,21 +71,23 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     # assert_not_empty @response.body
   end
 
-  test 'QBP client application error response should redirect to form' do
+  test 'QBP client application error response should redirect to form with alert' do
     post(search_query_url, { params: @qbp_application_error })
     assert_redirected_to search_form_url
   end
 
-  test 'QBP client application rejected response should return bad request with rejected page' do
+  test 'QBP client application rejected response should redirect to form with alert' do
     post(search_query_url, { params: @qbp_application_rejected })
-    assert_response :bad_request
-    assert_not_empty @response.body
+    assert_redirected_to search_form_url
+    follow_redirect!
+    assert_select '.notification'
   end
 
-  test 'QBP client not found response should return no data page' do
+  test 'QBP client not found response should redirect to form with notice' do
     post(search_query_url, { params: @qbp_not_found })
-    assert_response :success
-    assert_not_empty @response.body
+    assert_redirected_to search_form_url
+    follow_redirect!
+    assert_select '.notification'
   end
 
   test 'QBP client ok response should redirect to patient' do
@@ -104,15 +106,18 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to(Patient.all.select { |p| p.match?({ family: patient_json.name[0].family }) })
   end
 
-  test 'QBP client protected data response should return forbidden with protected page' do
+  test 'QBP client protected data response should redirect to form with notice' do
     post(search_query_url, { params: @qbp_protected_data })
-    assert_response :forbidden
-    assert_not_empty @response.body
+    assert_redirected_to search_form_url
+    follow_redirect!
+    assert_select '.notification'
   end
 
-  test 'QBP client too much response should redirect to form' do
+  test 'QBP client too much response should redirect to form with alert' do
     post(search_query_url, { params: @qbp_too_much })
     assert_redirected_to search_form_url
+    follow_redirect!
+    assert_select '.notification'
   end
 
   test 'QBP client invalid response code raises error' do

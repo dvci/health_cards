@@ -18,6 +18,13 @@
       </div>
     <% end %>
 
+    <% if notice %>
+      <div class="notification is-success is-light">
+        <button class="delete"></button>
+        <%= notice %>
+      </div>
+    <% end %>
+
     <h1 class="title">Immunization Information System Record Search</h1>
     <h2 class="subtitle">Consumer Portal</h2>
 

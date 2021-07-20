@@ -13,17 +13,20 @@ class SearchController < ApplicationController
     case results[:code]
     when 'AE'
       redirect_to search_form_url,
-                  alert: 'Sorry there was an error, please try again. If problem persists contact system administrator.'
+                  alert: 'Sorry there was an error with the Immunization Information System, please try again.'
     when 'AR'
-      render 'rejected', status: :bad_request
+      redirect_to search_form_url,
+                  alert: 'Sorry there was an error in processing your request.'
     when 'NF'
-      render 'no_data'
+      redirect_to search_form_url,
+                  notice: 'There is no information about this patient in the database.'
     when 'OK'
       json_bundle = translate(results[:patient])
       # TODO: - validation here
       render_patient(json_bundle)
     when 'PD'
-      render 'protected', status: :forbidden
+      redirect_to search_form_url,
+                  notice: 'The information has been privated by the patient.'
     when 'TM'
       redirect_to search_form_url, alert: 'Too many matches found, please enter more information.'
     else
