@@ -156,6 +156,7 @@ class QBPClientTest < ActiveSupport::TestCase
   end
 
   # Check Response Status
+
   test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)"' do
     response = HealthCards::QBPClient.query(@patient_hash)
     status = HealthCards::QBPClient.get_response_status(response)
@@ -176,9 +177,31 @@ class QBPClientTest < ActiveSupport::TestCase
 
   ## TODO: Add 2 similar patients to test :TM
 
+  # V2 to FHIR Translation Tests
+
+  test 'Valid HL7 V2 Complete Immunization History Response will return a FHIR Bundle from the HL7 to V2 Translator' do
+    response = open('test/fixtures/files/RSP_valid.hl7').readlines
+    v2_response = HL7::Message.new(response)
+    fhir_response = HealthCards::QBPClient.translate(v2_response)
+    fhir_response_hash = JSON.parse(fhir_response)
+    assert_equal("Bundle", fhir_response_hash["resourceType"])
+  end 
+
+  test 'Non-Patient HL7 V2 Response will return an error message from the HL7 to V2 Translator' do
+    response = open('test/fixtures/files/RSP_error.hl7').readlines
+    v2_response = HL7::Message.new(response)
+    fhir_response = HealthCards::QBPClient.translate(v2_response)
+    fhir_response_hash = JSON.parse(fhir_response)
+    puts fhir_response_hash
+    assert_not_nil(fhir_response_hash["errors"])
+  end 
+
+
+
+
   # Temporary Test to log things
   test 'patient parameters are properly converted to HL7 V2 elements' do
-    v2_response_body = HealthCards::QBPClient.query(@duplicate_hash)
+    v2_response_body = HealthCards::QBPClient.query(@patient_hash)
 
     puts 'RESPONSE:'
     puts(v2_response_body) # Printing response for testing purposes
