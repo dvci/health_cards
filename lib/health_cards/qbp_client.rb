@@ -19,23 +19,64 @@ module HealthCards
               sandbox_credentials = { username: Rails.application.config.username,
                                       password: Rails.application.config.password,
                                       facilityID: Rails.application.config.facilityID })
-      # Rubocop: This method needs to be shorter
-
       raise HealthCards::InvalidSandboxCredentialsError unless valid_credentials?(sandbox_credentials)
 
       service_def = 'lib/assets/service.wsdl'
-      # TODO: Set up with MITRE hosted VCI VM
       client = Savon.client(wsdl: service_def,
                             # endpoint: 'http://localhost:8081/iis-sandbox/soap',
                             endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
-
       # Check if client is configured properly
       raise HealthCards::OperationNotSupportedError unless client.operations.include?(:submit_single_message)
-
       check_client_connectivity(client) if client.operations.include?(:connectivity_test)
 
-      # Put this in it's own function: build_hl7_message()
+      msg_input = build_hl7_message(patient_info)
+      response = client.call(:submit_single_message) do
+        message(**sandbox_credentials, hl7Message: msg_input)
+      end
+
+      # TODO: Check for SOAP Faults
+      # TODO: Check for Response Error Cases
+
+      raw_response_message = response.body[:submit_single_message_response][:return]
+      response_segments = raw_response_message.to_s.split("\n")
+      response_message = HL7::Message.new(response_segments)
+      check_response_profile_errors(response_message)
+      response_message
+
+      # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
+    end
+
+    def upload_patient
+      # Define client
+      service_def = 'lib/assets/service.wsdl'
+      client = Savon.client(wsdl: service_def,
+                            # endpoint: 'http://localhost:8081/iis-sandbox/soap',
+                            endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
+                            pretty_print_xml: true)
+      # Upload Patient from Fixture
+      upload_raw_input = open('lib/assets/vxu_fixtures/vxu_2_2.hl7').readlines
+      upload_msg_input = HL7::Message.new(upload_raw_input)
+      client.call(:submit_single_message) do
+        message({ username: Rails.application.config.username,
+                  password: Rails.application.config.password,
+                  facilityID: Rails.application.config.facilityID,
+                  hl7Message: upload_msg_input })
+      end
+    end
+
+    # Translate relevant info from V2 Response message into a FHIR Bundle
+    # @param v2_response [String] V2 message returned from the IIS-Sandbox
+    # @return [String] FHIR Bundle representation of the V2 message
+    def translate(v2_response)
+      fhir_response = Faraday.post('http://vci.mitre.org:3000/api/v0.1.0/convert/text',
+                                   v2_response.to_hl7,
+                                   'Content-Type' => 'text/plain')
+      fhir_response.body
+    end
+
+
+    def build_hl7_message(patient_info)
       raw_input = open('lib/assets/qbp.hl7').readlines
       msg_input = HL7::Message.new(raw_input)
       uid = rand(10_000_000_000).to_s
@@ -84,51 +125,10 @@ module HealthCards
       phone_home[6] = patient_info[:phone][:local_number] # local number
       qpd.phone_home = phone_home.join(msg_input.item_delim)
 
-      # Make this it's own function?
-      response = client.call(:submit_single_message) do
-        message(**sandbox_credentials, hl7Message: msg_input)
-      end
-
-      # TODO: Check for SOAP Faults
-      # TODO: Check for Response Error Cases
-
-      raw_response_message = response.body[:submit_single_message_response][:return]
-      response_segments = raw_response_message.to_s.split("\n")
-      response_message = HL7::Message.new(response_segments)
-      check_response_profile_errors(response_message)
-      response_message
-
-      # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
+      return msg_input
     end
 
-    def upload_patient(patient_path)
-      # Define client
-      service_def = 'lib/assets/service.wsdl'
-      client = Savon.client(wsdl: service_def,
-                            # endpoint: 'http://localhost:8081/iis-sandbox/soap',
-                            endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
-                            pretty_print_xml: true)
-      # Upload Patient from Fixture
-      upload_raw_input = open(patient_path).readlines
-      upload_msg_input = HL7::Message.new(upload_raw_input)
-      response = client.call(:submit_single_message) do
-        message({ username: Rails.application.config.username,
-                  password: Rails.application.config.password,
-                  facilityID: Rails.application.config.facilityID,
-                  hl7Message: upload_msg_input })
-      end
-    end
 
-    # Translate relevant info from V2 Response message into a FHIR Bundle
-    # @param v2_response [String] V2 message returned from the IIS-Sandbox
-    # @return [String] FHIR Bundle representation of the V2 message
-    def translate(v2_response)
-      # TODO: Set up with Hosted VM
-      fhir_response = Faraday.post('http://vci.mitre.org:3000/api/v0.1.0/convert/text',
-                                   v2_response.to_hl7,
-                                   'Content-Type' => 'text/plain')
-      fhir_response.body
-    end
 
     # Methods That Parse HL7 V2 Message
     # Get QAK.2
@@ -149,11 +149,11 @@ module HealthCards
       profile = msg_response[:MSH][20][0..2].to_sym
       case profile
       when :Z32
-        handle_Z32_errors(msg_response)
+        handle_z32_errors(msg_response)
       when :Z31
-        handle_Z31_errors(msg_response)
+        handle_z31_errors(msg_response)
       when :Z33
-        handle_Z31_errors(msg_response)
+        handle_z31_errors(msg_response)
       end
     end
 
@@ -168,20 +168,20 @@ module HealthCards
 
     # Methods to Handle Profile Specific Errors
 
-    # PROFILE Z32 RESPONSE PROFILE – RETURN COMPLETE IMMUNIZATION HISTORY
-    def handle_Z32_errors(_msg)
+    # PROFILE Z32 RESPONSE PROFILE - RETURN COMPLETE IMMUNIZATION HISTORY
+    def handle_z32_errors(_msg)
       # TODO: Handle RSP K11 Z32 test cases
       nil
     end
 
-    # PROFILE Z31 -- RETURN A LIST OF CANDIDATES PROFILE
-    def handle_Z31_errors(_msg)
+    # PROFILE Z31 - RETURN A LIST OF CANDIDATES PROFILE
+    def handle_z31_errors(_msg)
       # TODO: Handle RSP K11 Z31 test cases
       nil
     end
 
-    # PROFILE Z33 --RETURN AN ACKNOWLEDGEMENT WITH NO PERSON RECORDS (ERRORS)
-    def handle_Z33_errors(_msg)
+    # PROFILE Z33 - RETURN AN ACKNOWLEDGEMENT WITH NO PERSON RECORDS (ERRORS)
+    def handle_z33_errors(_msg)
       # TODO: Handle RSP K11 Z323 test cases
       nil
     end

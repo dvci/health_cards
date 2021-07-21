@@ -178,7 +178,7 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # Temporary Test to log things
   test 'patient parameters are properly converted to HL7 V2 elements' do
-    v2_response_body = HealthCards::QBPClient.query(@patient_hash)
+    v2_response_body = HealthCards::QBPClient.query(@duplicate_hash)
 
     puts 'RESPONSE:'
     puts(v2_response_body) # Printing response for testing purposes
@@ -189,10 +189,10 @@ class QBPClientTest < ActiveSupport::TestCase
     puts fhir_response_body # Printing response for testing purposes
   end
 
-  # # WARNING: Running tests with this test uncommented could upload a patient to the sandbox and resultingly affect other tests
+  # # WARNING: Running tests with this test uncommented could cause other tests to fail
   # # Temporary Test to upload a patient
   # test 'Uploading a patient' do
-  #   HealthCards::QBPClient.upload_patient("lib/assets/vxu_fixtures/vxu_2_2.hl7")
+  #   HealthCards::QBPClient.upload_patient()
   # end
 end
 
