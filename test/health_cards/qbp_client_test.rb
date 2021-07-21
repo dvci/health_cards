@@ -96,7 +96,6 @@ class QBPClientTest < ActiveSupport::TestCase
     # TODO: Test with minimal and verbose data
 
     WebMock.allow_net_connect!
-    # TODO: If patient doesn't exist, upload him to the sandbox
   end
 
   def teardown
@@ -106,12 +105,12 @@ class QBPClientTest < ActiveSupport::TestCase
   # General Functionality Tests
 
   test 'query() method successfully returns an HL7 Message' do
-    v2_response_body = HealthCards::QBPClient.query(@no_data)
+    v2_response_body = HealthCards::QBPClient.query( { } )
     assert_instance_of(HL7::Message, v2_response_body)
   end
 
   test 'translate() method successfully returns a JSON object' do
-    v2_response_body = HealthCards::QBPClient.query(@no_data)
+    v2_response_body = HealthCards::QBPClient.query( { } )
     fhir_response_body = HealthCards::QBPClient.translate(v2_response_body)
     parsed_fhir_response = begin
       JSON.parse(fhir_response_body)
@@ -126,13 +125,13 @@ class QBPClientTest < ActiveSupport::TestCase
 
     missing_credential = user_sandbox_credentials.except(:password)
     assert_raises HealthCards::InvalidSandboxCredentialsError do
-      HealthCards::QBPClient.query(nil, missing_credential)
+      HealthCards::QBPClient.query( {}, missing_credential)
     end
 
     non_string_credential = user_sandbox_credentials
     non_string_credential[:password] = 1
     assert_raises HealthCards::InvalidSandboxCredentialsError do
-      HealthCards::QBPClient.query(nil, non_string_credential)
+      HealthCards::QBPClient.query( {}, non_string_credential)
     end
   end
 
@@ -150,6 +149,7 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # SOAP Faults
 
+  # TODO: Add SOAP Faults
   test 'SecurityFault - bad credentials' do
     user_sandbox_credentials = { username: 'test_user', password: 'test_password', facilityID: 'test_facilityID' }
     HealthCards::QBPClient.query(@patient_hash, user_sandbox_credentials)
@@ -157,25 +157,35 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # Check Response Status
 
-  test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)"' do
+  test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)" when all of patient info is entered' do
     response = HealthCards::QBPClient.query(@patient_hash)
     status = HealthCards::QBPClient.get_response_status(response)
     assert_equal(:OK, status)
   end
 
+  test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)" when minimal amount of patient info is entered' do
+    minimal_data_patient = @patient_hash.slice(:patient_name, :patient_dob)
+    minimal_data_patient[:patient_name] = minimal_data_patient[:patient_name].slice(:family_name, :given_name)
+    response = HealthCards::QBPClient.query(minimal_data_patient)
+    status = HealthCards::QBPClient.get_response_status(response)
+    assert_equal(:OK, status)
+  end
+
   test 'Patient not in sandbox returns a response status of NF - "Data found, no errors (this is the default)"' do
-    response = HealthCards::QBPClient.query(@empty_hash)
+    missing_patient =  { patient_name: { family_name: 'Not In Sandbox', given_name: 'Patient'}, patient_dob: '20200101' }
+    response = HealthCards::QBPClient.query(missing_patient)
     status = HealthCards::QBPClient.get_response_status(response)
     assert_equal(:NF, status)
   end
 
   test 'Patient without required data fields returns a response status of AE - "Applicaiton Error"' do
-    response = HealthCards::QBPClient.query(@no_data)
+    response = HealthCards::QBPClient.query( { } )
     status = HealthCards::QBPClient.get_response_status(response)
     assert_equal(:AE, status)
   end
 
   ## TODO: Add 2 similar patients to test :TM
+  # test 'Patient '
 
   # V2 to FHIR Translation Tests
 
@@ -192,7 +202,6 @@ class QBPClientTest < ActiveSupport::TestCase
     v2_response = HL7::Message.new(response)
     fhir_response = HealthCards::QBPClient.translate(v2_response)
     fhir_response_hash = JSON.parse(fhir_response)
-    puts fhir_response_hash
     assert_not_nil(fhir_response_hash["errors"])
   end 
 
