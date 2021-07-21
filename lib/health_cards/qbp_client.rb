@@ -10,10 +10,10 @@ module HealthCards
   module QBPClient
     extend self
     # Query a patient's Immunization history from the IIS Sandbox
-    # @param patient_info [Hash] Patient Demographic info sent from the IIS Consumer Portal
-    # @param credentials [Hash] User Id, Password, and Facility Id for the IIS Sandbox login
+    # @param patient_info [Hash] Patient demographic info sent from the IIS Consumer Portal
+    # @param credentials [Hash] (optional) User Id, Password, and Facility Id for the IIS Sandbox login
     # @return [Hash]
-    # response_status: [Symbol] The status
+    # response_status: [Symbol] The status of the response from the IIS-Sandbox
     # response: [String] The HL7 V2 Response message from the IIS-Sandbox, represented as a string
     def query(patient_info,
               sandbox_credentials = { username: Rails.application.config.username,
@@ -23,7 +23,6 @@ module HealthCards
 
       service_def = 'lib/assets/service.wsdl'
       client = Savon.client(wsdl: service_def,
-                            # endpoint: 'http://localhost:8081/iis-sandbox/soap',
                             endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
       # Check if client is configured properly
@@ -44,9 +43,12 @@ module HealthCards
       check_response_profile_errors(response_message)
       response_message
 
+      # TODO: (probably last) Add status as part of output
       # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
     end
 
+    # TODO: Delete this or put it somewhere else
+    # TODO: (probably last) Clean up patients in the Sandbox
     def upload_patient
       # Define client
       service_def = 'lib/assets/service.wsdl'
@@ -66,7 +68,7 @@ module HealthCards
     end
 
     # Translate relevant info from V2 Response message into a FHIR Bundle
-    # @param v2_response [String] V2 message returned from the IIS-Sandbox
+    # @param v2_response [HL7::Message] V2 message returned from the IIS-Sandbox
     # @return [String] FHIR Bundle representation of the V2 message
     def translate(v2_response)
       fhir_response = Faraday.post('http://vci.mitre.org:3000/api/v0.1.0/convert/text',
@@ -79,16 +81,17 @@ module HealthCards
     def build_hl7_message(patient_info)
       raw_input = open('lib/assets/qbp.hl7').readlines
       msg_input = HL7::Message.new(raw_input)
-      uid = rand(10_000_000_000).to_s
 
+      # Build MSH Segment
+      uid = rand(10_000_000_000).to_s
       msh = msg_input[:MSH]
       msh.time = Time.zone.now
       msh.message_control_id = uid
-      qpd = msg_input[:QPD]
 
+      # Build QPD segnment
+      qpd = msg_input[:QPD]
       qpd.query_tag = uid
 
-      # To Do -> condense by making a variable. Default to empty string
       patient_id_list = HL7::MessageParser.split_by_delimiter(qpd.patient_id_list, msg_input.item_delim)
       patient_id_list[1] = patient_info[:patient_list][:id] # ID
       patient_id_list[4] = patient_info[:patient_list][:assigning_authority] # assigning authority
@@ -144,7 +147,6 @@ module HealthCards
       throw HealthCards::BadClientConnectionError unless conncectivity_response == 'End-point is ready. Echoing: ?'
     end
 
-    # TODO: Check Response Profile Errors
     def check_response_profile_errors(msg_response)
       profile = msg_response[:MSH][20][0..2].to_sym
       case profile
