@@ -16,4 +16,8 @@ Rails.application.configure do
 
   config.auth_code = ENV['AUTH_CODE']
   config.client_id = ENV['CLIENT_ID']
+
+  config.username = ENV['IIS_SANDBOX_USERNAME']
+  config.password = ENV['IIS_SANDBOX_PASSWORD']
+  config.facilityID = ENV['IIS_SANDBOX_FACILITYID']
 end

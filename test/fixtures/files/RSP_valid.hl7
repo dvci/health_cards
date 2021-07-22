@@ -1,0 +1,13 @@
+MSH|^~\&||IIS Sandbox v0.4.6|||20210721060002+0000||RSP^K11^RSP_K11|1626890402756312|P|2.5.1|||NE|NE|||||Z32^CDCPHINVS
+MSA|AA|1874792858
+QAK|1874792858|OK|Z34^Request a Complete Immunization History^CDCPHINVS
+QPD|Z34^Request Immunization History^CDCPHINVS|1874792858|^J19X5^^^AIRA-TEST^MR|WeilAIRA^BethesdaAIRA^Delvene^^^^|WeilAIRA^BethesdaAIRA^^^^^M|20170610|F|1113 Wollands Kroon Ave^^Hamburg^MI^48139^USA^P|^PRN^PH^^^810^2499010|||||
+PID|1||GKAXZ2C5R7TE^^^IIS^SR~J19X5^^^AIRA-TEST^MR||WeilAIRA^BethesdaAIRA^Delvene^^^^L|ClearfieldAIRA^^^^^^M|20170610|F|||1113 Wollands Kroon Ave^^Hamburg^MI^48139^USA^P||^PRN^PH^^^810^2499010||||||||||||
+NK1|1|RichardsonAIRA^TarraAIRA^^^^^L|MTH^Mother^HL70063
+ORC|RE|1^IIS|O60A4.3^MITRE Healthcare
+RXA|0|1|20210616||94^MMRV^CVX|0.5|mL^milliliters^UCUM||00^New immunization record^NIP001||||||L6696AE||MSD^Merck and Co., Inc.^MVX|||CP|A
+RXR|C38299^Subcutaneous^NCIT|RA^Right Upper Arm^HL70163
+OBX|1|CE|64994-7^Vaccine funding program eligibility category^LN|1|V02^VFC eligible - Medicaid/Medicaid Managed Care^HL70064||||||F|||20210616|||VXC40^Eligibility captured at the immunization level^CDCPHINVS
+OBX|2|CE|30956-7^Vaccine Type^LN|1|94^MMRV^CVX||||||F||||||
+OBX|3|TS|29768-9^Date vaccine information statement published^LN|1|20100521||||||F||||||
+OBX|4|TS|29769-7^Date vaccine information statement presented^LN|1|20210616||||||F||||||

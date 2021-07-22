@@ -1,0 +1,4 @@
+MSH|^~\&||IIS Sandbox v0.4.6|||20210721061020+0000||RSP^K11^RSP_K11|1626891020355334|P|2.5.1|||NE|NE|||||Z33^CDCPHINVS
+MSA|AA|2874716164
+QAK|2874716164|NF|Z34^Request a Complete Immunization History^CDCPHINVS
+QPD|Z34^Request Immunization History^CDCPHINVS|2874716164|^^^^^|Not In Sandbox^Patient^^^^^|^^^^^^|20200101||^^^^^USA^|^PRN^PH^^^81^|||||
