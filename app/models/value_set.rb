@@ -35,13 +35,14 @@ class ValueSet < FHIRRecord
         #     "http://snomed.info/sct" => [[value_set_json['compose']['include'][0]['concept'][0]["code"], value_set_json['compose']['include'][0]['concept'][0]["display"]]],
         #     "http://loinc.org" => [[value_set_json['compose']['include'][0]['concept'][0]["code"], value_set_json['compose']['include'][0]['concept'][0]["display"]]]
         # } 
-
-        #isolate include and then iterate through the system
-        #go and grab the codes 
         
     end
 
     #RESULTS = get_info_from_valueset(value_set_json)
 
+    @@value_set_covid_json = FHIR.from_contents(File.read('db/lab_codes/ValueSet-2.16.840.1.113762.1.4.1114.9.json'))
+    def self.get_covid_codes_valueset
+        @@value_set_covid_json.compose.include
+    end 
 
 end
