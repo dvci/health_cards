@@ -81,7 +81,7 @@ class QBPClientTest < ActiveSupport::TestCase
   test 'SOAP FAULT: SecurityFault - bad credentials' do
     user_sandbox_credentials = { username: 'mitre', password: 'bad_password', facilityID: 'MITRE Healthcare' }
     assert_raises Savon::SOAPFault do
-      response = HealthCards::QBPClient.query({}, user_sandbox_credentials)
+      HealthCards::QBPClient.query({}, user_sandbox_credentials)
     end
   end
 
@@ -90,7 +90,7 @@ class QBPClientTest < ActiveSupport::TestCase
     # Currently, this throws the same exception as the above "Security Fault"
     user_sandbox_credentials = { username: 'NPE', password: 'NPE', facilityID: 'MITRE Healthcare' }
     assert_raises Savon::SOAPFault do
-      response = HealthCards::QBPClient.query({}, user_sandbox_credentials)
+      HealthCards::QBPClient.query({}, user_sandbox_credentials)
     end
   end
 
@@ -100,13 +100,13 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # Check Response Statuses
 
-  test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)" when all of patient info is entered' do
+  test 'Status of OK - "Data found, no errors" is returned for valid patient with all fields specified' do
     response = HealthCards::QBPClient.query(@complete_patient)
     status = HealthCards::QBPClient.get_response_status(response)
     assert_equal(:OK, status)
   end
 
-  test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)" when minimal amount of patient info is entered' do
+  test 'Status of OK - "Data found, no errors" is returned for valid patient with minimum fields specified' do
     minimal_data_patient = @complete_patient.slice(:patient_name, :patient_dob)
     minimal_data_patient[:patient_name] = minimal_data_patient[:patient_name].slice(:family_name, :given_name)
     response = HealthCards::QBPClient.query(minimal_data_patient)
@@ -128,9 +128,9 @@ class QBPClientTest < ActiveSupport::TestCase
     assert_equal(:AE, status)
   end
 
-  test 'Patient leading to multiple matches within the sandbox returns Z31 profile indicating that one or more low confidence matches are found' do
+  test 'Unspecific query returns Z31 profile indicating that one or more low confidence matches are found' do
     duplicate_patient = @complete_patient.deep_dup
-    # NOTE: This is a specialized query built into the IIS system that allows for the return of a Z31 multi-match profile
+    # NOTE: This is a specialized query built into the sandbox that allows for the return of a Z31 multi-match profile
     # I was unable to trigger this response manually by uploading similar patients into the sandbox.
     duplicate_patient[:patient_name][:second_or_further_names] = 'Multi'
     response = HealthCards::QBPClient.query(duplicate_patient)
@@ -143,7 +143,7 @@ class QBPClientTest < ActiveSupport::TestCase
   # V2 to FHIR Translation Tests
 
   test 'Valid HL7 V2 Complete Immunization History Response will return a FHIR Bundle from the HL7 to V2 Translator' do
-    response = open('test/fixtures/files/RSP_valid.hl7').readlines
+    response = File.open('test/fixtures/files/RSP_valid.hl7').readlines
     v2_response = HL7::Message.new(response)
     fhir_response = HealthCards::QBPClient.translate(v2_response)
     fhir_response_hash = JSON.parse(fhir_response)
@@ -151,7 +151,7 @@ class QBPClientTest < ActiveSupport::TestCase
   end
 
   test 'Non-Patient HL7 V2 Response will return an error message from the HL7 to V2 Translator' do
-    response = open('test/fixtures/files/RSP_error.hl7').readlines
+    response = File.open('test/fixtures/files/RSP_error.hl7').readlines
     v2_response = HL7::Message.new(response)
     fhir_response = HealthCards::QBPClient.translate(v2_response)
     fhir_response_hash = JSON.parse(fhir_response)

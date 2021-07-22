@@ -7,7 +7,7 @@ require_relative 'qpd'
 
 module HealthCards
   # Send, receive, and translate HL7 V2 messages from the QBP client of the IIS sandbox
-  module QBPClient
+  module QBPClient # rubocop:disable Metrics/ModuleLength # Disabling since module will be ported and refactored
     extend self
     # Query a patient's Immunization history from the IIS Sandbox
     # @param patient_info [Hash] Patient demographic info sent from the IIS Consumer Portal
@@ -35,7 +35,7 @@ module HealthCards
 
       raw_response_message = response.body[:submit_single_message_response][:return]
       response_segments = raw_response_message.to_s.split("\n")
-      response_message = HL7::Message.new(response_segments)
+      HL7::Message.new(response_segments)
     end
 
     # Translate relevant info from V2 Response message into a FHIR Bundle
@@ -48,8 +48,9 @@ module HealthCards
       fhir_response.body
     end
 
-    def build_hl7_message(patient_info)
-      raw_input = open('lib/assets/qbp.hl7').readlines
+    def build_hl7_message(patient_info) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      # Disabling method length Rubocop warnings due to probable future refactor and moving of repos
+      raw_input = File.open('lib/assets/qbp.hl7').readlines
       msg_input = HL7::Message.new(raw_input)
 
       # Build MSH Segment
@@ -121,7 +122,7 @@ module HealthCards
                             endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
       # Upload Patient from fixture
-      upload_raw_input = open(vxu_path).readlines
+      upload_raw_input = FILE.open(vxu_path).readlines
       upload_msg_input = HL7::Message.new(upload_raw_input)
       client.call(:submit_single_message) do
         message({ username: Rails.application.config.username,
@@ -153,12 +154,13 @@ module HealthCards
       when :Z31
         handle_z31_errors(msg_response)
         # Setting response status to :TM (Too much data found) to handle case where multiple mathces are returned.
-        # The Query Response Status (QAK) segment would not indicate the need to input more information in this scenario.
+        # Query Response Status (QAK) segment would not indicate the need to input more information in this scenario.
         response_status = :TM
       when :Z33
         handle_z33_errors(msg_response)
       else
-        # TODO: Come up with request that can produce an unrecognized response profile (this may require a flavor in the IIS Sandbox)
+        # TODO: Come up with request that can produce an unrecognized response profile
+        # (this may require a flavor in the IIS Sandbox)
         raise HealthCards::OperationNotSupportedError
       end
 
