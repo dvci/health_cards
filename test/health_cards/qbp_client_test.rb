@@ -136,7 +136,7 @@ class QBPClientTest < ActiveSupport::TestCase
     profile = response[:MSH][20]
     assert_equal('Z31^CDCPHINVS', profile)
     status = HealthCards::QBPClient.get_response_status(response)
-    assert_equal(:AE, status)
+    assert_equal(:TM, status)
   end
 
 
@@ -157,20 +157,6 @@ class QBPClientTest < ActiveSupport::TestCase
     fhir_response_hash = JSON.parse(fhir_response)
     assert_not_nil(fhir_response_hash["errors"])
   end 
-
-
-  # Temporary Test to log things
-  test 'patient parameters are properly converted to HL7 V2 elements' do
-    v2_response_body = HealthCards::QBPClient.query( @complete_patient )
-
-    puts 'RESPONSE:'
-    puts(v2_response_body) # Printing response for testing purposes
-    fhir_response_body = HealthCards::QBPClient.translate(v2_response_body)
-
-    puts ''
-    puts 'FHIR:'
-    puts fhir_response_body # Printing response for testing purposes
-  end
 
   # # WARNING: Running tests with this test uncommented could change sandbox data and cause other tests to fail
   # # Temporary Test to upload a patient
