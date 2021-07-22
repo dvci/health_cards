@@ -25,6 +25,7 @@ module HealthCards
                             pretty_print_xml: true)
       # Check if client is configured properly
       raise HealthCards::OperationNotSupportedError unless client.operations.include?(:submit_single_message)
+
       check_client_connectivity(client) if client.operations.include?(:connectivity_test)
 
       msg_input = build_hl7_message(patient_info)
@@ -63,9 +64,9 @@ module HealthCards
 
       if patient_info[:patient_list]
         patient_id_list = HL7::MessageParser.split_by_delimiter(qpd.patient_id_list, msg_input.item_delim)
-        patient_id_list[1] = patient_info[:patient_list][:id] || '' # ID
-        patient_id_list[4] = patient_info[:patient_list][:assigning_authority] || '' # assigning authority
-        patient_id_list[5] = patient_info[:patient_list][:identifier_type_code] ||'' # identifier type code
+        patient_id_list[1] = patient_info[:patient_list][:id] # ID
+        patient_id_list[4] = patient_info[:patient_list][:assigning_authority] # assigning authority
+        patient_id_list[5] = patient_info[:patient_list][:identifier_type_code] # identifier type code
         qpd.patient_id_list = patient_id_list.join(msg_input.item_delim)
       end
 
@@ -107,7 +108,7 @@ module HealthCards
         qpd.phone_home = phone_home.join(msg_input.item_delim)
       end
 
-      return msg_input
+      msg_input
     end
 
     # NOTE: This is a helper method to upload a patient to the IIS Sandbox and should be used for testing purposes only
@@ -161,9 +162,8 @@ module HealthCards
         raise HealthCards::OperationNotSupportedError
       end
 
-      return response_status
+      response_status
     end
-
 
     # Methods that check for and handle errors
 
@@ -187,19 +187,19 @@ module HealthCards
     # Methods to Handle Profile Specific Errors
 
     # PROFILE Z32 RESPONSE PROFILE - RETURN COMPLETE IMMUNIZATION HISTORY
-    def handle_z32_errors(msg)
+    def handle_z32_errors(_msg)
       # TODO: Handle RSP K11 Z32 test cases
       nil
     end
 
     # PROFILE Z31 - RETURN A LIST OF CANDIDATES PROFILE
-    def handle_z31_errors(msg)
+    def handle_z31_errors(_msg)
       # TODO: Handle RSP K11 Z31 test cases
       nil
     end
 
     # PROFILE Z33 - RETURN AN ACKNOWLEDGEMENT WITH NO PERSON RECORDS (ERRORS)
-    def handle_z33_errors(msg)
+    def handle_z33_errors(_msg)
       # TODO: Handle RSP K11 Z323 test cases
       nil
     end
