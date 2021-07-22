@@ -115,7 +115,7 @@ class QBPClientTest < ActiveSupport::TestCase
     assert_equal(:OK, status)
   end
 
-  test 'Patient not in sandbox returns a response status of NF - "Data found, no errors (this is the default)"' do
+  test 'Patient not in sandbox returns a response status of NF - "No data found, no errors"' do
     missing_patient =  { patient_name: { family_name: 'Not In Sandbox', given_name: 'Patient'}, patient_dob: '20200101' }
     response = HealthCards::QBPClient.query(missing_patient)
     status = HealthCards::QBPClient.get_response_status(response)
@@ -160,7 +160,7 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # Temporary Test to log things
   test 'patient parameters are properly converted to HL7 V2 elements' do
-    v2_response_body = HealthCards::QBPClient.query( { } )
+    v2_response_body = HealthCards::QBPClient.query( @complete_patient )
 
     puts 'RESPONSE:'
     puts(v2_response_body) # Printing response for testing purposes

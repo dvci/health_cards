@@ -41,14 +41,7 @@ module HealthCards
       response_segments = raw_response_message.to_s.split("\n")
       response_message = HL7::Message.new(response_segments)
 
-      # TODO: This should be moved out of this function and combined with get_status to either a) return 1 of 4 use case statuses or b) return an error
-          # Use Case statuses:
-          # 1) Good to go
-          # 2) Not found
-          # 3) More specific information
-          # 4) Query error / bad query format
-
-      check_response_profile_errors(response_message)
+ 
       response_message
 
       # TODO: (probably last) Add status as part of output
@@ -130,13 +123,14 @@ module HealthCards
       return msg_input
     end
 
+    # NOTE: This is a helper method to upload a patient to the IIS Sandbox and should be used for testing purposes only
+
     # Send a VXU message to the IIS Sandbox service to upload a patient
     # @param vxu_path [String] File Path where HL7 V2 VXU message is located
     def upload_patient(vxu_path = 'lib/assets/vxu_fixtures/vxu.hl7')
       # Define client
       service_def = 'lib/assets/service.wsdl'
       client = Savon.client(wsdl: service_def,
-                            # endpoint: 'http://localhost:8081/iis-sandbox/soap',
                             endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
       # Upload Patient from Fixture
@@ -150,15 +144,40 @@ module HealthCards
       end
     end
 
-
     # Methods That Parse HL7 V2 Message
-    
-    # Get QAK.2
+
+    # Get the status of a response returned from the IIS Sandbox. Throw Errors for invalid responses.
+    # @param msg_response [HL7::Message] The response message returned from an IIS Sandbox QBP Query
+    # @return [Symbol] The status of the response from the IIS-Sandbox
+    # Return Options:
+    #   :OK = Data found, no errors (this is the default)
+    #   :NF = No data found, no errors
+    #   :AE = Application Error
+    #   :TM = Too much data found
     def get_response_status(msg_response)
-      msg_response[:QAK][2].to_sym
+      # Get QAK.2 (Query Response Status)
+      response_status = msg_response[:QAK][2].to_sym
+
+      # Handle Errors for each profile that could be returned; modify response_status if necessary
+      profile = msg_response[:MSH][20][0..2].to_sym
+      case profile
+      when :Z32
+        handle_z32_errors(msg_response)
+      when :Z31
+        handle_z31_errors(msg_response)
+        # Setting response status to :TM (Too much data found) to handle case where multiple mathces are returned.
+        # The Query Response Status (QAK) would not indicate the need to input more information in this scenario.
+        response_status = :TM
+      when :Z33
+        handle_z33_errors(msg_response)
+      else
+        # TODO: Come up with request that can produce an unrecognized response profile (this may require a flavor in the IIS Sandbox)
+        raise HealthCards::OperationNotSupportedError
+      end
+
+      return response_status
     end
 
-    # TODO: Have a way to indicate that a list of candidate patients are returned
 
     # Methods that check for and handle errors
 
@@ -170,17 +189,6 @@ module HealthCards
       throw HealthCards::BadClientConnectionError unless conncectivity_response == 'End-point is ready. Echoing: ?'
     end
 
-    def check_response_profile_errors(msg_response)
-      profile = msg_response[:MSH][20][0..2].to_sym
-      case profile
-      when :Z32
-        handle_z32_errors(msg_response)
-      when :Z31
-        handle_z31_errors(msg_response)
-      when :Z33
-        handle_z33_errors(msg_response)
-      end
-    end
 
     private
 

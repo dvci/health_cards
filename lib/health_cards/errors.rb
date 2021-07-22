@@ -83,6 +83,13 @@ module HealthCards
     end
   end
 
+  # Exception thrown when the response profile returned from the IIS sandbox is not recognized
+  class UnrecognizedResponseProfileError < QBPClientError
+    def initialize(msg = 'Response Profile returned from the sandbox is not recognized')
+      super(msg)
+    end
+  end
+
   # Other errors
 
   # Exception thrown when an invalid key (public or private) is provided
