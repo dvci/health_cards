@@ -162,7 +162,7 @@ class QBPClientTest < ActiveSupport::TestCase
     assert_equal(:AE, status)
   end
 
-  test 'Patient leading to multiple mathces within the sandbox returns Z31 profile indicating that one or more low confidence matches are found' do
+  test 'Patient leading to multiple matches within the sandbox returns Z31 profile indicating that one or more low confidence matches are found' do
     duplicate_patient = @patient_hash.deep_dup
     # NOTE: This is a specialized query build into the IIS system that allows for the return of a Z31 multi-match profile
       # I was unable to trigger this response by manually uploading similar patients into the sandbox. 
@@ -190,8 +190,6 @@ class QBPClientTest < ActiveSupport::TestCase
     fhir_response_hash = JSON.parse(fhir_response)
     assert_not_nil(fhir_response_hash["errors"])
   end 
-
-
 
 
   # Temporary Test to log things
