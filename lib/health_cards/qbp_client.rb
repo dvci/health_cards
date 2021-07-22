@@ -12,9 +12,7 @@ module HealthCards
     # Query a patient's Immunization history from the IIS Sandbox
     # @param patient_info [Hash] Patient demographic info sent from the IIS Consumer Portal
     # @param credentials [Hash] (optional) User Id, Password, and Facility Id for the IIS Sandbox login
-    # @return [Hash]
-    # response_status: [Symbol] The status of the response from the IIS-Sandbox
-    # response: [String] The HL7 V2 Response message from the IIS-Sandbox, represented as a string
+    # @return [HL7::Message] The HL7 V2 Response message from the IIS-Sandbox
     def query(patient_info,
               sandbox_credentials = { username: Rails.application.config.username,
                                       password: Rails.application.config.password,
@@ -34,24 +32,13 @@ module HealthCards
         message(**sandbox_credentials, hl7Message: msg_input)
       end
 
-      # TODO: Check for SOAP Faults
-      # TODO: Check for Response Error Cases
-
       raw_response_message = response.body[:submit_single_message_response][:return]
       response_segments = raw_response_message.to_s.split("\n")
       response_message = HL7::Message.new(response_segments)
-
- 
-      response_message
-
-      # TODO: (probably last) Add status as part of output
-      # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
     end
 
-
-
     # Translate relevant info from V2 Response message into a FHIR Bundle
-    # @param v2_response [HL7::Message] V2 message returned from the IIS-Sandbox
+    # @param v2_response [HL7::Message] V2 message returned from the IIS Sandbox
     # @return [String] FHIR Bundle representation of the V2 message
     def translate(v2_response)
       fhir_response = Faraday.post('http://vci.mitre.org:3000/api/v0.1.0/convert/text',
@@ -124,7 +111,6 @@ module HealthCards
     end
 
     # NOTE: This is a helper method to upload a patient to the IIS Sandbox and should be used for testing purposes only
-
     # Send a VXU message to the IIS Sandbox service to upload a patient
     # @param vxu_path [String] File Path where HL7 V2 VXU message is located
     def upload_patient(vxu_path = 'lib/assets/vxu_fixtures/vxu.hl7')
@@ -133,7 +119,7 @@ module HealthCards
       client = Savon.client(wsdl: service_def,
                             endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
-      # Upload Patient from Fixture
+      # Upload Patient from fixture
       upload_raw_input = open(vxu_path).readlines
       upload_msg_input = HL7::Message.new(upload_raw_input)
       client.call(:submit_single_message) do
@@ -166,7 +152,7 @@ module HealthCards
       when :Z31
         handle_z31_errors(msg_response)
         # Setting response status to :TM (Too much data found) to handle case where multiple mathces are returned.
-        # The Query Response Status (QAK) would not indicate the need to input more information in this scenario.
+        # The Query Response Status (QAK) segment would not indicate the need to input more information in this scenario.
         response_status = :TM
       when :Z33
         handle_z33_errors(msg_response)
@@ -189,7 +175,6 @@ module HealthCards
       throw HealthCards::BadClientConnectionError unless conncectivity_response == 'End-point is ready. Echoing: ?'
     end
 
-
     private
 
     def valid_credentials?(credentials)
@@ -202,19 +187,19 @@ module HealthCards
     # Methods to Handle Profile Specific Errors
 
     # PROFILE Z32 RESPONSE PROFILE - RETURN COMPLETE IMMUNIZATION HISTORY
-    def handle_z32_errors(_msg)
+    def handle_z32_errors(msg)
       # TODO: Handle RSP K11 Z32 test cases
       nil
     end
 
     # PROFILE Z31 - RETURN A LIST OF CANDIDATES PROFILE
-    def handle_z31_errors(_msg)
+    def handle_z31_errors(msg)
       # TODO: Handle RSP K11 Z31 test cases
       nil
     end
 
     # PROFILE Z33 - RETURN AN ACKNOWLEDGEMENT WITH NO PERSON RECORDS (ERRORS)
-    def handle_z33_errors(_msg)
+    def handle_z33_errors(msg)
       # TODO: Handle RSP K11 Z323 test cases
       nil
     end

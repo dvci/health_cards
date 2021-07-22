@@ -39,7 +39,7 @@ class QBPClientTest < ActiveSupport::TestCase
     assert_instance_of(HL7::Message, v2_response_body)
   end
 
-  test 'translate() method successfully returns a JSON object' do
+  test 'translate() method successfully returns a stringified JSON object' do
     v2_response_body = HealthCards::QBPClient.query( { } )
     fhir_response_body = HealthCards::QBPClient.translate(v2_response_body)
     parsed_fhir_response = begin
@@ -52,7 +52,6 @@ class QBPClientTest < ActiveSupport::TestCase
 
   test 'raises error if inputted sandbox credentials are incorrectly formatted' do
     user_sandbox_credentials = { username: 'test_user', password: 'test_password', facilityID: 'test_facilityID' }
-
     missing_credential = user_sandbox_credentials.except(:password)
     assert_raises HealthCards::InvalidSandboxCredentialsError do
       HealthCards::QBPClient.query( {}, missing_credential)
@@ -96,10 +95,10 @@ class QBPClientTest < ActiveSupport::TestCase
   end
 
   # Response Error Cases
-  #   NOTE: We currently use a locallly downloaded version of the correctly implemented WSDL file, so we will not have 
+  #   NOTE: We currently use a locally downloaded version of the correctly implemented WSDL file, 
   #   so we will not have to worry about poorly formatted responses for our use case
 
-  # Check Response Status
+  # Check Response Statuses
 
   test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)" when all of patient info is entered' do
     response = HealthCards::QBPClient.query(@complete_patient)
@@ -130,12 +129,14 @@ class QBPClientTest < ActiveSupport::TestCase
 
   test 'Patient leading to multiple matches within the sandbox returns Z31 profile indicating that one or more low confidence matches are found' do
     duplicate_patient = @complete_patient.deep_dup
-    # NOTE: This is a specialized query build into the IIS system that allows for the return of a Z31 multi-match profile
-      # I was unable to trigger this response by manually uploading similar patients into the sandbox. 
+    # NOTE: This is a specialized query built into the IIS system that allows for the return of a Z31 multi-match profile
+      # I was unable to trigger this response manually by uploading similar patients into the sandbox. 
     duplicate_patient[:patient_name][:second_or_further_names] = "Multi"
     response = HealthCards::QBPClient.query(duplicate_patient)
     profile = response[:MSH][20]
     assert_equal('Z31^CDCPHINVS', profile)
+    status = HealthCards::QBPClient.get_response_status(response)
+    assert_equal(:AE, status)
   end
 
 
@@ -171,42 +172,9 @@ class QBPClientTest < ActiveSupport::TestCase
     puts fhir_response_body # Printing response for testing purposes
   end
 
-  # # WARNING: Running tests with this test uncommented could cause other tests to fail
+  # # WARNING: Running tests with this test uncommented could change sandbox data and cause other tests to fail
   # # Temporary Test to upload a patient
   # test 'Uploading a patient' do
   #   HealthCards::QBPClient.upload_patient() #Enter VXU Upload fixture path parameter here
   # end
 end
-
-# NOTES / FUTURE TESTS
-
-# MSH Propertly Added
-#   Time is a time
-#   UID is a number
-# QPD patient info properly added
-#   Check that each element matches a string (i.e.  Mother's maiden name =  ^^name^^
-# Check that all 3 required segments are there
-# Checdkd that message is properly formed hl7 v2 message
-
-# Check to see that response is received
-# Response is properly formed as an HL7 message
-
-# Connection to V2 to fhir works
-# Receive back a FHIR Resoruce
-
-# Check each type of Error
-#   Proper message returns Z32
-#   Need to Refine - Z31
-#   Error - Z33
-
-# Checks for Proper Response
-#   Check if each V2 Segment is there in the response
-#   There should be no errors
-#   There should be a vaccine
-#   QAK should have proper query response status (OK) - Also should have proper status for errors as well
-#   Same QPD should be returned
-
-# Check that message is ackn olwedged (MSA1 = AA)
-# Check that there are not query errors (QAK2 != AE or AR)
-# Add ToDo for handling PD and TM
-# Check that Data is found, not found (QAK2 = OF, NF)
