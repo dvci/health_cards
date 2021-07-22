@@ -79,11 +79,25 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # SOAP Faults
 
-  # TODO: Add SOAP Faults
-  test 'SecurityFault - bad credentials' do
-    user_sandbox_credentials = { username: 'test_user', password: 'test_password', facilityID: 'test_facilityID' }
-    HealthCards::QBPClient.query(@complete_patient, user_sandbox_credentials)
+  test 'SOAP FAULT: SecurityFault - bad credentials' do
+    user_sandbox_credentials = { username: 'mitre', password: 'bad_password', facilityID: 'MITRE Healthcare' }
+    assert_raises Savon::SOAPFault do
+      response = HealthCards::QBPClient.query( { }, user_sandbox_credentials)
+    end
   end
+
+  test 'SOAP FAULT: Unknown fault - generic error' do
+    # NOTE: This functionality may be updated within the IIS Sandbox, according to recent conversation with Nathan
+    # Currently, this throws the same exception as the above "Security Fault"
+    user_sandbox_credentials = { username: 'NPE', password: 'NPE', facilityID: 'MITRE Healthcare' }
+    assert_raises Savon::SOAPFault do
+      response = HealthCards::QBPClient.query( { }, user_sandbox_credentials)
+    end
+  end
+
+  # Response Error Cases
+  #   NOTE: We currently use a locallly downloaded version of the correctly implemented WSDL file, so we will not have 
+  #   so we will not have to worry about poorly formatted responses for our use case
 
   # Check Response Status
 
@@ -146,7 +160,7 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # Temporary Test to log things
   test 'patient parameters are properly converted to HL7 V2 elements' do
-    v2_response_body = HealthCards::QBPClient.query(@complete_patient)
+    v2_response_body = HealthCards::QBPClient.query( { } )
 
     puts 'RESPONSE:'
     puts(v2_response_body) # Printing response for testing purposes
