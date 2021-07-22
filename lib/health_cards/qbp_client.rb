@@ -40,6 +40,14 @@ module HealthCards
       raw_response_message = response.body[:submit_single_message_response][:return]
       response_segments = raw_response_message.to_s.split("\n")
       response_message = HL7::Message.new(response_segments)
+
+      # TODO: This should be moved out of this function and combined with get_status to either a) return 1 of 4 use case statuses or b) return an error
+          # Use Case statuses:
+          # 1) Good to go
+          # 2) Not found
+          # 3) More specific information
+          # 4) Query error / bad query format
+
       check_response_profile_errors(response_message)
       response_message
 
@@ -57,7 +65,7 @@ module HealthCards
                             endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
                             pretty_print_xml: true)
       # Upload Patient from Fixture
-      upload_raw_input = open('lib/assets/vxu_fixtures/vxu_2_2.hl7').readlines
+      upload_raw_input = open('lib/assets/vxu_fixtures/vxu_simple_2.hl7').readlines
       upload_msg_input = HL7::Message.new(upload_raw_input)
       client.call(:submit_single_message) do
         message({ username: Rails.application.config.username,
@@ -148,6 +156,8 @@ module HealthCards
       msg_response[:QAK][2].to_sym
     end
 
+    # TODO: Have a way to indicate that a list of candidate patients are returned
+
     # Methods that check for and handle errors
 
     def check_client_connectivity(client)
@@ -166,7 +176,7 @@ module HealthCards
       when :Z31
         handle_z31_errors(msg_response)
       when :Z33
-        handle_z31_errors(msg_response)
+        handle_z33_errors(msg_response)
       end
     end
 
