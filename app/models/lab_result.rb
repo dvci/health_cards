@@ -3,9 +3,8 @@ class LabResult < FHIRRecord
     attribute :lab_code, :string
     attribute :status, :string
   
-    belongs_to :patient  
-    belongs_to :lab
-
+    belongs_to :patient
+    
     serialize :json, FHIR::Observation
   
     validates :effective, presence: true
@@ -44,8 +43,9 @@ class LabResult < FHIRRecord
   end
 
   def lab_code=(lc)
-    code = Lab.find(lc).code
-    update_lab_code(code)
+    lc = ValueSet.get_info_from_valueset
+    #TODO: should be able to get the code here
+    update_lab_code(lc)
     super(lc)
   end
 
@@ -56,8 +56,8 @@ class LabResult < FHIRRecord
 private 
 
 def update_lab_code(code)
-  json.labCode ||= FHIR::CodeableConcept.new
-  json.labCode.coding[0] = FHIR::Coding.new(system: 'http://loinc.org', code: code)
+  json.lab_code ||= FHIR::CodeableConcept.new
+  #json.lab_code.coding[0] = FHIR::Coding.new(system: 'http://loinc.org', code: code)
 end
 
   def update_patient_reference(pat)
