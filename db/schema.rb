@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_28_195550) do
+ActiveRecord::Schema.define(version: 2021_06_22_174803) do
 
   create_table "immunizations", force: :cascade do |t|
     t.integer "patient_id"
@@ -40,12 +40,6 @@ ActiveRecord::Schema.define(version: 2021_06_28_195550) do
     t.string "code"
     t.string "name"
     t.integer "doses_required"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
-  create_table "value_sets", force: :cascade do |t|
-    t.text "json"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

@@ -1,8 +1,7 @@
 class LabResultsController < ApplicationController
 
     before_action :find_patient, except: :show
-    before_action :set_labResult, only: %i[edit update destroy]
-    before_action :find_lab_codes, only: %i[new edit create update]
+    before_action :set_lab_result, only: %i[index edit update destroy]
 
     
     def new
@@ -38,7 +37,6 @@ class LabResultsController < ApplicationController
             format.json { render :show, status: :ok, location: @lab_result }
           else
             format.html do
-              find_lab_codes
               render :edit, status: :unprocessable_entity
             end
             format.json { render json: @lab_result.errors, status: :unprocessable_entity }
@@ -57,8 +55,8 @@ class LabResultsController < ApplicationController
       private
     
       # Use callbacks to share common setup or constraints between actions.
-      def set_labResult
-        @lab_result = @patient.labResults.find(params[:id])
+      def set_lab_result
+        @lab_result = @patient.lab_results
       end
     
       def lab_result_params
@@ -67,10 +65,6 @@ class LabResultsController < ApplicationController
     
       def find_patient
         @patient = Patient.find(params[:patient_id])
-      end
-
-      def find_lab_codes
-        @allLabCodes = Lab.all
       end
     
 end
