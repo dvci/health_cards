@@ -1,9 +1,0 @@
-MSH|^~\&|||||20210722011125+0000||VXU^V04^VXU_V04|O05N276.1nl|P|2.5.1|||ER|AL|||||Z22^CDCPHINVS|
-PID|1||Z17U293^^^AIRA-TEST^MR||BinghamAIRA^SarmisthaAIRA^^^^^L||20170724|F|||||||||||||||
-ORC|RE||O05N276.3^AIRA|||||||I-23432^Burden^Donna^A^^^^^NIST-AA-1^^^^PRN||57422^RADON^NICHOLAS^^^^^^NIST-AA-1^L^^^PRN|
-RXA|0|1|20210722||21^Varicella^CVX|0.5|mL^milliliters^UCUM||00^Administered^NIP001||||||Y5841RR||MSD^Merck and Co^MVX|||CP|A|
-RXR|C38299^^NCIT|RA^^HL70163|
-OBX|1|CE|64994-7^Vaccine funding program eligibility category^LN|1|V01^Not VFC eligible^HL70064||||||F|||20210722|||VXC40^Eligibility captured at the immunization level^CDCPHINVS|
-OBX|2|CE|30956-7^Vaccine Type^LN|2|21^Varicella^CVX||||||F|
-OBX|3|TS|29768-9^Date vaccine information statement published^LN|2|20080313||||||F|
-OBX|4|TS|29769-7^Date vaccine information statement presented^LN|2|20210722||||||F|

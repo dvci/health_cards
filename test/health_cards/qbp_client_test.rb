@@ -5,7 +5,7 @@ require 'health_cards/qbp_client'
 
 class QBPClientTest < ActiveSupport::TestCase
   setup do
-    @patient_hash = { patient_list: { id: 'J19X5',
+    @complete_patient = { patient_list: { id: 'J19X5',
                                       assigning_authority: 'AIRA-TEST',
                                       identifier_type_code: 'MR' },
                       patient_name: { family_name: 'WeilAIRA',
@@ -24,54 +24,6 @@ class QBPClientTest < ActiveSupport::TestCase
                                  address_type: 'P' },
                       phone: { area_code: '810',
                                local_number: '2499010' } }
-
-    # To Do: Delete this once it confirmed does not work
-    @duplicate_hash = {
-      patient_list: { id: '',
-                      assigning_authority: '',
-                      identifier_type_code: '' },
-      patient_name: { family_name: 'Platte',
-                      given_name: 'Zara',
-                      second_or_further_names: '',
-                      suffix: '' },
-      mothers_maiden_name: { family_name: '',
-                             given_name: '',
-                             name_type_code: '' },
-      patient_dob: '20160605',
-      admin_sex: '',
-      address: { street: '',
-                 city: '',
-                 state: '',
-                 zip: '',
-                 address_type: '' },
-      phone: { area_code: '',
-               local_number: '' }
-
-    }
-
-    @duplicate_hash_2 = {
-      patient_list: { id: '',
-                      assigning_authority: '',
-                      identifier_type_code: '' },
-      patient_name: { family_name: 'BinghamAIRA',
-                      given_name: 'SarmisthaAIRA',
-                      second_or_further_names: '',
-                      suffix: '' },
-      mothers_maiden_name: { family_name: '',
-                             given_name: '',
-                             name_type_code: '' },
-      patient_dob: '20170724',
-      admin_sex: '',
-      address: { street: '',
-                 city: '',
-                 state: '',
-                 zip: '',
-                 address_type: '' },
-      phone: { area_code: '',
-               local_number: '' }
-
-    }
-
 
     WebMock.allow_net_connect!
   end
@@ -130,19 +82,19 @@ class QBPClientTest < ActiveSupport::TestCase
   # TODO: Add SOAP Faults
   test 'SecurityFault - bad credentials' do
     user_sandbox_credentials = { username: 'test_user', password: 'test_password', facilityID: 'test_facilityID' }
-    HealthCards::QBPClient.query(@patient_hash, user_sandbox_credentials)
+    HealthCards::QBPClient.query(@complete_patient, user_sandbox_credentials)
   end
 
   # Check Response Status
 
   test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)" when all of patient info is entered' do
-    response = HealthCards::QBPClient.query(@patient_hash)
+    response = HealthCards::QBPClient.query(@complete_patient)
     status = HealthCards::QBPClient.get_response_status(response)
     assert_equal(:OK, status)
   end
 
   test 'Patient in sandbox returns a response status of OK - "Data found, no errors (this is the default)" when minimal amount of patient info is entered' do
-    minimal_data_patient = @patient_hash.slice(:patient_name, :patient_dob)
+    minimal_data_patient = @complete_patient.slice(:patient_name, :patient_dob)
     minimal_data_patient[:patient_name] = minimal_data_patient[:patient_name].slice(:family_name, :given_name)
     response = HealthCards::QBPClient.query(minimal_data_patient)
     status = HealthCards::QBPClient.get_response_status(response)
@@ -163,7 +115,7 @@ class QBPClientTest < ActiveSupport::TestCase
   end
 
   test 'Patient leading to multiple matches within the sandbox returns Z31 profile indicating that one or more low confidence matches are found' do
-    duplicate_patient = @patient_hash.deep_dup
+    duplicate_patient = @complete_patient.deep_dup
     # NOTE: This is a specialized query build into the IIS system that allows for the return of a Z31 multi-match profile
       # I was unable to trigger this response by manually uploading similar patients into the sandbox. 
     duplicate_patient[:patient_name][:second_or_further_names] = "Multi"
@@ -194,7 +146,7 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # Temporary Test to log things
   test 'patient parameters are properly converted to HL7 V2 elements' do
-    v2_response_body = HealthCards::QBPClient.query(@duplicate_hash)
+    v2_response_body = HealthCards::QBPClient.query(@complete_patient)
 
     puts 'RESPONSE:'
     puts(v2_response_body) # Printing response for testing purposes
@@ -208,7 +160,7 @@ class QBPClientTest < ActiveSupport::TestCase
   # # WARNING: Running tests with this test uncommented could cause other tests to fail
   # # Temporary Test to upload a patient
   # test 'Uploading a patient' do
-  #   HealthCards::QBPClient.upload_patient()
+  #   HealthCards::QBPClient.upload_patient() #Enter VXU Upload fixture path parameter here
   # end
 end
 

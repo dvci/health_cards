@@ -55,25 +55,7 @@ module HealthCards
       # return {response: msg_output.to_hl7, status: get_response_status(msg_output)}
     end
 
-    # TODO: Delete this or put it somewhere else
-    # TODO: (probably last) Clean up patients in the Sandbox
-    def upload_patient
-      # Define client
-      service_def = 'lib/assets/service.wsdl'
-      client = Savon.client(wsdl: service_def,
-                            # endpoint: 'http://localhost:8081/iis-sandbox/soap',
-                            endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
-                            pretty_print_xml: true)
-      # Upload Patient from Fixture
-      upload_raw_input = open('lib/assets/vxu_fixtures/vxu_simple_2.hl7').readlines
-      upload_msg_input = HL7::Message.new(upload_raw_input)
-      client.call(:submit_single_message) do
-        message({ username: Rails.application.config.username,
-                  password: Rails.application.config.password,
-                  facilityID: Rails.application.config.facilityID,
-                  hl7Message: upload_msg_input })
-      end
-    end
+
 
     # Translate relevant info from V2 Response message into a FHIR Bundle
     # @param v2_response [HL7::Message] V2 message returned from the IIS-Sandbox
@@ -146,6 +128,26 @@ module HealthCards
       end
 
       return msg_input
+    end
+
+    # Send a VXU message to the IIS Sandbox service to upload a patient
+    # @param vxu_path [String] File Path where HL7 V2 VXU message is located
+    def upload_patient(vxu_path = 'lib/assets/vxu_fixtures/vxu.hl7')
+      # Define client
+      service_def = 'lib/assets/service.wsdl'
+      client = Savon.client(wsdl: service_def,
+                            # endpoint: 'http://localhost:8081/iis-sandbox/soap',
+                            endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
+                            pretty_print_xml: true)
+      # Upload Patient from Fixture
+      upload_raw_input = open(vxu_path).readlines
+      upload_msg_input = HL7::Message.new(upload_raw_input)
+      client.call(:submit_single_message) do
+        message({ username: Rails.application.config.username,
+                  password: Rails.application.config.password,
+                  facilityID: Rails.application.config.facilityID,
+                  hl7Message: upload_msg_input })
+      end
     end
 
 
