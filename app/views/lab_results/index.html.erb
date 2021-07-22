@@ -14,15 +14,15 @@
   </thead>
 
   <tbody>
-    <% @lab_results.each do |lab_result| %>
+    <% @patient.lab_results.each do |lr| %>
       <tr>
-	<td><%= lab_result.patient %></td>
-	<td><%= labresult.code %></td>
-	<td><%= labresult.effective %></td>
-	<td><%= labresult.status %></td>
-	<td><%= link_to 'Show', lab_result %></td>
-	<td><%= link_to 'Edit', edit_lab_result_path(lab_result) %></td>
-	<td><%= link_to 'Destroy', lab_result, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+	<td><%= lr.patient %></td>
+	<td><%= lr.code %></td>
+	<td><%= lr.effective %></td>
+	<td><%= lr.status %></td>
+	<td><%= link_to 'Show', lr %></td>
+	<td><%= link_to 'Edit', edit_lab_result_path(lr) %></td>
+	<td><%= link_to 'Destroy', lr, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>
@@ -30,4 +30,4 @@
 
 <br>
 
-<%= link_to 'New Lab Result', new_lab_result_path %>
+<%= link_to 'New Lab Result', new_patient_lab_result_path %>

@@ -131,6 +131,9 @@ class Patient < FHIRRecord
     immunizations.each do |imm|
       bundle.entry << FHIR::Bundle::Entry.new(fullUrl: "#{base_url}/Immunization/#{imm.json.id}", resource: imm.json)
     end
+    lab_results.each do |lr|
+      bundle.entry << FHIR::Bundle::Entry.new(fullUrl: "#{base_url}/labResult/#{lr.json.id}", resource: lr.json)
+    end 
     bundle
   end
 

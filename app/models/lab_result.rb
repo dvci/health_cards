@@ -9,8 +9,9 @@ class LabResult < FHIRRecord
     serialize :json, FHIR::Observation
   
     validates :effective, presence: true
-    validates :value_set, presence: true
     validates :patient, presence: true
+    validates :lab_code, presence: true 
+    validates :status, presence: true
 
 
   after_initialize do
