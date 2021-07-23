@@ -11,19 +11,20 @@ class LabResultsController < ApplicationController
     def edit; end
 
     def create
-        @lab_result = LabResult.new(lab_result_params)
-        @lab_result.patient = @patient
-    
-        respond_to do |format|
-          if @lab_result.save
-            format.html { redirect_to patient_path(@patient), notice: 'Lab Result was successfully created.' }
-            format.json { render :show, status: :created, location: @lab_result }
-          else
-            format.html { render :new, status: :unprocessable_entity }
-            format.json { render json: @lab_result.errors, status: :unprocessable_entity }
-          end
+    byebug
+      @lab_result = LabResult.new(lab_result_params)
+      @lab_result.patient = @patient
+
+      respond_to do |format|
+        if @lab_result.save
+          format.html { redirect_to patient_path(@patient), notice: 'Lab Result was successfully created.' }
+          format.json { render :show, status: :created, location: @lab_result }
+        else
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: @lab_result.errors, status: :unprocessable_entity }
         end
       end
+    end
     
       def show
         @lab_result = LabResult.find(params[:id])
@@ -56,11 +57,11 @@ class LabResultsController < ApplicationController
     
       # Use callbacks to share common setup or constraints between actions.
       def set_lab_result
-        @lab_result = @patient.lab_results
+        @lab_result = @patient.lab_results.find(params[:id])
       end
     
       def lab_result_params
-        params.require(:lab_result).permit(:effective, :status, :value_set_code, :lab_code)
+        params.require(:lab_result).permit(:effective, :status, :code, :result)
       end
     
       def find_patient
