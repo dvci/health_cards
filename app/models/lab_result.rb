@@ -67,9 +67,8 @@ class LabResult < FHIRRecord
     json.code.coding[0].display
   end
 
-  def result
-    json.valueCodeableConcept.coding[0].display
-    
+  def result_name
+    json.valueCodeableConcept&.coding[0].display
   end
 
 private 
