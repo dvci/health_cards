@@ -38,7 +38,7 @@
         <%= form.label :code, class: 'label' %>
         <div class="control">
           <div class="select">
-            <%= form.grouped_collection_select(:code, ValueSet::LAB_CODES, :concept, :system, :code, :display) %>
+            <%= form.select(:code, lab_options(ValueSet::LAB_CODES)) %>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
         <%= form.label :result, class: 'label' %>
         <div class="control">
           <div class="select">
-            <%= form.grouped_collection_select(:result, ValueSet::FINDINGS, :concept, :system, :code, :display) %>
+            <%= form.select(:result, lab_options(ValueSet::RESULTS)) %>
           </div>
         </div>
       </div>

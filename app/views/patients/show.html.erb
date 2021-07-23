@@ -75,11 +75,12 @@
         <% @patient.lab_results.each do |i| %>
           <div class="tile is-parent">
             <div class="tile is-child box">
-            <% if false%>
               <div class="block">
-                <span class="has-text-weight-bold"><%= i.code.name %></span>
+                <span class="has-text-weight-bold"><%= i.name %></span>
               </div>
-              <% end %>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Result:</span><span><%= i.result %></span>
+              </div>
               <div class="block">
                 <span class="mr-2 has-text-weight-bold">Effective Date:</span><span><%= format_date(i.effective) %></span>
               </div>

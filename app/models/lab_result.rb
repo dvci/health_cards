@@ -63,14 +63,23 @@ class LabResult < FHIRRecord
     super(lab)
   end
 
+  def name
+    json.code.coding[0].display
+  end
+
+  def result
+    json.valueCodeableConcept.coding[0].display
+    
+  end
+
 private 
 
   def update_result(code)
-    json.valueCodeableConcept	||= FHIR::CodeableConcept.new(coding: [FHIR::Coding.new(system: 'http://loinc.org', code: code)])
+    json.valueCodeableConcept	||= FHIR::CodeableConcept.new(coding: [ValueSet::RESULTS.find_by_code(code)])
   end
 
   def update_code(code)
-    json.code	||= FHIR::CodeableConcept.new(coding: [FHIR::Coding.new(system: 'http://loinc.org', code: code)])
+    json.code	||= FHIR::CodeableConcept.new(coding: [ValueSet::LAB_CODES.find_by_code(code)])
   end
 
   def update_patient_reference(pat)
