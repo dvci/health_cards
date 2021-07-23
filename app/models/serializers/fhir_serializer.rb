@@ -9,10 +9,9 @@ module Serializers
 
     def dump(model)
       raise ActiveRecord::SerializationTypeMismatch unless model.class.module_parent == FHIR
-
       model.to_json
     end
   end
 end
 
-[FHIR::Patient, FHIR::Immunization, FHIR::Observation, FHIR::ValueSet].each { |c| c.class_eval { extend Serializers::FHIRSerializer } }
+[FHIR::Patient, FHIR::Immunization, FHIR::Observation].each { |c| c.class_eval { extend Serializers::FHIRSerializer } }

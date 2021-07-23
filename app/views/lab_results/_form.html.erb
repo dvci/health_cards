@@ -30,15 +30,24 @@
       <div class="field">
         <%= form.label :status, class: 'label' %>
         <div class="control">
-          <%= form.select :status, [['final'],['amended'],['corrected']] %>
+          <%= form.select :status, LabResult::STATUS %>
         </div>
       </div>
 
       <div class="field">
-        <%= form.label :lab_code, class: 'label' %>
+        <%= form.label :code, class: 'label' %>
         <div class="control">
           <div class="select">
-            <%= form.grouped_collection_select(:lab_code, ValueSet.get_info_from_valueset, :concept, :system, :code, :display) %>
+            <%= form.grouped_collection_select(:code, ValueSet::LAB_CODES, :concept, :system, :code, :display) %>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= form.label :result, class: 'label' %>
+        <div class="control">
+          <div class="select">
+            <%= form.grouped_collection_select(:result, ValueSet::FINDINGS, :concept, :system, :code, :display) %>
           </div>
         </div>
       </div>

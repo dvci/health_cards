@@ -1,6 +1,7 @@
 class LabResult < FHIRRecord
     attribute :effective, :date
-    attribute :lab_code, :string
+    attribute :code, :string
+    attribute :result, :string
     attribute :status, :string
   
     belongs_to :patient
@@ -9,13 +10,11 @@ class LabResult < FHIRRecord
   
     validates :effective, presence: true
     validates :patient, presence: true
-    validates :lab_code, presence: true 
+    validates :code, presence: true
+    validates :result, presence: true 
     validates :status, presence: true
 
-
-  after_initialize do
-    json.status ||= 'completed'
-  end
+    STATUS = %w(final amended corrected)
 
   def effective
     from_fhir_time(json.effectiveDateTime)
@@ -25,6 +24,10 @@ class LabResult < FHIRRecord
     json.status
   end
 
+  def status=(stat)
+    json.status = stat
+  end
+  
   def effective=(eff)
     super(eff)
     json.effectiveDateTime = to_fhir_time(attributes['effective'])
@@ -42,23 +45,33 @@ class LabResult < FHIRRecord
     super(pat)
   end
 
-  def lab_code=(lc)
-    lc = ValueSet.get_info_from_valueset
-    #TODO: should be able to get the code here
-    update_lab_code(lc)
+  def result
+    json.valueCodeableConcept&.coding&.first&.code
+  end
+
+  def result=(lc)
+    update_result(lc)
     super(lc)
   end
 
-  def lab_codes=(lab)
-    update_lab_code(lab.code)
+  def code
+    json.code&.coding&.first&.code
+  end
+
+  def code=(lab)
+    update_code(lab)
     super(lab)
   end
+
 private 
 
-def update_lab_code(code)
-  json.lab_code ||= FHIR::CodeableConcept.new
-  #json.lab_code.coding[0] = FHIR::Coding.new(system: 'http://loinc.org', code: code)
-end
+  def update_result(code)
+    json.valueCodeableConcept	||= FHIR::CodeableConcept.new(coding: [FHIR::Coding.new(system: 'http://loinc.org', code: code)])
+  end
+
+  def update_code(code)
+    json.code	||= FHIR::CodeableConcept.new(coding: [FHIR::Coding.new(system: 'http://loinc.org', code: code)])
+  end
 
   def update_patient_reference(pat)
     if pat
