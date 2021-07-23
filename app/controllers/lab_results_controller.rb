@@ -11,7 +11,6 @@ class LabResultsController < ApplicationController
     def edit; end
 
     def create
-    byebug
       @lab_result = LabResult.new(lab_result_params)
       @lab_result.patient = @patient
 
