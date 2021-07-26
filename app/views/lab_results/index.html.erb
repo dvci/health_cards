@@ -6,9 +6,11 @@
   <thead>
     <tr>
       <th>Patient</th>
-      <th>Lab Result</th>
+      <th>Code</th>
       <th>Effective</th>
+      <th>Result</th>
       <th>Status</th>
+
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -18,10 +20,11 @@
       <tr>
 	<td><%= lr.patient %></td>
 	<td><%= lr.code %></td>
+  <td><%= lr.result %></td>
 	<td><%= lr.effective %></td>
 	<td><%= lr.status %></td>
 	<td><%= link_to 'Show', lr %></td>
-	<td><%= link_to 'Edit', edit_lab_result_path(lr) %></td>
+	<td><%= link_to 'Edit', edit_patient_lab_result_path(lr) %></td>
 	<td><%= link_to 'Destroy', lr, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
