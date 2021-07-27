@@ -1,6 +1,6 @@
-class ValueSet 
+# frozen_string_literal: true
 
-
+class ValueSet
   attr_reader :codes
 
   def initialize(file)
@@ -15,10 +15,10 @@ class ValueSet
   LAB_CODES = ValueSet.new('db/lab_codes/ValueSet-2.16.840.1.113762.1.4.1114.9.json').freeze
 
   def find_by_code(code_string)
-    codes.find { |code| code.code == code_string}
+    codes.find { |code| code.code == code_string }
   end
 
   def systems
-    codes.map { |code| code.system }.uniq
+    codes.map(&:system).uniq
   end
 end
