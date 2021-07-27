@@ -10,7 +10,6 @@ class LabResultsController < ApplicationController
 
     def edit
       logger.debug(@lab_result.to_json) 
-      raise StandardError
     end
 
     def create
