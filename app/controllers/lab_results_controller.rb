@@ -8,9 +8,9 @@ class LabResultsController < ApplicationController
     @lab_result = LabResult.new
   end
 
-  def edit
-    logger.debug(@lab_result.to_json)
-  end
+  def edit; end
+
+  def index; end
 
   def create
     @lab_result = LabResult.new(lab_result_params)

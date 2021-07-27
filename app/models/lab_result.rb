@@ -47,9 +47,9 @@ class LabResult < FHIRRecord
     json.valueCodeableConcept&.coding&.first&.code
   end
 
-  def result=(lc)
-    update_result(lc)
-    super(lc)
+  def result=(labc)
+    update_result(labc)
+    super(labc)
   end
 
   def code
@@ -66,7 +66,7 @@ class LabResult < FHIRRecord
   end
 
   def result_name
-    json.valueCodeableConcept&.coding[0].display
+    json.valueCodeableConcept&.coding&.first&.display
   end
 
   private
