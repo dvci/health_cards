@@ -133,7 +133,7 @@ class Patient < FHIRRecord
     end
     lab_results.each do |lr|
       bundle.entry << FHIR::Bundle::Entry.new(fullUrl: "#{base_url}/labResult/#{lr.json.id}", resource: lr.json)
-    end 
+    end
     bundle
   end
 

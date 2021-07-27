@@ -9,6 +9,7 @@ module Serializers
 
     def dump(model)
       raise ActiveRecord::SerializationTypeMismatch unless model.class.module_parent == FHIR
+
       model.to_json
     end
   end
