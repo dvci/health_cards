@@ -23,7 +23,7 @@ class Patient < FHIRRecord
 
   GENDERS = FHIR::Patient::METADATA['gender']['valid_codes']['http://hl7.org/fhir/administrative-gender']
 
-  validates :given, presence: true
+  validate :name_attribute_is_populated
   validates :gender, inclusion: { in: GENDERS, allow_nil: true }
 
   def full_name
@@ -33,11 +33,11 @@ class Patient < FHIRRecord
   # Overriden getters/setters to support FHIR JSON
 
   def given
-    first_name.given.try(:first)
+    first_name.given.try(:first) || first_name.text
   end
 
   def given=(giv)
-    first_name.given = [giv]
+    first_name.given = giv.present? ? [giv] : nil
     super(giv)
   end
 
@@ -111,7 +111,7 @@ class Patient < FHIRRecord
   end
 
   def phone=(pho)
-    phone_contact.value = pho
+    phone_contact.value = pho.presence
     super(pho)
   end
 
@@ -120,12 +120,12 @@ class Patient < FHIRRecord
   end
 
   def email=(ema)
-    email_contact.value = ema
+    email_contact.value = ema.presence
     super(ema)
   end
 
   def to_bundle(base_url)
-    bundle = FHIR::Bundle.new
+    bundle = FHIR::Bundle.new(type: 'collection')
     patient_url = "#{base_url}/Patient/#{json.id}"
     bundle.entry[0] = FHIR::Bundle::Entry.new(fullUrl: patient_url, resource: json)
     immunizations.each do |imm|
@@ -138,6 +138,10 @@ class Patient < FHIRRecord
   end
 
   private
+
+  def name_attribute_is_populated
+    errors.add(:base, 'Either given or family name must not be blank') unless given || family
+  end
 
   def phone_contact
     setup_contact('phone')

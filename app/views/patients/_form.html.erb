@@ -28,14 +28,14 @@
       <div class="field">
         <%= form.label :given, 'Given Name', class: 'label' %>
         <div class="control">
-          <%= form.text_field :given, class: 'input', required: true %>
+          <%= form.text_field :given, class: 'input'%>
         </div>
       </div>
 
       <div class="field">
         <%= form.label :family, 'Family Name', class: 'label' %>
         <div class="control">
-          <%= form.text_field :family, class: 'input', required: true %>
+          <%= form.text_field :family, class: 'input' %>
         </div>
       </div>
 
@@ -72,7 +72,7 @@
         <%= form.label :email, class: "label" %>
         <%= form.email_field :email, class: "input" %>
       </div>
-        
+
       <div class="field">
         <%= form.label :street_line1, 'Street address, P.O Box, etc.', class: "label" %>
         <%= form.text_field :street_line1, class: "input" %>
@@ -102,7 +102,7 @@
           <%= form.submit class: 'button is-info' %>
         </div>
         <div class="control">
-          <%= link_to 'Cancel', patients_path, class: 'button is-info is-light' %>
+          <%= link_to 'Cancel', :back, class: 'button is-info is-light' %>
         </div>
       </div>
     <% end %>

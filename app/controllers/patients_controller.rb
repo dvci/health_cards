@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # PatientsController manages patients via the Web UI
-class PatientsController < ApplicationController
-  before_action :set_patient, only: %i[show edit update destroy]
+class PatientsController < SecuredController
+  before_action :find_patient, except: %i[index new create]
 
   # GET /patients or /patients.json
   def index
@@ -12,8 +12,9 @@ class PatientsController < ApplicationController
   # GET /patients/1 or /patients/1.json
   def show
     respond_to do |format|
-      format.html
-      format.fhir_json { render json: @patient.to_json }
+      format.html { @qr_codes = exporter.qr_codes }
+      format.fhir_json { render json: exporter.to_fhir }
+      format.json { render json: exporter.to_fhir }
     end
   end
 
@@ -64,7 +65,7 @@ class PatientsController < ApplicationController
   private
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_patient
+  def find_patient
     @patient = Patient.find(params[:id])
   end
 

@@ -2,12 +2,12 @@
 
 module HealthCards
   # Split up a JWS into chunks if encoded size is above QR Code Size constraint
-  module Chunking
+  module ChunkingUtils
     extend self
     MAX_SINGLE_JWS_SIZE = 1195
     MAX_CHUNK_SIZE = 1191
 
-    def split_bundle(jws)
+    def split_jws(jws)
       if jws.length <= MAX_SINGLE_JWS_SIZE
         [jws]
       else
@@ -18,13 +18,21 @@ module HealthCards
     end
 
     # Splits jws into chunks and converts each string into numeric
-    def generate_qr_chunks(jws)
-      jws_chunks = split_bundle jws.to_s
-      jws_chunks.map { |c| convert_jws_to_numeric(c) }
+    def jws_to_qr_chunks(jws)
+      chunks = split_jws(jws.to_s).map { |c| convert_jws_to_numeric(c) }
+
+      # if 1 chunk, attach prefix shc:/
+      # if multiple chunks, attach prefix shc:/$orderNumber/$totalChunkCount
+      if chunks.length == 1
+        chunks[0] = "shc:/#{chunks[0]}"
+      else
+        chunks.map!.with_index(1) { |ch, i| "shc:/#{i}/#{chunks.length}/#{ch}" }
+      end
+      chunks
     end
 
     # Assemble jws from qr code chunks
-    def assemble_jws(qr_chunks)
+    def qr_chunks_to_jws(qr_chunks)
       if qr_chunks.length == 1
         # Strip off shc:/ and convert numeric jws
         numeric_jws = qr_chunks[0].delete_prefix('shc:/')

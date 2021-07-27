@@ -1,20 +1,23 @@
-<%= javascript_pack_tag 'qrcode' %>
+<section class="hero is-small is-info">
+  <div class="hero-body">
+    <p class="title">
+      <%= link_to patients_path, 'aria-label': 'Back to patient list' do%>
+        <i class="fa fa-caret-left"></i>
+      <% end %>
+      <%= @patient.full_name %>
+    </p>
+  </div>
+</section>
 <p id="notice"><%= notice %></p>
 <section class="section">
   <div class="container">
     <div class="content">
       <div class="level">
         <div class="level-left">
-          <div class="level-item">
-            <p class="title"><%= @patient.full_name %></p>
-          </div>
           <div class="is-grouped">
-            <%= link_to 'Edit', edit_patient_path(@patient), class: 'button is-info is-light' %> 
+            <%= link_to 'Edit', edit_patient_path(@patient), class: 'button is-info is-light' %>
             <%= link_to 'Download Health Card', patient_health_card_path(@patient, format: 'smart-health-card'), class: 'button is-info is-light' %>
-            <%= form_with url: patient_health_card_path(@patient, format: 'pdf'), class: 'button is-info is-light', method: :post do |f| %>        
-              <%= f.hidden_field :qrcode, id: 'qr-code-field' %>
-              <%= f.submit 'Download PDF', id:'download-pdf-button', class: 'button is-info is-light' %>
-            <% end %>
+            <%= link_to 'Download PDF', patient_health_card_path(@patient, format: 'pdf'), id:'download-pdf-button', class: 'button is-info is-light' %>
             <%= link_to 'Health Card Details', patient_health_card_path(@patient), class: 'button is-info is-light' %>
           </div>
         </div>
@@ -98,6 +101,7 @@
     </div>
     <div id="qr-code"></div>
     <%= link_to 'Patient List', patients_path, class: 'button is-info' %>
+    <%= render partial: 'qr_codes/chunks', object: @qr_codes.chunks %>
   </div>
 </section>
 

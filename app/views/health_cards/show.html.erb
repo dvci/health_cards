@@ -1,10 +1,15 @@
 <%= javascript_pack_tag 'details_pg' %>
-<p id="notice"><%= notice %></p>
-<section class="hero is-link">
+<section class="hero is-small is-info">
   <div class="hero-body">
-    <p class="title">Health Card Details</p>
+    <p class="title">
+      <%= link_to patient_path(@patient), 'aria-label': 'Back to patient page' do%>
+        <i class="fa fa-caret-left"></i>
+      <% end %>
+      Health Card Details
+    </p>
   </div>
 </section>
+<p id="notice"><%= notice %></p>
 
   <section class="section">
     <div class="container">
@@ -83,7 +88,7 @@
     
     <div class="card is-fullwidth">
       <header class="card-header">
-        <p class="card-header-title">Numeric QR</p>
+        <p class="card-header-title">Encoded QR Codes</p>
         <a class="card-header-icon card-toggle">
           <i class="fa fa-angle-down"></i>
         </a>
@@ -91,7 +96,9 @@
         <div class="card-content">
           <pre style="white-space:pre-wrap;">
             <div class="content", style="word-wrap: break-word; width: 800px">
-                <p> <%= @qr_code_payload.join(', ') %> </p>
+                <% @qr_codes.chunks.each do |ch| %>
+                <p> <%= ch.data %> </p>
+                <% end %>
             </div>
           </pre>
         </div>

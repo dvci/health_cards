@@ -13,7 +13,7 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'includes correct types' do
-    HealthCards::COVIDHealthCard.types.include?(HealthCards::HealthCard::VC_TYPE[0])
+    HealthCards::COVIDHealthCard.types.include?(HealthCards::CardTypes::VC_TYPE[0])
     HealthCards::COVIDHealthCard.types.include?('https://smarthealth.cards#covid19')
   end
 
@@ -21,7 +21,7 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     hash = @card.to_hash
     type = hash.dig(:vc, :type)
     assert_not_nil type
-    assert_includes type, HealthCards::HealthCard::VC_TYPE[0]
+    assert_includes type, HealthCards::CardTypes::VC_TYPE[0]
     assert_includes type, 'https://smarthealth.cards#covid19'
     assert_includes type, 'https://smarthealth.cards#immunization'
 
@@ -48,15 +48,20 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
 
   test 'valid bundle json' do
     assert_nothing_raised do
-      FHIR.from_contents(@card.to_json)
+      assert_fhir(@card.bundle.to_json, type: FHIR::Bundle, validate: false)
     end
+  end
+
+  test 'supports multiple types' do
+    assert HealthCards::COVIDHealthCard.supports_type? ['https://smarthealth.cards#covid19',
+                                                        'https://smarthealth.cards#immunization']
   end
 
   test 'minified entries' do
     bundle = @card.strip_fhir_bundle
-    assert_equal 3, bundle['entry'].size
-    patient = FHIR::Patient.new(bundle['entry'][0]['resource'])
-    imm = FHIR::Immunization.new(bundle['entry'][1]['resource'])
+    assert_equal 3, bundle.entry.size
+    patient = bundle.entry[0].resource
+    imm = bundle.entry[1].resource
 
     assert_equal 'Jane', patient.name.first.given.first
     assert_equal '1961-01-20', patient.birthDate

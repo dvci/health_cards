@@ -1,0 +1,18 @@
+<section class="hero is-small is-info">
+  <div class="hero-body">
+    <p class="title">
+      <%= link_to root_path, 'aria-label': 'Back to home page' do%>
+        <i class="fa fa-caret-left"></i>
+      <% end %>
+      Scanned Health Card
+    </p>
+  </div>
+</section>
+
+<%= render partial: 'patients/patient',
+           object: create_patient_from_jws(@scan_result[:payload]),
+           locals: {
+             payload: @scan_result[:payload],
+             verified: @scan_result[:verified],
+             error_message: @scan_result[:error_message]}
+%>

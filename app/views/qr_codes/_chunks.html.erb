@@ -1,0 +1,9 @@
+<div class="tile is-ancestor">
+  <% chunks.each do |ch| %>
+    <div class="tile is-parent">
+      <div class="tile is-child box has-text-centered">
+        <%= image_tag patient_qr_code_path(@patient, ch.ordinal, format: :png) %>
+      </div>
+    </div>
+  <% end %>
+</div>

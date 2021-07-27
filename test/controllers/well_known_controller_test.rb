@@ -6,6 +6,7 @@ class WellKnownControllerTest < ActionDispatch::IntegrationTest
   setup do
     @well_known = Rails.application.config.smart
     @key = rails_public_key
+    @headers = { Origin: 'http://example.com' }
   end
 
   teardown do
@@ -13,7 +14,7 @@ class WellKnownControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'supports health cards' do
-    get(well_known_smart_url)
+    get(well_known_smart_url, headers: @headers)
     assert_response :success
 
     config = JSON.parse(response.body)
@@ -22,7 +23,7 @@ class WellKnownControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'supports jwks' do
-    get(well_known_jwks_url)
+    get(well_known_jwks_url, headers: @headers)
     assert_response :success
 
     json = JSON.parse(response.body)

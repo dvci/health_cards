@@ -10,6 +10,11 @@ SimpleCov.start do
   add_filter '/config/'
 end
 
+if ENV['GITHUB_ACTIONS']
+  require 'codecov'
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
+
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
@@ -64,9 +69,21 @@ module ActiveSupport
     end
 
     def bundle_payload
-      bundle = FHIR::Bundle.new
+      bundle = FHIR::Bundle.new(type: 'collection')
       bundle.entry << FHIR::Bundle::Entry.new(resource: FHIR::Patient.new)
       bundle
+    end
+
+    def assert_fhir(obj, type: nil, validate: true)
+      output = FHIR.from_contents(obj)
+      assert output.is_a?(type) if type
+      assert output.valid?, output.validate if validate
+      output
+    end
+
+    def assert_operation_outcome(response, response_code: :not_found)
+      assert_fhir(response.body, type: FHIR::OperationOutcome)
+      assert_response response_code
     end
 
     def assert_entry_references_match(patient_entry, reference_element)

@@ -20,6 +20,12 @@ class PatientTest < ActiveSupport::TestCase
     end
   end
 
+  test 'use name.text if no given name' do
+    text = 'Foo'
+    pat = Patient.new(json: FHIR::Patient.new(name: [{ text: text }]))
+    assert_equal text, pat.given
+  end
+
   test 'invalid fhir json' do
     patient = Patient.create(json: FHIR::Patient.new(gender: 'INVALID GENDER'))
     assert patient.new_record?
@@ -34,10 +40,13 @@ class PatientTest < ActiveSupport::TestCase
     assert_not_nil patient.immunizations.first.id
 
     bundle = patient.to_bundle(rails_issuer.url)
+
+    assert bundle.valid?
+
     hc = rails_issuer.create_health_card(bundle)
 
     assert_nothing_raised do
-      new_bundle = FHIR::Bundle.new(hc.strip_fhir_bundle)
+      new_bundle = hc.strip_fhir_bundle
 
       assert_entry_references_match(new_bundle.entry[0], new_bundle.entry[1].resource.patient)
     end
