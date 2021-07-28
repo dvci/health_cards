@@ -21,7 +21,7 @@ module HealthCards
 
       service_def = 'lib/assets/service.wsdl'
       client = Savon.client(wsdl: service_def,
-                            endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
+                            endpoint: Rails.application.config.iisSandboxHost + '/iis-sandbox/soap',
                             pretty_print_xml: true)
       # Check if client is configured properly
       raise HealthCards::OperationNotSupportedError unless client.operations.include?(:submit_single_message)
@@ -42,7 +42,7 @@ module HealthCards
     # @param v2_response [HL7::Message] V2 message returned from the IIS Sandbox
     # @return [String] FHIR Bundle representation of the V2 message
     def translate(v2_response)
-      fhir_response = Faraday.post('http://vci.mitre.org:3000/api/v0.1.0/convert/text',
+      fhir_response = Faraday.post(Rails.application.config.v2ToFhirHost + '/api/v0.1.0/convert/text',
                                    v2_response.to_hl7,
                                    'Content-Type' => 'text/plain')
       fhir_response.body
@@ -119,7 +119,7 @@ module HealthCards
       # Define client
       service_def = 'lib/assets/service.wsdl'
       client = Savon.client(wsdl: service_def,
-                            endpoint: 'http://vci.mitre.org:8081/iis-sandbox/soap',
+                            endpoint: Rails.application.config.iisSandboxHost + '/iis-sandbox/soap',
                             pretty_print_xml: true)
       # Upload Patient from fixture
       upload_raw_input = FILE.open(vxu_path).readlines
