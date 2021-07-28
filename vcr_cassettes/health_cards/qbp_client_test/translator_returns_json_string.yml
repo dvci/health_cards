@@ -1,0 +1,87 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://vci.mitre.org:8081/iis-sandbox/soap
+    body:
+      encoding: UTF-8
+      string: |-
+        <?xml version="1.0" encoding="UTF-8"?><env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="urn:cdc:iisb:2011" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Body><tns:submitSingleMessage><tns:username>mitre</tns:username><tns:password>mitre</tns:password><tns:facilityID>MITRE Healthcare</tns:facilityID><tns:hl7Message>MSH|^~\&amp;|||||20210728204957||QBP^Q11^QBP_Q11|261104570|P|2.5.1|||ER|AL|||||Z34^CDCPHINVS|
+
+        QPD|Z34^Request Immunization History^CDCPHINVS|261104570||^^^^^^|^^^^^^|||^^^^^USA^|^PRN^PH^^^^|||||
+
+        RCP|I||</tns:hl7Message></tns:submitSingleMessage></env:Body></env:Envelope>
+    headers:
+      Soapaction:
+      - '"urn:cdc:iisb:2011:submitSingleMessage"'
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Content-Length:
+      - '676'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/soap+xml;action="urn:cdc:iisb:2011:connectivityTest";charset=UTF-8
+      Content-Length:
+      - '664'
+      Date:
+      - Wed, 28 Jul 2021 20:49:56 GMT
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<Envelope xmlns=\"http://www.w3.org/2003/05/soap-envelope\">\n
+        \ <Header />\n   <Body>\n      <submitSingleMessageResponse xmlns=\"urn:cdc:iisb:2011\">\n
+        \       <return><![CDATA[MSH|^~\\&||IIS Sandbox v0.4.6|||20210728084957+0000||RSP^K11^RSP_K11|16275053976551637|P|2.5.1|||NE|NE|||||Z33^CDCPHINVS\rMSA|AE|261104570\rERR||QPD^1^4|101^Required
+        field missing^HL70357|E||||Last name is missing|\rQAK|261104570|AE|Z34^Request
+        a Complete Immunization History^CDCPHINVS\rQPD|Z34^Request Immunization History^CDCPHINVS|261104570||^^^^^^|^^^^^^|||^^^^^USA^|^PRN^PH^^^^|||||\r]]></return>\n
+        \     </submitSingleMessageResponse>\n  </Body>\n</Envelope>\n"
+  recorded_at: Wed, 28 Jul 2021 20:49:57 GMT
+- request:
+    method: post
+    uri: http://vci.mitre.org:3000/api/v0.1.0/convert/text
+    body:
+      encoding: UTF-8
+      string: "MSH|^~\\&||IIS Sandbox v0.4.6|||20210728084957+0000||RSP^K11^RSP_K11|16275053976551637|P|2.5.1|||NE|NE|||||Z33^CDCPHINVS\rMSA|AE|261104570\rERR||QPD^1^4|101^Required
+        field missing^HL70357|E||||Last name is missing|\rQAK|261104570|AE|Z34^Request
+        a Complete Immunization History^CDCPHINVS\rQPD|Z34^Request Immunization History^CDCPHINVS|261104570||^^^^^^|^^^^^^|||^^^^^USA^|^PRN^PH^^^^|||||"
+    headers:
+      User-Agent:
+      - Faraday v1.5.1
+      Content-Type:
+      - text/plain
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      X-Powered-By:
+      - Express
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '67'
+      Etag:
+      - W/"43-GPCb9NH/Omqruw75szMqS9hqKIo"
+      Date:
+      - Wed, 28 Jul 2021 20:49:57 GMT
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - timeout=5
+    body:
+      encoding: UTF-8
+      string: '{"errors":[{"message":"Message is missing required segment PID."}]}'
+  recorded_at: Wed, 28 Jul 2021 20:49:57 GMT
+recorded_with: VCR 6.0.0

@@ -295,6 +295,7 @@ GEM
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.0.0)
+    vcr (6.0.0)
     wasabi (3.6.1)
       addressable
       httpi (~> 2.0)
@@ -364,6 +365,7 @@ DEPENDENCIES
   sqlite3 (~> 1.4)
   turbolinks (~> 5)
   tzinfo-data
+  vcr
   web-console (>= 4.1.0)
   webdrivers
   webmock

@@ -2,6 +2,12 @@
 
 require 'test_helper'
 require 'health_cards/qbp_client'
+require 'vcr'
+
+VCR.configure do |config|
+  config.cassette_library_dir = 'vcr_cassettes/health_cards/qbp_client_test'
+  config.hook_into :webmock
+end
 
 class QBPClientTest < ActiveSupport::TestCase
   setup do
@@ -24,30 +30,28 @@ class QBPClientTest < ActiveSupport::TestCase
                                      address_type: 'P' },
                           phone: { area_code: '810',
                                    local_number: '2499010' } }
-
-    WebMock.allow_net_connect!
-  end
-
-  def teardown
-    WebMock.disable_net_connect!
   end
 
   # General Functionality Tests
 
-  test 'query() method successfully returns an HL7 Message' do
-    v2_response_body = HealthCards::QBPClient.query({})
-    assert_instance_of(HL7::Message, v2_response_body)
+  test 'query() method successfully returns an HL7 V2 Message' do
+    VCR.use_cassette('query_returns_v2') do
+      v2_response_body = HealthCards::QBPClient.query({})
+      assert_instance_of(HL7::Message, v2_response_body)
+    end
   end
 
   test 'translate_to_fhir() method successfully returns a stringified JSON object' do
-    v2_response_body = HealthCards::QBPClient.query({})
-    fhir_response_body = HealthCards::QBPClient.translate_to_fhir(v2_response_body)
-    parsed_fhir_response = begin
-      JSON.parse(fhir_response_body)
-    rescue StandardError
-      nil
+    VCR.use_cassette('translator_returns_json_string') do
+      v2_response_body = HealthCards::QBPClient.query({})
+      fhir_response_body = HealthCards::QBPClient.translate_to_fhir(v2_response_body)
+      parsed_fhir_response = begin
+        JSON.parse(fhir_response_body)
+      rescue StandardError
+        nil
+      end
+      assert_not_nil(parsed_fhir_response)
     end
-    assert_not_nil(parsed_fhir_response)
   end
 
   test 'raises error if inputted sandbox credentials are incorrectly formatted' do
@@ -66,31 +70,37 @@ class QBPClientTest < ActiveSupport::TestCase
 
   # Client Connectivity Tests
 
-  test 'Connectivity Test Works (Successfully connected to IIS Sandbox endpoint)' do
-    service_def = 'lib/assets/service.wsdl'
-    client = Savon.client(wsdl: service_def,
-                          endpoint: 'http://localhost:8081/iis-sandbox/soap',
-                          pretty_print_xml: true)
-    assert_nothing_raised do
-      HealthCards::QBPClient.check_client_connectivity(client) if client.operations.include?(:connectivity_test)
+  test 'Connectivity Test raises no errors (Successfully connected to IIS Sandbox endpoint)' do
+    VCR.use_cassette('connectivity_test') do
+      service_def = 'lib/assets/service.wsdl'
+      client = Savon.client(wsdl: service_def,
+                            endpoint: 'http://localhost:8081/iis-sandbox/soap',
+                            pretty_print_xml: true)
+      assert_nothing_raised do
+        HealthCards::QBPClient.check_client_connectivity(client) if client.operations.include?(:connectivity_test)
+      end
     end
   end
 
   # SOAP Faults
 
   test 'SOAP FAULT: SecurityFault - bad credentials' do
-    user_sandbox_credentials = { username: 'mitre', password: 'bad_password', facilityID: 'MITRE Healthcare' }
-    assert_raises HealthCards::SOAPError do
-      HealthCards::QBPClient.query({}, user_sandbox_credentials)
+    VCR.use_cassette('soap_fault_bad_credentials') do
+      user_sandbox_credentials = { username: 'mitre', password: 'bad_password', facilityID: 'MITRE Healthcare' }
+      assert_raises HealthCards::SOAPError do
+        HealthCards::QBPClient.query({}, user_sandbox_credentials)
+      end
     end
   end
 
   test 'SOAP FAULT: Unknown fault - generic error' do
     # NOTE: This functionality may be updated within the IIS Sandbox, according to recent conversation with Nathan
     # Currently, this throws the same exception as the above "Security Fault"
-    user_sandbox_credentials = { username: 'NPE', password: 'NPE', facilityID: 'MITRE Healthcare' }
-    assert_raises HealthCards::SOAPError do
-      HealthCards::QBPClient.query({}, user_sandbox_credentials)
+    VCR.use_cassette('soap_fault_generic_error') do
+      user_sandbox_credentials = { username: 'NPE', password: 'NPE', facilityID: 'MITRE Healthcare' }
+      assert_raises HealthCards::SOAPError do
+        HealthCards::QBPClient.query({}, user_sandbox_credentials)
+      end
     end
   end
 
@@ -101,61 +111,75 @@ class QBPClientTest < ActiveSupport::TestCase
   # Check Response Statuses
 
   test 'Status of OK - "Data found, no errors" is returned for valid patient with all fields specified' do
-    response = HealthCards::QBPClient.query(@complete_patient)
-    status = HealthCards::QBPClient.get_response_status(response)
-    assert_equal(:OK, status)
+    VCR.use_cassette('ok_status_all_fields') do
+      response = HealthCards::QBPClient.query(@complete_patient)
+      status = HealthCards::QBPClient.get_response_status(response)
+      assert_equal(:OK, status)
+    end
   end
 
   test 'Status of OK - "Data found, no errors" is returned for valid patient with minimum fields specified' do
-    minimal_data_patient = @complete_patient.slice(:patient_name, :patient_dob)
-    minimal_data_patient[:patient_name] = minimal_data_patient[:patient_name].slice(:family_name, :given_name)
-    response = HealthCards::QBPClient.query(minimal_data_patient)
-    status = HealthCards::QBPClient.get_response_status(response)
-    assert_equal(:OK, status)
+    VCR.use_cassette('ok_status_min_fields') do
+      minimal_data_patient = @complete_patient.slice(:patient_name, :patient_dob)
+      minimal_data_patient[:patient_name] = minimal_data_patient[:patient_name].slice(:family_name, :given_name)
+      response = HealthCards::QBPClient.query(minimal_data_patient)
+      status = HealthCards::QBPClient.get_response_status(response)
+      assert_equal(:OK, status)
+    end
   end
 
   test 'Patient not in sandbox returns a response status of NF - "No data found, no errors"' do
-    missing_patient =  { patient_name: { family_name: 'Not In Sandbox', given_name: 'Patient' },
-                         patient_dob: '20200101' }
-    response = HealthCards::QBPClient.query(missing_patient)
-    status = HealthCards::QBPClient.get_response_status(response)
-    assert_equal(:NF, status)
+    VCR.use_cassette('nf_status') do
+      missing_patient = { patient_name: { family_name: 'Not In Sandbox', given_name: 'Patient' },
+                          patient_dob: '20200101' }
+      response = HealthCards::QBPClient.query(missing_patient)
+      status = HealthCards::QBPClient.get_response_status(response)
+      assert_equal(:NF, status)
+    end
   end
 
   test 'Patient without required data fields returns a response status of AE - "Application Error"' do
-    response = HealthCards::QBPClient.query({})
-    status = HealthCards::QBPClient.get_response_status(response)
-    assert_equal(:AE, status)
+    VCR.use_cassette('ae_status') do
+      response = HealthCards::QBPClient.query({})
+      status = HealthCards::QBPClient.get_response_status(response)
+      assert_equal(:AE, status)
+    end
   end
 
   test 'Unspecific query returns Z31 profile indicating that one or more low confidence matches are found' do
-    duplicate_patient = @complete_patient.deep_dup
-    # NOTE: This is a specialized query built into the sandbox that allows for the return of a Z31 multi-match profile
-    # I was unable to trigger this response manually by uploading similar patients into the sandbox.
-    duplicate_patient[:patient_name][:second_or_further_names] = 'Multi'
-    response = HealthCards::QBPClient.query(duplicate_patient)
-    profile = response[:MSH][20]
-    assert_equal('Z31^CDCPHINVS', profile)
-    status = HealthCards::QBPClient.get_response_status(response)
-    assert_equal(:TM, status)
+    VCR.use_cassette('z31_returned') do
+      duplicate_patient = @complete_patient.deep_dup
+      # NOTE: This is a specialized query built into the sandbox that allows for the return of a Z31 multi-match profile
+      # I was unable to trigger this response manually by uploading similar patients into the sandbox.
+      duplicate_patient[:patient_name][:second_or_further_names] = 'Multi'
+      response = HealthCards::QBPClient.query(duplicate_patient)
+      profile = response[:MSH][20]
+      assert_equal('Z31^CDCPHINVS', profile)
+      status = HealthCards::QBPClient.get_response_status(response)
+      assert_equal(:TM, status)
+    end
   end
 
   # V2 to FHIR Translation Tests
 
   test 'Valid HL7 V2 Complete Immunization History Response will return a FHIR Bundle from the HL7 to V2 Translator' do
-    response = File.open('test/fixtures/files/RSP_valid.hl7').readlines
-    v2_response = HL7::Message.new(response)
-    fhir_response = HealthCards::QBPClient.translate_to_fhir(v2_response)
-    fhir_response_hash = JSON.parse(fhir_response)
-    assert_equal('Bundle', fhir_response_hash['resourceType'])
+    VCR.use_cassette('translator_returns_fhir_bundle') do
+      response = File.open('test/fixtures/files/RSP_valid.hl7').readlines
+      v2_response = HL7::Message.new(response)
+      fhir_response = HealthCards::QBPClient.translate_to_fhir(v2_response)
+      fhir_response_hash = JSON.parse(fhir_response)
+      assert_equal('Bundle', fhir_response_hash['resourceType'])
+    end
   end
 
   test 'Non-Patient HL7 V2 Response will return an error message from the HL7 to V2 Translator' do
-    response = File.open('test/fixtures/files/RSP_error.hl7').readlines
-    v2_response = HL7::Message.new(response)
-    fhir_response = HealthCards::QBPClient.translate_to_fhir(v2_response)
-    fhir_response_hash = JSON.parse(fhir_response)
-    assert_not_nil(fhir_response_hash['errors'])
+    VCR.use_cassette('translator_returns_error') do
+      response = File.open('test/fixtures/files/RSP_error.hl7').readlines
+      v2_response = HL7::Message.new(response)
+      fhir_response = HealthCards::QBPClient.translate_to_fhir(v2_response)
+      fhir_response_hash = JSON.parse(fhir_response)
+      assert_not_nil(fhir_response_hash['errors'])
+    end
   end
 
   # # WARNING: Running tests with this test uncommented could change sandbox data and cause other tests to fail

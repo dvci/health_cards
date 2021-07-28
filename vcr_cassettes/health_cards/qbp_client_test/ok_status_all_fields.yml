@@ -1,0 +1,55 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://vci.mitre.org:8081/iis-sandbox/soap
+    body:
+      encoding: UTF-8
+      string: |-
+        <?xml version="1.0" encoding="UTF-8"?><env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="urn:cdc:iisb:2011" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Body><tns:submitSingleMessage><tns:username>mitre</tns:username><tns:password>mitre</tns:password><tns:facilityID>MITRE Healthcare</tns:facilityID><tns:hl7Message>MSH|^~\&amp;|||||20210728204956||QBP^Q11^QBP_Q11|9115643310|P|2.5.1|||ER|AL|||||Z34^CDCPHINVS|
+
+        QPD|Z34^Request Immunization History^CDCPHINVS|9115643310|^J19X5^^^AIRA-TEST^MR|WeilAIRA^BethesdaAIRA^Delvene^^^^|WeilAIRA^BethesdaAIRA^^^^^M|20170610|F|1113 Wollands Kroon Ave^^Hamburg^MI^48139^USA^P|^PRN^PH^^^810^2499010|||||
+
+        RCP|I||</tns:hl7Message></tns:submitSingleMessage></env:Body></env:Envelope>
+    headers:
+      Soapaction:
+      - '"urn:cdc:iisb:2011:submitSingleMessage"'
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Content-Length:
+      - '804'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/soap+xml;action="urn:cdc:iisb:2011:connectivityTest";charset=UTF-8
+      Content-Length:
+      - '1656'
+      Date:
+      - Wed, 28 Jul 2021 20:49:56 GMT
+    body:
+      encoding: UTF-8
+      string: "<?xml version='1.0' encoding='UTF-8'?>\n<Envelope xmlns=\"http://www.w3.org/2003/05/soap-envelope\">\n
+        \ <Header />\n   <Body>\n      <submitSingleMessageResponse xmlns=\"urn:cdc:iisb:2011\">\n
+        \       <return><![CDATA[MSH|^~\\&||IIS Sandbox v0.4.6|||20210728084956+0000||RSP^K11^RSP_K11|16275053965781635|P|2.5.1|||NE|NE|||||Z32^CDCPHINVS\rMSA|AA|9115643310\rQAK|9115643310|OK|Z34^Request
+        a Complete Immunization History^CDCPHINVS\rQPD|Z34^Request Immunization History^CDCPHINVS|9115643310|^J19X5^^^AIRA-TEST^MR|WeilAIRA^BethesdaAIRA^Delvene^^^^|WeilAIRA^BethesdaAIRA^^^^^M|20170610|F|1113
+        Wollands Kroon Ave^^Hamburg^MI^48139^USA^P|^PRN^PH^^^810^2499010|||||\rPID|1||GKAXZ2C5R7TE^^^IIS^SR~J19X5^^^AIRA-TEST^MR||WeilAIRA^BethesdaAIRA^Delvene^^^^L|ClearfieldAIRA^^^^^^M|20170610|F|||1113
+        Wollands Kroon Ave^^Hamburg^MI^48139^USA^P||^PRN^PH^^^810^2499010||||||||||||\rNK1|1|RichardsonAIRA^TarraAIRA^^^^^L|MTH^Mother^HL70063\rORC|RE|1^IIS|O60A4.3^MITRE
+        Healthcare\rRXA|0|1|20210616||94^MMRV^CVX|0.5|mL^milliliters^UCUM||00^New
+        immunization record^NIP001||||||L6696AE||MSD^Merck and Co., Inc.^MVX|||CP|A\rRXR|C38299^Subcutaneous^NCIT|RA^Right
+        Upper Arm^HL70163\rOBX|1|CE|64994-7^Vaccine funding program eligibility category^LN|1|V02^VFC
+        eligible - Medicaid/Medicaid Managed Care^HL70064||||||F|||20210616|||VXC40^Eligibility
+        captured at the immunization level^CDCPHINVS\rOBX|2|CE|30956-7^Vaccine Type^LN|1|94^MMRV^CVX||||||F||||||\rOBX|3|TS|29768-9^Date
+        vaccine information statement published^LN|1|20100521||||||F||||||\rOBX|4|TS|29769-7^Date
+        vaccine information statement presented^LN|1|20210616||||||F||||||\r]]></return>\n
+        \     </submitSingleMessageResponse>\n  </Body>\n</Envelope>\n"
+  recorded_at: Wed, 28 Jul 2021 20:49:56 GMT
+recorded_with: VCR 6.0.0

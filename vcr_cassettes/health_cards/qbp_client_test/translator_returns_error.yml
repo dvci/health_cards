@@ -1,0 +1,43 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://vci.mitre.org:3000/api/v0.1.0/convert/text
+    body:
+      encoding: UTF-8
+      string: "MSH|^~\\&||IIS Sandbox v0.4.6|||20210721061020+0000||RSP^K11^RSP_K11|1626891020355334|P|2.5.1|||NE|NE|||||Z33^CDCPHINVS\n\rMSA|AA|2874716164\n\rQAK|2874716164|NF|Z34^Request
+        a Complete Immunization History^CDCPHINVS\n\rQPD|Z34^Request Immunization
+        History^CDCPHINVS|2874716164|^^^^^|Not In Sandbox^Patient^^^^^|^^^^^^|20200101||^^^^^USA^|^PRN^PH^^^81^|||||"
+    headers:
+      User-Agent:
+      - Faraday v1.5.1
+      Content-Type:
+      - text/plain
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      X-Powered-By:
+      - Express
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '67'
+      Etag:
+      - W/"43-GPCb9NH/Omqruw75szMqS9hqKIo"
+      Date:
+      - Wed, 28 Jul 2021 20:49:58 GMT
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - timeout=5
+    body:
+      encoding: UTF-8
+      string: '{"errors":[{"message":"Message is missing required segment PID."}]}'
+  recorded_at: Wed, 28 Jul 2021 20:49:58 GMT
+recorded_with: VCR 6.0.0
