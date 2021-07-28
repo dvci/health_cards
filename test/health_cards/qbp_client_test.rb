@@ -5,7 +5,7 @@ require 'health_cards/qbp_client'
 require 'vcr'
 
 VCR.configure do |config|
-  config.cassette_library_dir = 'vcr_cassettes/health_cards/qbp_client_test'
+  config.cassette_library_dir = 'test/vcr_cassettes/health_cards/qbp_client_test'
   config.hook_into :webmock
 end
 
@@ -74,7 +74,7 @@ class QBPClientTest < ActiveSupport::TestCase
     VCR.use_cassette('connectivity_test') do
       service_def = 'lib/assets/service.wsdl'
       client = Savon.client(wsdl: service_def,
-                            endpoint: 'http://localhost:8081/iis-sandbox/soap',
+                            endpoint: "#{Rails.application.config.iisSandboxHost}/iis-sandbox/soap",
                             pretty_print_xml: true)
       assert_nothing_raised do
         HealthCards::QBPClient.check_client_connectivity(client) if client.operations.include?(:connectivity_test)

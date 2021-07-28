@@ -31,7 +31,7 @@ module HealthCards
         response = client.call(:submit_single_message) do
           message(**sandbox_credentials, hl7Message: msg_input)
         end
-      rescue Savon::SOAPFault => e
+      rescue Savon::Error => e
         fault_code = e.to_s
         raise HealthCards::SOAPError, fault_code
       end
@@ -173,8 +173,13 @@ module HealthCards
     # Methods that check for and handle errors
 
     def check_client_connectivity(client)
-      response = client.call(:connectivity_test) do
-        message echoBack: '?'
+      begin
+        response = client.call(:connectivity_test) do
+          message echoBack: '?'
+        end
+      rescue Savon::Error => e
+        fault_code = e.to_s
+        raise HealthCards::SOAPError, fault_code
       end
       conncectivity_response = response.body[:connectivity_test_response][:return]
       throw HealthCards::BadClientConnectionError unless conncectivity_response == 'End-point is ready. Echoing: ?'
