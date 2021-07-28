@@ -76,6 +76,17 @@ module HealthCards
     end
   end
 
+  # Exception thrown when the SOAP client returns a SOAP fault
+  class SOAPError < QBPClientError
+    def initialize(msg = nil)
+      if msg
+        super("The following SOAP fault was returned by the client: #{msg}")
+      else
+        super('SOAP Fault returned by the client')
+      end
+    end
+  end
+
   # Exception thrown when the SOAP client fails the connectivity test
   class BadClientConnectionError < QBPClientError
     def initialize(msg = 'Unable to establish a good connection with the SOAP client')

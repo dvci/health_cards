@@ -39,9 +39,9 @@ class QBPClientTest < ActiveSupport::TestCase
     assert_instance_of(HL7::Message, v2_response_body)
   end
 
-  test 'translate() method successfully returns a stringified JSON object' do
+  test 'translate_to_fhir() method successfully returns a stringified JSON object' do
     v2_response_body = HealthCards::QBPClient.query({})
-    fhir_response_body = HealthCards::QBPClient.translate(v2_response_body)
+    fhir_response_body = HealthCards::QBPClient.translate_to_fhir(v2_response_body)
     parsed_fhir_response = begin
       JSON.parse(fhir_response_body)
     rescue StandardError
@@ -80,7 +80,7 @@ class QBPClientTest < ActiveSupport::TestCase
 
   test 'SOAP FAULT: SecurityFault - bad credentials' do
     user_sandbox_credentials = { username: 'mitre', password: 'bad_password', facilityID: 'MITRE Healthcare' }
-    assert_raises Savon::SOAPFault do
+    assert_raises HealthCards::SOAPError do
       HealthCards::QBPClient.query({}, user_sandbox_credentials)
     end
   end
@@ -89,7 +89,7 @@ class QBPClientTest < ActiveSupport::TestCase
     # NOTE: This functionality may be updated within the IIS Sandbox, according to recent conversation with Nathan
     # Currently, this throws the same exception as the above "Security Fault"
     user_sandbox_credentials = { username: 'NPE', password: 'NPE', facilityID: 'MITRE Healthcare' }
-    assert_raises Savon::SOAPFault do
+    assert_raises HealthCards::SOAPError do
       HealthCards::QBPClient.query({}, user_sandbox_credentials)
     end
   end
@@ -145,7 +145,7 @@ class QBPClientTest < ActiveSupport::TestCase
   test 'Valid HL7 V2 Complete Immunization History Response will return a FHIR Bundle from the HL7 to V2 Translator' do
     response = File.open('test/fixtures/files/RSP_valid.hl7').readlines
     v2_response = HL7::Message.new(response)
-    fhir_response = HealthCards::QBPClient.translate(v2_response)
+    fhir_response = HealthCards::QBPClient.translate_to_fhir(v2_response)
     fhir_response_hash = JSON.parse(fhir_response)
     assert_equal('Bundle', fhir_response_hash['resourceType'])
   end
@@ -153,7 +153,7 @@ class QBPClientTest < ActiveSupport::TestCase
   test 'Non-Patient HL7 V2 Response will return an error message from the HL7 to V2 Translator' do
     response = File.open('test/fixtures/files/RSP_error.hl7').readlines
     v2_response = HL7::Message.new(response)
-    fhir_response = HealthCards::QBPClient.translate(v2_response)
+    fhir_response = HealthCards::QBPClient.translate_to_fhir(v2_response)
     fhir_response_hash = JSON.parse(fhir_response)
     assert_not_nil(fhir_response_hash['errors'])
   end

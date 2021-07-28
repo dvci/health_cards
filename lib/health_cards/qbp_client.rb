@@ -21,16 +21,19 @@ module HealthCards
 
       service_def = 'lib/assets/service.wsdl'
       client = Savon.client(wsdl: service_def,
-                            endpoint: Rails.application.config.iisSandboxHost + '/iis-sandbox/soap',
+                            endpoint: "#{Rails.application.config.iisSandboxHost}/iis-sandbox/soap",
                             pretty_print_xml: true)
       # Check if client is configured properly
       raise HealthCards::OperationNotSupportedError unless client.operations.include?(:submit_single_message)
 
-      check_client_connectivity(client) if client.operations.include?(:connectivity_test)
-
       msg_input = build_hl7_message(patient_info)
-      response = client.call(:submit_single_message) do
-        message(**sandbox_credentials, hl7Message: msg_input)
+      begin
+        response = client.call(:submit_single_message) do
+          message(**sandbox_credentials, hl7Message: msg_input)
+        end
+      rescue Savon::SOAPFault => e
+        fault_code = e.to_s
+        raise HealthCards::SOAPError, fault_code
       end
 
       raw_response_message = response.body[:submit_single_message_response][:return]
@@ -41,8 +44,8 @@ module HealthCards
     # Translate relevant info from V2 Response message into a FHIR Bundle
     # @param v2_response [HL7::Message] V2 message returned from the IIS Sandbox
     # @return [String] FHIR Bundle representation of the V2 message
-    def translate(v2_response)
-      fhir_response = Faraday.post(Rails.application.config.v2ToFhirHost + '/api/v0.1.0/convert/text',
+    def translate_to_fhir(v2_response)
+      fhir_response = Faraday.post("#{Rails.application.config.v2ToFhirHost}/api/v0.1.0/convert/text",
                                    v2_response.to_hl7,
                                    'Content-Type' => 'text/plain')
       fhir_response.body
@@ -119,7 +122,7 @@ module HealthCards
       # Define client
       service_def = 'lib/assets/service.wsdl'
       client = Savon.client(wsdl: service_def,
-                            endpoint: Rails.application.config.iisSandboxHost + '/iis-sandbox/soap',
+                            endpoint: "#{Rails.application.config.iisSandboxHost}/iis-sandbox/soap",
                             pretty_print_xml: true)
       # Upload Patient from fixture
       upload_raw_input = FILE.open(vxu_path).readlines
