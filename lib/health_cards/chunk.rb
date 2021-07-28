@@ -17,8 +17,8 @@ module HealthCards
 
       prefix = multi ? multi.to_s : SINGLE_REGEX.match(input).to_s
       content = input.delete_prefix(prefix)
-
-      @qrcode = RQRCode::QRCode.new([{mode: :byte_8bit, data: prefix}, {mode: :number, data: content}], mode: :multi, max_size: 22, level: :l)
+      
+      @qrcode = RQRCode::QRCode.new([RQRCodeCore::QRSegment.new(mode: :byte_8bit, data: prefix), RQRCodeCore::QRSegment.new(mode: :number, data: content)], mode: :multi, max_size: 22, level: :l)
     end
 
     def image
