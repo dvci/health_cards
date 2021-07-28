@@ -6,9 +6,9 @@ http_interactions:
     body:
       encoding: UTF-8
       string: |-
-        <?xml version="1.0" encoding="UTF-8"?><env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="urn:cdc:iisb:2011" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Body><tns:submitSingleMessage><tns:username>mitre</tns:username><tns:password>mitre</tns:password><tns:facilityID>MITRE Healthcare</tns:facilityID><tns:hl7Message>MSH|^~\&amp;|||||20210728204959||QBP^Q11^QBP_Q11|3889385634|P|2.5.1|||ER|AL|||||Z34^CDCPHINVS|
+        <?xml version="1.0" encoding="UTF-8"?><env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="urn:cdc:iisb:2011" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Body><tns:submitSingleMessage><tns:username>mitre</tns:username><tns:password>mitre</tns:password><tns:facilityID>MITRE Healthcare</tns:facilityID><tns:hl7Message>MSH|^~\&amp;|||||20210728210915||QBP^Q11^QBP_Q11|401439916|P|2.5.1|||ER|AL|||||Z34^CDCPHINVS|
 
-        QPD|Z34^Request Immunization History^CDCPHINVS|3889385634|^J19X5^^^AIRA-TEST^MR|WeilAIRA^BethesdaAIRA^Multi^^^^|WeilAIRA^BethesdaAIRA^^^^^M|20170610|F|1113 Wollands Kroon Ave^^Hamburg^MI^48139^USA^P|^PRN^PH^^^810^2499010|||||
+        QPD|Z34^Request Immunization History^CDCPHINVS|401439916|^J19X5^^^AIRA-TEST^MR|WeilAIRA^BethesdaAIRA^Multi^^^^|WeilAIRA^BethesdaAIRA^^^^^M|20170610|F|1113 Wollands Kroon Ave^^Hamburg^MI^48139^USA^P|^PRN^PH^^^810^2499010|||||
 
         RCP|I||</tns:hl7Message></tns:submitSingleMessage></env:Body></env:Envelope>
     headers:
@@ -17,7 +17,7 @@ http_interactions:
       Content-Type:
       - text/xml;charset=UTF-8
       Content-Length:
-      - '802'
+      - '800'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -32,18 +32,18 @@ http_interactions:
       Content-Type:
       - application/soap+xml;action="urn:cdc:iisb:2011:connectivityTest";charset=UTF-8
       Content-Length:
-      - '1124'
+      - '1121'
       Date:
-      - Wed, 28 Jul 2021 20:50:00 GMT
+      - Wed, 28 Jul 2021 21:09:15 GMT
     body:
       encoding: UTF-8
       string: "<?xml version='1.0' encoding='UTF-8'?>\n<Envelope xmlns=\"http://www.w3.org/2003/05/soap-envelope\">\n
         \ <Header />\n   <Body>\n      <submitSingleMessageResponse xmlns=\"urn:cdc:iisb:2011\">\n
-        \       <return><![CDATA[MSH|^~\\&||IIS Sandbox v0.4.6|||20210728085000+0000||RSP^K11^RSP_K11|16275054000491641|P|2.5.1|||NE|NE|||||Z31^CDCPHINVS\rMSA|AA|3889385634\rQAK|3889385634|OK|Z34^Request
-        a Complete Immunization History^CDCPHINVS\rQPD|Z34^Request Immunization History^CDCPHINVS|3889385634|^J19X5^^^AIRA-TEST^MR|WeilAIRA^BethesdaAIRA^Multi^^^^|WeilAIRA^BethesdaAIRA^^^^^M|20170610|F|1113
+        \       <return><![CDATA[MSH|^~\\&||IIS Sandbox v0.4.6|||20210728090915+0000||RSP^K11^RSP_K11|16275065555571653|P|2.5.1|||NE|NE|||||Z31^CDCPHINVS\rMSA|AA|401439916\rQAK|401439916|OK|Z34^Request
+        a Complete Immunization History^CDCPHINVS\rQPD|Z34^Request Immunization History^CDCPHINVS|401439916|^J19X5^^^AIRA-TEST^MR|WeilAIRA^BethesdaAIRA^Multi^^^^|WeilAIRA^BethesdaAIRA^^^^^M|20170610|F|1113
         Wollands Kroon Ave^^Hamburg^MI^48139^USA^P|^PRN^PH^^^810^2499010|||||\rPID|1||GKAXZ2C5R7TE^^^IIS^SR~J19X5^^^AIRA-TEST^MR||WeilAIRA^BethesdaAIRA^Delvene^^^^L|ClearfieldAIRA^^^^^^M|20170610|F|||1113
         Wollands Kroon Ave^^Hamburg^MI^48139^USA^P||^PRN^PH^^^810^2499010||||||||||||\rPID|2||GKAXZ2C5R7TE^^^IIS^SR~J19X5^^^AIRA-TEST^MR||WeilAIRA^BethesdaAIRA^Delvene^^^^L|ClearfieldAIRA^^^^^^M|20170610|F|||1113
         Wollands Kroon Ave^^Hamburg^MI^48139^USA^P||^PRN^PH^^^810^2499010||||||||||||\r]]></return>\n
         \     </submitSingleMessageResponse>\n  </Body>\n</Envelope>\n"
-  recorded_at: Wed, 28 Jul 2021 20:49:59 GMT
+  recorded_at: Wed, 28 Jul 2021 21:09:15 GMT
 recorded_with: VCR 6.0.0

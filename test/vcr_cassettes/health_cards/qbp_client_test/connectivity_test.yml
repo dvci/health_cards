@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: http://localhost:8081/iis-sandbox/soap
+    uri: http://vci.mitre.org:8081/iis-sandbox/soap
     body:
       encoding: UTF-8
       string: <?xml version="1.0" encoding="UTF-8"?><env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -31,11 +31,11 @@ http_interactions:
       Content-Length:
       - '275'
       Date:
-      - Wed, 28 Jul 2021 20:49:59 GMT
+      - Wed, 28 Jul 2021 21:09:14 GMT
     body:
       encoding: UTF-8
       string: "<?xml version='1.0' encoding='UTF-8'?>\n<Envelope xmlns=\"http://www.w3.org/2003/05/soap-envelope\">\n
         \ <Body>\n    <connectivityTestResponse xmlns=\"urn:cdc:iisb:2011\">\n      <return>End-point
         is ready. Echoing: ?</return>   \n    </connectivityTestResponse>\n  </Body>\n</Envelope>\n"
-  recorded_at: Wed, 28 Jul 2021 20:49:59 GMT
+  recorded_at: Wed, 28 Jul 2021 21:09:14 GMT
 recorded_with: VCR 6.0.0

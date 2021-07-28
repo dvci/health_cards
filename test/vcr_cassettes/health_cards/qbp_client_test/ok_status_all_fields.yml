@@ -6,9 +6,9 @@ http_interactions:
     body:
       encoding: UTF-8
       string: |-
-        <?xml version="1.0" encoding="UTF-8"?><env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="urn:cdc:iisb:2011" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Body><tns:submitSingleMessage><tns:username>mitre</tns:username><tns:password>mitre</tns:password><tns:facilityID>MITRE Healthcare</tns:facilityID><tns:hl7Message>MSH|^~\&amp;|||||20210728204958||QBP^Q11^QBP_Q11|1282054219|P|2.5.1|||ER|AL|||||Z34^CDCPHINVS|
+        <?xml version="1.0" encoding="UTF-8"?><env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="urn:cdc:iisb:2011" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Body><tns:submitSingleMessage><tns:username>mitre</tns:username><tns:password>mitre</tns:password><tns:facilityID>MITRE Healthcare</tns:facilityID><tns:hl7Message>MSH|^~\&amp;|||||20210728210915||QBP^Q11^QBP_Q11|4456040369|P|2.5.1|||ER|AL|||||Z34^CDCPHINVS|
 
-        QPD|Z34^Request Immunization History^CDCPHINVS|1282054219||WeilAIRA^BethesdaAIRA^^^^^|^^^^^^|20170610||^^^^^USA^|^PRN^PH^^^^|||||
+        QPD|Z34^Request Immunization History^CDCPHINVS|4456040369|^J19X5^^^AIRA-TEST^MR|WeilAIRA^BethesdaAIRA^Delvene^^^^|WeilAIRA^BethesdaAIRA^^^^^M|20170610|F|1113 Wollands Kroon Ave^^Hamburg^MI^48139^USA^P|^PRN^PH^^^810^2499010|||||
 
         RCP|I||</tns:hl7Message></tns:submitSingleMessage></env:Body></env:Envelope>
     headers:
@@ -17,7 +17,7 @@ http_interactions:
       Content-Type:
       - text/xml;charset=UTF-8
       Content-Length:
-      - '706'
+      - '804'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -32,15 +32,16 @@ http_interactions:
       Content-Type:
       - application/soap+xml;action="urn:cdc:iisb:2011:connectivityTest";charset=UTF-8
       Content-Length:
-      - '1558'
+      - '1656'
       Date:
-      - Wed, 28 Jul 2021 20:49:59 GMT
+      - Wed, 28 Jul 2021 21:09:15 GMT
     body:
       encoding: UTF-8
       string: "<?xml version='1.0' encoding='UTF-8'?>\n<Envelope xmlns=\"http://www.w3.org/2003/05/soap-envelope\">\n
         \ <Header />\n   <Body>\n      <submitSingleMessageResponse xmlns=\"urn:cdc:iisb:2011\">\n
-        \       <return><![CDATA[MSH|^~\\&||IIS Sandbox v0.4.6|||20210728084958+0000||RSP^K11^RSP_K11|16275053988351638|P|2.5.1|||NE|NE|||||Z32^CDCPHINVS\rMSA|AA|1282054219\rQAK|1282054219|OK|Z34^Request
-        a Complete Immunization History^CDCPHINVS\rQPD|Z34^Request Immunization History^CDCPHINVS|1282054219||WeilAIRA^BethesdaAIRA^^^^^|^^^^^^|20170610||^^^^^USA^|^PRN^PH^^^^|||||\rPID|1||GKAXZ2C5R7TE^^^IIS^SR~J19X5^^^AIRA-TEST^MR||WeilAIRA^BethesdaAIRA^Delvene^^^^L|ClearfieldAIRA^^^^^^M|20170610|F|||1113
+        \       <return><![CDATA[MSH|^~\\&||IIS Sandbox v0.4.6|||20210728090915+0000||RSP^K11^RSP_K11|16275065556901654|P|2.5.1|||NE|NE|||||Z32^CDCPHINVS\rMSA|AA|4456040369\rQAK|4456040369|OK|Z34^Request
+        a Complete Immunization History^CDCPHINVS\rQPD|Z34^Request Immunization History^CDCPHINVS|4456040369|^J19X5^^^AIRA-TEST^MR|WeilAIRA^BethesdaAIRA^Delvene^^^^|WeilAIRA^BethesdaAIRA^^^^^M|20170610|F|1113
+        Wollands Kroon Ave^^Hamburg^MI^48139^USA^P|^PRN^PH^^^810^2499010|||||\rPID|1||GKAXZ2C5R7TE^^^IIS^SR~J19X5^^^AIRA-TEST^MR||WeilAIRA^BethesdaAIRA^Delvene^^^^L|ClearfieldAIRA^^^^^^M|20170610|F|||1113
         Wollands Kroon Ave^^Hamburg^MI^48139^USA^P||^PRN^PH^^^810^2499010||||||||||||\rNK1|1|RichardsonAIRA^TarraAIRA^^^^^L|MTH^Mother^HL70063\rORC|RE|1^IIS|O60A4.3^MITRE
         Healthcare\rRXA|0|1|20210616||94^MMRV^CVX|0.5|mL^milliliters^UCUM||00^New
         immunization record^NIP001||||||L6696AE||MSD^Merck and Co., Inc.^MVX|||CP|A\rRXR|C38299^Subcutaneous^NCIT|RA^Right
@@ -50,5 +51,5 @@ http_interactions:
         vaccine information statement published^LN|1|20100521||||||F||||||\rOBX|4|TS|29769-7^Date
         vaccine information statement presented^LN|1|20210616||||||F||||||\r]]></return>\n
         \     </submitSingleMessageResponse>\n  </Body>\n</Envelope>\n"
-  recorded_at: Wed, 28 Jul 2021 20:49:58 GMT
+  recorded_at: Wed, 28 Jul 2021 21:09:15 GMT
 recorded_with: VCR 6.0.0

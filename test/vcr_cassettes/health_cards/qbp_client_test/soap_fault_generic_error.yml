@@ -6,9 +6,9 @@ http_interactions:
     body:
       encoding: UTF-8
       string: |-
-        <?xml version="1.0" encoding="UTF-8"?><env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="urn:cdc:iisb:2011" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Body><tns:submitSingleMessage><tns:username>mitre</tns:username><tns:password>bad_password</tns:password><tns:facilityID>MITRE Healthcare</tns:facilityID><tns:hl7Message>MSH|^~\&amp;|||||20210728204956||QBP^Q11^QBP_Q11|2498695011|P|2.5.1|||ER|AL|||||Z34^CDCPHINVS|
+        <?xml version="1.0" encoding="UTF-8"?><env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="urn:cdc:iisb:2011" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Body><tns:submitSingleMessage><tns:username>NPE</tns:username><tns:password>NPE</tns:password><tns:facilityID>MITRE Healthcare</tns:facilityID><tns:hl7Message>MSH|^~\&amp;|||||20210728210914||QBP^Q11^QBP_Q11|3469655333|P|2.5.1|||ER|AL|||||Z34^CDCPHINVS|
 
-        QPD|Z34^Request Immunization History^CDCPHINVS|2498695011||^^^^^^|^^^^^^|||^^^^^USA^|^PRN^PH^^^^|||||
+        QPD|Z34^Request Immunization History^CDCPHINVS|3469655333||^^^^^^|^^^^^^|||^^^^^USA^|^PRN^PH^^^^|||||
 
         RCP|I||</tns:hl7Message></tns:submitSingleMessage></env:Body></env:Envelope>
     headers:
@@ -17,7 +17,7 @@ http_interactions:
       Content-Type:
       - text/xml;charset=UTF-8
       Content-Length:
-      - '685'
+      - '674'
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -34,7 +34,7 @@ http_interactions:
       Content-Length:
       - '775'
       Date:
-      - Wed, 28 Jul 2021 20:49:56 GMT
+      - Wed, 28 Jul 2021 21:09:14 GMT
     body:
       encoding: UTF-8
       string: |
@@ -58,5 +58,5 @@ http_interactions:
               </Fault>
            </Body>
         </Envelope>
-  recorded_at: Wed, 28 Jul 2021 20:49:57 GMT
+  recorded_at: Wed, 28 Jul 2021 21:09:14 GMT
 recorded_with: VCR 6.0.0

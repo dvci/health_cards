@@ -40,7 +40,7 @@ http_interactions:
       Etag:
       - W/"1a6-2MZvqOzI8Fdzqxf65pO3sEBHjus"
       Date:
-      - Wed, 28 Jul 2021 20:49:58 GMT
+      - Wed, 28 Jul 2021 21:09:13 GMT
       Connection:
       - keep-alive
       Keep-Alive:
@@ -48,5 +48,5 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"resourceType":"Bundle","type":"collection","entry":[{"fullUrl":"resource:0","resource":{"resourceType":"Patient","name":[{"family":"WeilAIRA","given":["BethesdaAIRA","Delvene"]}],"birthDate":"20170610"}},{"fullUrl":"resource:1","resource":{"resourceType":"Immunization","patient":{"reference":"resource:0"},"occurrenceDateTime":"20210616","vaccineCode":{"coding":[{"system":"CVX","code":"94"}]},"lotNumber":"L6696AE"}}]}'
-  recorded_at: Wed, 28 Jul 2021 20:49:58 GMT
+  recorded_at: Wed, 28 Jul 2021 21:09:13 GMT
 recorded_with: VCR 6.0.0
