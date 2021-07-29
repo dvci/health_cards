@@ -12,8 +12,8 @@ class LabResult < FHIRRecord
 
   validates :effective, presence: true
   validates :patient, presence: true
-  validates :code, presence: true
-  validates :result, presence: true
+  validates :code, inclusion: { in: ValueSet::LAB_CODES.code_values, message: 'is not a valid lab code' }
+  validates :result, inclusion: { in: ValueSet::RESULTS.code_values, message: 'is not a valid lab result' }
   validates :status, presence: true
 
   STATUS = %w[final amended corrected].freeze
@@ -72,11 +72,11 @@ class LabResult < FHIRRecord
   private
 
   def update_result(code)
-    json.valueCodeableConcept	||= FHIR::CodeableConcept.new(coding: [ValueSet::RESULTS.find_by_code(code: code)])
+    json.valueCodeableConcept	||= FHIR::CodeableConcept.new(coding: [ValueSet::RESULTS.find_code(code)])
   end
 
   def update_code(code)
-    json.code	||= FHIR::CodeableConcept.new(coding: [ValueSet::LAB_CODES.find_by_code(code: code)])
+    json.code	||= FHIR::CodeableConcept.new(coding: [ValueSet::LAB_CODES.find_code(code)])
   end
 
   def update_patient_reference(pat)
