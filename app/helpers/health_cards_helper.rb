@@ -8,7 +8,7 @@ module HealthCardsHelper
 
     patient = Patient.new(json: patient_entry.resource)
     create_immunizations(patient, bundle)
-    create_labResult(patient, bundle)
+    create_lab_result(patient, bundle)
     patient
   end
 
@@ -26,7 +26,7 @@ module HealthCardsHelper
     end
   end
 
-  def create_labResult(patient, bundle)
+  def create_lab_result(patient, bundle)
     lab_results = bundle.entry.select { |e| e.resource.is_a?(FHIR::Observation) }
     lab_results.each do |i|
       lab_result_resource = i.resource
