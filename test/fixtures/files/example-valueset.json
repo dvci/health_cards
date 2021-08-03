@@ -1,0 +1,54 @@
+{
+    "resourceType": "ValueSet",
+    "id": "qualitative-lab-result-findings",
+    "text": {
+      "status": "generated",
+      "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>This value set includes codes based on the following rules:</p><ul><li>Import all the codes that are contained in <a href=\"https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1114.10/expansion\">http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1114.10</a></li><li>Import all the codes that are contained in <a href=\"ValueSet-qualitative-lab-results-loinc.html\">http://hl7.org/fhir/uv/smarthealthcards-vaccination/ValueSet/qualitative-lab-results-loinc</a></li></ul></div>"
+    },
+    "url": "http://hl7.org/fhir/uv/smarthealthcards-vaccination/ValueSet/qualitative-lab-result-findings",
+    "version": "0.5.0-rc",
+    "name": "QualitativeLabResultFindings",
+    "title": "Qualitative lab result findings",
+    "status": "active",
+    "date": "2021-05-15T19:35:22+00:00",
+    "publisher": "vci.org",
+    "contact": [
+      {
+        "name": "vci.org",
+        "telecom": [
+          {
+            "system": "url",
+            "value": "https://vci.org"
+          },
+          {
+            "system": "email",
+            "value": "vci-ig@mitre.org"
+          }
+        ]
+      }
+    ],
+    "description": "This value set includes codes for identifying laboratory test results. It includes SNOMED CT codes from a [value set of COVID-19-related SNOMED CT codes](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1114.10/expansion), as well as codes from LOINC answer lists with roughly equivalent meanings. While the source value set is COVID-19-related, these codes should apply to all infectious disease-related qualitative laboratory results.",
+    "jurisdiction": [
+      {
+        "coding": [
+          {
+            "system": "http://unstats.un.org/unsd/methods/m49/m49.htm",
+            "code": "001"
+          }
+        ]
+      }
+    ],
+    "compose": {
+      "include": [
+        {
+          "system": "http://snomed.info/sct",
+          "concept": [
+            {
+              "code": "10828004",
+              "display": "Positive (qualifier value)"
+            }
+          ]
+        }
+      ]
+    }
+  }
