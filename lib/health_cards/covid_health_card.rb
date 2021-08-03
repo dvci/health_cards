@@ -14,6 +14,6 @@ module HealthCards
 
     allow type: FHIR::Patient, attributes: %w[name birthDate]
     allow type: FHIR::Immunization, attributes: %w[status vaccineCode patient occurrenceDateTime]
-    allow type: FHIR::Observation, attributes: %w[status labCode patient effectiveDateTime]
+    allow type: FHIR::Observation, attributes: %w[status labCode result patient effectiveDateTime]
   end
 end

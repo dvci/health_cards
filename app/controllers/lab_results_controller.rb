@@ -47,7 +47,7 @@ class LabResultsController < ApplicationController
   end
 
   def destroy
-    @lab_result.destroy
+    @lab_result.destroy!
     respond_to do |format|
       format.html { redirect_to patient_path(@patient), notice: 'Lab Result was successfully destroyed.' }
       format.json { head :no_content }

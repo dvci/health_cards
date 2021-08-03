@@ -24,6 +24,7 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert_includes type, HealthCards::CardTypes::VC_TYPE[0]
     assert_includes type, 'https://smarthealth.cards#covid19'
     assert_includes type, 'https://smarthealth.cards#immunization'
+    assert_includes type, 'https://smarthealth.cards#labresult'
 
     fhir_version = hash.dig(:vc, :credentialSubject, :fhirVersion)
     assert_not_nil fhir_version
