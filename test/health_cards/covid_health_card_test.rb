@@ -55,7 +55,8 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
 
   test 'supports multiple types' do
     assert HealthCards::COVIDHealthCard.supports_type? ['https://smarthealth.cards#covid19',
-                                                        'https://smarthealth.cards#immunization']
+                                                        'https://smarthealth.cards#immunization',
+                                                        'https://smarthealth.cards#labresult']
   end
 
   test 'minified entries' do
