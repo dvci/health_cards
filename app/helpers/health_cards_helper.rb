@@ -7,14 +7,14 @@ module HealthCardsHelper
     return nil if patient_entry.nil?
 
     patient = Patient.new(json: patient_entry.resource)
-    create_immunizations(patient, bundle)
-    create_lab_result(patient, bundle)
+    new_immunizations(patient, bundle)
+    new_lab_result(patient, bundle)
     patient
   end
 
   private
 
-  def create_immunizations(pat, bundle)
+  def new_immunizations(pat, bundle)
     immunizations = bundle.entry.select { |e| e.resource.is_a?(FHIR::Immunization) }
     immunizations.each do |i|
       immunization_resource = i.resource
@@ -26,14 +26,16 @@ module HealthCardsHelper
     end
   end
 
-  def create_lab_result(patient, bundle)
+  def new_lab_result(patient, bundle)
     lab_results = bundle.entry.select { |e| e.resource.is_a?(FHIR::Observation) }
+    valueset_result = ValueSet.new(ValueSet::RESULTS)
+    valueset_code = ValueSet.new(ValueSet::LAB_CODES)
     lab_results.each do |i|
       lab_result_resource = i.resource
       patient.lab_results.new({
-                                code: ValueSet.find_by(code: lab_result_resource.labCode.coding[0].code).code,
+                                code: valueset_code.find_code(code: lab_result_resource.code.coding[0].code).code,
                                 status: lab_result_resource.status,
-                                result: lab_result_resource.result,
+                                result: valueset_result.find_code(result: lab_result_resource.valueCodeableConcept.coding[0].result).result,
                                 effective: lab_result_resource.effectiveDateTime
                               })
     end
