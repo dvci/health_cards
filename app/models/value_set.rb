@@ -3,8 +3,6 @@
 class ValueSet
   attr_reader :codes
 
-  def initialize; end
-
   def initialize(file)
     @codes = FHIR.from_contents(File.read(file)).compose.include.flat_map do |compose|
       compose.concept.map do |concept|

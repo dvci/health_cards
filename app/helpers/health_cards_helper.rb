@@ -28,14 +28,12 @@ module HealthCardsHelper
 
   def new_lab_result(patient, bundle)
     lab_results = bundle.entry.select { |e| e.resource.is_a?(FHIR::Observation) }
-    valueset_result = ValueSet.new(ValueSet::RESULTS)
-    valueset_code = ValueSet.new(ValueSet::LAB_CODES)
     lab_results.each do |i|
       lab_result_resource = i.resource
       patient.lab_results.new({
-                                code: valueset_code.find_code(code: lab_result_resource.code.coding[0].code).code,
+                                code: lab_result_resource.code.coding[0].code,
                                 status: lab_result_resource.status,
-                                result: valueset_result.find_code(result: lab_result_resource.valueCodeableConcept.coding[0].result).result,
+                                result: lab_result_resource.valueCodeableConcept.coding[0].code,
                                 effective: lab_result_resource.effectiveDateTime
                               })
     end
