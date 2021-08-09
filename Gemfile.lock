@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git@github.com:ssayer/rqrcode_core.git
-  revision: 6e513ead4e6b955874634ea3b64ed6c2ec89a6ee
+  revision: 60b63a53e3dc991cf52e5fa9648942b2cca8df95
   branch: multi_mode_support
   specs:
     rqrcode_core (1.1.0)
