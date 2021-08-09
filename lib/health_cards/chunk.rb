@@ -22,6 +22,12 @@ module HealthCards
         module_px_size: 2
       )
     end
+
+    delegate :data, to: :qr_code
+
+    def image
+      @qrcode.as_png(module_px_size: 2)
+    end
   end
 
   # RQRCodeCore shim for to enable multimode encoding
@@ -86,7 +92,6 @@ module HealthCards
       def get_code(chars)
         chars.to_i
       end
-    end
   end
 end
 # rubocop:enable Lint/MissingSuper

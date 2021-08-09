@@ -165,6 +165,14 @@ module HealthCards
 
     private
 
+    def first_from_bundle
+      from_bundle&.first
+    end
+
+    def from_bundle(type:)
+      bundle.find { |entry| entry.is_a?(type) }
+    end
+
     def duplicate_bundle
       FHIR::Bundle.new(bundle.to_hash)
     end

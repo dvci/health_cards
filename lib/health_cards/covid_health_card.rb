@@ -11,7 +11,13 @@ module HealthCards
     additional_types 'https://smarthealth.cards#covid19'
     additional_types 'https://smarthealth.cards#immunization'
 
-    allow type: FHIR::Patient, attributes: %w[name birthDate]
-    allow type: FHIR::Immunization, attributes: %w[status vaccineCode patient occurrenceDateTime]
+    # allow type: FHIR::Patient, attributes: %w[name birthDate]
+    # allow type: FHIR::Immunization, attributes: %w[status vaccineCode patient occurrenceDateTime]
+
+    # display :patient, name: { |pat| patient }
+    # display_collection :immunization, code
+
+    bundle_member :patient, type: FHIR::Patient, allow: %w[name birthDate]
+    bundle_collection :immunizations, type: FHIR:Immunizations, allow: %w[status vaccineCode patient occurrenceDateTime]
   end
 end
