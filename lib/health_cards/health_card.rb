@@ -4,12 +4,14 @@ require 'zlib'
 require 'uri'
 
 require 'health_cards/attribute_filters'
+require 'health_cards/bundle_filters'
 require 'health_cards/card_types'
 
 module HealthCards
   # A HealthCard which implements the credential claims specified by https://smarthealth.cards/
   class HealthCard
     include HealthCards::AttributeFilters
+    include HealthCards::BundleFilters
     extend HealthCards::CardTypes
 
     FHIR_REF_REGEX = %r{((http|https)://([A-Za-z0-9\-\\.:%$]*/)+)?(
@@ -104,7 +106,7 @@ module HealthCards
       raise InvalidPayloadError unless bundle.is_a?(FHIR::Bundle) # && bundle.valid?
 
       @issuer = issuer
-      @bundle = bundle
+      @bundle = extract_bundle(bundle)
     end
 
     # A Hash matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws

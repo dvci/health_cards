@@ -30,6 +30,23 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert_equal HealthCards::COVIDHealthCard.fhir_version, fhir_version
   end
 
+  test 'bundle filter' do
+    bundle = FHIR::Bundle.new(type: 'collection')
+    bundle.entry = [FHIR::Observation, FHIR::Immunization, FHIR::Immunization, FHIR::Patient].map do |type|
+      FHIR::Bundle::Entry.new(resource: type.new)
+    end
+    card = HealthCards::COVIDHealthCard.new(bundle: bundle)
+
+    assert_equal 3, card.bundle.entry.length
+    assert_equal card.bundle.entry[0].resource.class, FHIR::Patient
+    assert_equal card.bundle.entry[1].resource.class, FHIR::Immunization
+    assert_equal card.bundle.entry[2].resource.class, FHIR::Immunization
+
+    assert_not_nil card.patient
+    assert_not_nil card.immunizations
+    assert_equal 2, card.immunizations.size
+  end
+
   test 'bundle creation' do
     @card = rails_issuer.create_health_card(@bundle, type: HealthCards::COVIDHealthCard)
     bundle = @card.bundle
