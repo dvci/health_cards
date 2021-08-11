@@ -45,6 +45,7 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
       assert_equal FHIR::Immunization, imm.class
       # FHIR Validator thinks references are invalid so can't validate Immunization
     end
+
   end
 
   test 'valid bundle json' do
