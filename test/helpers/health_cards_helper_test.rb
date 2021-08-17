@@ -27,5 +27,5 @@ class HealthCardsHelperTest < ActiveSupport::TestCase
   test 'Patient created when lab_result is in bundle file' do
     patient_lr = create_patient_from_jws @lr_payload
     assert_not_nil patient_lr
-  end 
+  end
 end
