@@ -46,7 +46,7 @@ Then go to `http://127.0.0.1:3000` to view the locally running application.
 
 Health Cards is a Ruby gem that implements [SMART Health Cards](https://smarthealth.cards), a framework for sharing verifiable clinical data with [HL7 FHIR](https://hl7.org/FHIR/) and [JSON Web Signatures (JWS)](https://datatracker.ietf.org/doc/html/rfc7515) which may then be embedded into a QR code, exported to a `*.smart-health-card` file, or returned by a `$health-card-issue` FHIR operation.
 
-This library also natively supports [SMART Health Cards: Vaccination & Testing Implementation Guide](http://build.fhir.org/ig/dvci/vaccine-credential-ig/branches/main/) specific cards.
+This library also natively supports [SMART Health Cards: Vaccination & Testing Implementation Guide](http://hl7.org/fhir/uv/shc-vaccination/history.html) specific cards.
 
 ### Installation
 
