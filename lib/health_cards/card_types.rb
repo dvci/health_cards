@@ -16,7 +16,7 @@ module HealthCards
     # Type claims supported by this HealthCard subclass
     # @return [Array] an array of Strings with all the supported type claims
     def types
-      self == HealthCards::HealthCard ? additional_types : additional_types.concat(superclass.additional_types)
+      @types ||= self == HealthCards::HealthCard ? additional_types : superclass.types + additional_types
     end
 
     # Check if this class supports the given type claim(s)

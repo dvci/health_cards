@@ -84,6 +84,9 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
   test 'inheritance of attributes' do
     assert_equal HealthCards::COVIDHealthCard.types, COVIDHealthCardSame.types
     assert_equal HealthCards::COVIDHealthCard.fhir_version, COVIDHealthCardSame.fhir_version
+    assert_equal 1, HealthCards::HealthCard.types.length
+    assert_equal 4, HealthCards::COVIDHealthCard.types.length
+    assert_equal 5, COVIDHealthCardChanged.types.length
     assert_equal HealthCards::COVIDHealthCard.types.length + 1, COVIDHealthCardChanged.types.length
     assert_includes COVIDHealthCardChanged.types, 'https://smarthealth.cards#test'
     assert_equal '4.0.2', COVIDHealthCardChanged.fhir_version
