@@ -94,6 +94,8 @@ module HealthCards
       end
     end
 
+    fhir_version '4.0.1'
+
     additional_types 'https://smarthealth.cards#health-card'
 
     allow type: FHIR::Meta, attributes: %w[security]

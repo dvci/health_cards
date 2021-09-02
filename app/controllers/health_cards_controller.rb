@@ -13,7 +13,7 @@ class HealthCardsController < SecuredController
       format.healthcard { render json: exporter.download }
       format.html do
         @jws_encoded_details = exporter.jws
-        @health_card = HealthCards::COVIDHealthCard.from_jws @jws_encoded_details
+        @health_card = HealthCards::COVIDImmunizationCard.from_jws @jws_encoded_details
         @qr_codes = exporter.qr_codes
       end
       format.pdf do

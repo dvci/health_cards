@@ -18,6 +18,8 @@ require 'health_cards/chunk'
 require 'health_cards/verifier'
 require 'health_cards/importer'
 require 'health_cards/covid_health_card'
+require 'health_cards/covid_immunization_card'
+require 'health_cards/covid_lab_result_card'
 require 'health_cards/exporter'
 
 require 'base64'

@@ -3,13 +3,6 @@
 require 'test_helper'
 
 class HealthCardTest < ActiveSupport::TestCase
-  class TestCOVIDHealthCard < HealthCards::COVIDHealthCard
-    additional_types 'https://smarthealth.cards#test'
-    allow type: FHIR::Observation,
-          attributes: %w[status code subject effectiveDateTime performer referenceRange valueString valueQuantity
-                         valueCodeableConcept labCode patient]
-  end
-
   setup do
     # from https://smarthealth.cards/examples/example-00-d-jws.txt
 

@@ -30,8 +30,6 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert_not_nil type
     assert_includes type, 'https://smarthealth.cards#health-card'
     assert_includes type, 'https://smarthealth.cards#covid19'
-    assert_includes type, 'https://smarthealth.cards#immunization'
-    assert_includes type, 'https://smarthealth.cards#labresult'
 
     fhir_version = hash.dig(:vc, :credentialSubject, :fhirVersion)
     assert_not_nil fhir_version
@@ -62,10 +60,10 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
 
   test 'supports multiple types' do
     assert HealthCards::COVIDHealthCard.supports_type? [
-      'https://smarthealth.cards#health-card', 'https://smarthealth.cards#covid19',
-      'https://smarthealth.cards#immunization',
-      'https://smarthealth.cards#labresult'
+      'https://smarthealth.cards#health-card', 'https://smarthealth.cards#covid19'
     ]
+    assert HealthCards::COVIDImmunizationCard.supports_type?('https://smarthealth.cards#immunization')
+    assert HealthCards::COVIDLabResultCard.supports_type?('https://smarthealth.cards#laboratory')
   end
 
   test 'minified entries' do
@@ -85,8 +83,8 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert_equal HealthCards::COVIDHealthCard.types, COVIDHealthCardSame.types
     assert_equal HealthCards::COVIDHealthCard.fhir_version, COVIDHealthCardSame.fhir_version
     assert_equal 1, HealthCards::HealthCard.types.length
-    assert_equal 4, HealthCards::COVIDHealthCard.types.length
-    assert_equal 5, COVIDHealthCardChanged.types.length
+    assert_equal 2, HealthCards::COVIDHealthCard.types.length
+    assert_equal 3, COVIDHealthCardChanged.types.length
     assert_equal HealthCards::COVIDHealthCard.types.length + 1, COVIDHealthCardChanged.types.length
     assert_includes COVIDHealthCardChanged.types, 'https://smarthealth.cards#test'
     assert_equal '4.0.2', COVIDHealthCardChanged.fhir_version
