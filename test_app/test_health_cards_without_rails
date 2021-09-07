@@ -26,4 +26,4 @@ codes.chunks.map(&:data)
 
 codes.to_jws
 
-puts "Success!"
+puts 'Success!'
