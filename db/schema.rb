@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_28_145300) do
+ActiveRecord::Schema.define(version: 2021_06_28_195550) do
 
   create_table "immunizations", force: :cascade do |t|
     t.integer "patient_id"
@@ -20,6 +20,14 @@ ActiveRecord::Schema.define(version: 2021_04_28_145300) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["patient_id"], name: "index_immunizations_on_patient_id"
     t.index ["vaccine_id"], name: "index_immunizations_on_vaccine_id"
+  end
+
+  create_table "lab_results", force: :cascade do |t|
+    t.integer "patient_id"
+    t.string "json"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_lab_results_on_patient_id"
   end
 
   create_table "patients", force: :cascade do |t|
@@ -32,6 +40,13 @@ ActiveRecord::Schema.define(version: 2021_04_28_145300) do
     t.string "code"
     t.string "name"
     t.integer "doses_required"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "value_sets", force: :cascade do |t|
+    t.string "oid"
+    t.string "codes"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

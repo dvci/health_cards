@@ -1,0 +1,10 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Patient:</strong>
+  <%= @lab_result.patient %>
+</p>
+
+
+<%= link_to 'Edit', edit_patient_lab_result_path(@lab_result) %> |
+<%= link_to 'Back', lab_result_path %>

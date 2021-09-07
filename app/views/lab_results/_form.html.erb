@@ -1,0 +1,65 @@
+<section class="section">
+  <div class="container">
+    <%= form_for([patient, lab_result]) do |form| %>
+      <% if lab_result.errors.any? %>
+        <div class="notification is-danger is-light content">
+          <p class="subtitle">
+            <%= pluralize(lab_result.errors.count, "error") %> prohibited this lab result from being saved:
+          </p>
+          <ul>
+            <% lab_result.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="field">
+        <%= form.label :effective, class: 'label' %>
+        <div class="control">
+          <%= form.date_field :effective,
+           class: 'input',
+           value: lab_result.effective,
+           pattern: '^(1[0-2]|0?[1-9])/(3[01]|[12][0-9]|0?[1-9])/(?:[0-9]{2})?[0-9]{2}$',
+           oninput: 'this.setCustomValidity("")'
+          %>
+        </div>
+      </div>
+
+
+      <div class="field">
+        <%= form.label :status, class: 'label' %>
+        <div class="control">
+          <%= form.select :status, LabResult::STATUS %>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= form.label :code, class: 'label' %>
+        <div class="control">
+          <div class="select">
+            <%= form.select(:code, lab_options(ValueSet::LAB_CODES)) %>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= form.label :result, class: 'label' %>
+        <div class="control">
+          <div class="select">
+            <%= form.select(:result, lab_options(ValueSet::RESULTS)) %>
+          </div>
+        </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <%= form.submit class: 'button is-info' %>
+        </div>
+        <div class="control">
+          <%= link_to 'Cancel', patient_path(@patient), class: 'button is-info is-light' %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

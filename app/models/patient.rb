@@ -19,6 +19,7 @@ class Patient < FHIRRecord
   serialize :json, FHIR::Patient
 
   has_many :immunizations, dependent: :destroy
+  has_many :lab_results, dependent: :destroy
 
   GENDERS = FHIR::Patient::METADATA['gender']['valid_codes']['http://hl7.org/fhir/administrative-gender']
 
@@ -129,6 +130,9 @@ class Patient < FHIRRecord
     bundle.entry[0] = FHIR::Bundle::Entry.new(fullUrl: patient_url, resource: json)
     immunizations.each do |imm|
       bundle.entry << FHIR::Bundle::Entry.new(fullUrl: "#{base_url}/Immunization/#{imm.json.id}", resource: imm.json)
+    end
+    lab_results.each do |lr|
+      bundle.entry << FHIR::Bundle::Entry.new(fullUrl: "#{base_url}/Observation/#{lr.json.id}", resource: lr.json)
     end
     bundle
   end

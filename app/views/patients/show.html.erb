@@ -72,7 +72,47 @@
       </div>
     </div>
 
+      <div class="level">
+        <div class="level-left">
+          <% if @patient.lab_results.present? %>
+            <div class="level-item">
+              <p class="title">Lab Results</p>
+            </div>
+          <% end %>
+          <div class="level-item">
+            <%= link_to 'Record Lab Result', new_patient_lab_result_path(@patient), class: 'button is-success' %>
+          </div>
+        </div>
+      </div>
+
+    <div class="tile is-ancestor">
+        <% @patient.lab_results.each do |i| %>
+          <div class="tile is-parent">
+            <div class="tile is-child box">
+              <div class="block">
+                <span class="has-text-weight-bold"><%= i.name %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Result:</span><span><%= i.result_name %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Effective Date:</span><span><%= format_date(i.effective) %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Status:</span><span><%= i.status %> </span>
+              </div>
+              <div class="block">
+                <%= link_to 'Edit', edit_patient_lab_result_path(@patient, i), class: 'button is-info is-light mr-2' %>
+                <%= link_to 'Destroy', patient_lab_result_path(@patient, i), method: :delete, data: { confirm: 'Are you sure?' }, class: 'button is-danger is-outlined' %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
     <%= render partial: 'qr_codes/chunks', object: @qr_codes.chunks %>
+    <div id="qr-code"></div>
+    <%= link_to 'Patient List', patients_path, class: 'button is-info' %>
   </div>
 </section>
 

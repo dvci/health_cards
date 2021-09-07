@@ -1,0 +1,11 @@
+<section class="hero is-small is-info">
+  <div class="hero-body">
+    <p class="title">
+      <%= link_to patient_path(@patient), 'aria-label': 'Back to patient page' do%>
+        <i class="fa fa-caret-left"></i>
+      <% end %>    
+    New Lab Result</p>
+  </div>
+</section>
+
+<%= render 'form', lab_result: @lab_result, patient: @patient %>

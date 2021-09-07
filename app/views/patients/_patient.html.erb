@@ -74,6 +74,35 @@
             </div>
           <% end %>
         </div>
+        <div class="level">
+          <div class="level-left">
+            <% if patient.lab_results.present? %>
+              <div class="level-item">
+                <p class="title">Lab Results</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <div class="tile is-ancestor">
+        <% patient.lab_results.each do |i| %>
+          <div class="tile is-parent">
+            <div class="tile is-child box">
+              <div class="block">
+                <span class="has-text-weight-bold"><%= i.name %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Result:</span><span class="has-text-weight-bold"><%= i.result_name %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Effective Date:</span><span><%= format_date(i.effective) %></span>
+              </div>
+              <div class="block">
+                <span class="mr-2 has-text-weight-bold">Status:</span><span><%= i.status %> </span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
       </div>
     <% end %>
   </div>
