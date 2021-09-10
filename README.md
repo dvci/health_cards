@@ -2,7 +2,7 @@
 
 ![Build](https://github.com/dvci/health_cards/actions/workflows/ruby.yml/badge.svg)
 
-This repository includes a Ruby gem for [SMART Health Cards](https://smarthealth.cards/) **and** a reference implementation for the [SMART Health Cards: Vaccination & Testing Implementation Guide](https://vci.org/ig/vaccination-and-testing). Go to the [Health Card Gem](#health-card-gem) section to read about the Ruby library or go to the [Reference Implementation](#reference-implementation) section to try a ready-to-use rails application.
+This repository includes a Ruby gem for [SMART Health Cards](https://smarthealth.cards/) **and** a reference implementation for the [SMART Health Cards: Vaccination & Testing Implementation Guide](https://vci.org/ig/vaccination-and-testing). Go to the [Health Card Gem](#health-cards-gem) section to read about the Ruby library or go to the [Reference Implementation](#reference-implementation) section to try a ready-to-use rails application.
 
 ## Reference Implementation
 
@@ -70,9 +70,9 @@ Or install it yourself as:
 
 ### Documentation
 
-See usage examples in [USAGE.md](https://github.com/dvci/health_cards/blob/master/lib/USAGE.md). 
+See usage examples in [USAGE.md](https://github.com/dvci/health_cards/blob/main/lib/USAGE.md). 
 
-See full documentation in [API.md](https://github.com/dvci/health_cards/blob/master/lib/API.md).
+See full documentation in [API.md](https://github.com/dvci/health_cards/blob/main/lib/API.md).
 
 ## Development
 
@@ -82,11 +82,11 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/dvci/health_cards. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/dvci/health_cards/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/dvci/health_cards. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/dvci/health_cards/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
-Copyright 2020 The MITRE Corporation
+Copyright 2021 The MITRE Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 ```
@@ -96,4 +96,4 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ## Code of Conduct
 
-Everyone interacting in the HealthCards project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/dvci/health_cards/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the HealthCards project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/dvci/health_cards/blob/main/CODE_OF_CONDUCT.md).

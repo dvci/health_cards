@@ -51,7 +51,7 @@ health_card = HealthCards::HealthCard.new(issuer: "http://example-issuer.com", b
 ```
 
 ### Manually Verifying a JWS
-JWS representing a Health Card can also be manually verified
+JWS representing a Health Card can also be manually verified.
 
 ```ruby
 jws = 'foofoofoo.barbarbar.bazbazbaz'
@@ -126,7 +126,7 @@ The `HealthCard` supports these features as well.
 
 ## QR Codes
 
-A QR Code can be created from either a set of encoded strings (from scanning QR Codes) or a JWS (object or string)
+A QR Code can be created from either a set of encoded strings (from scanning QR Codes) or a JWS (object or string).
 
 ```ruby
 
@@ -140,7 +140,7 @@ chunks = ['shc:/1/2/1234123412341234', 'shc:/2/2/2345234523452345']
 qr_codes = Healthcards::QRCodes.new(chunks)
 ```
 Each QRCodes object contains an array of 'chunks' which each represent an individual QR Code.
-Each chunk contains an ordinal integer representing their position, along with a chunk of data. These can be converted to images (PNGs) and saved or displayed
+Each chunk contains an ordinal integer representing their position, along with a chunk of data. These can be converted to images (PNGs) and saved or displayed.
 
 ```ruby
 
