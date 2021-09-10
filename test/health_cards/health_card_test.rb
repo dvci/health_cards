@@ -60,7 +60,7 @@ class HealthCardTest < ActiveSupport::TestCase
 
     type = hash.dig('vc', 'type')
     assert_not_nil type
-    assert_includes type, HealthCards::CardTypes::VC_TYPE[0]
+    assert_includes type, 'https://smarthealth.cards#health-card'
     bundle = hash.dig('vc', 'credentialSubject', 'fhirBundle')
 
     assert_not_nil bundle
