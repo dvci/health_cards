@@ -22,8 +22,10 @@ RUN yarn install
 
 ADD Gemfile* $INSTALL_PATH
 RUN gem install bundler
-RUN bundle install --deployment --without development --without test
+RUN bundle config set --local deployment 'true'
+RUN bundle config set --local without 'development' 'test'
 ADD . $INSTALL_PATH
+RUN bundle install
 
 ENV KEY_PATH=config/keys/key.pem
 ENV SECRET_KEY_BASE=f7c9be19114730b947c8f7f274ea7c128e792245d049ae2c808d479f7e632817dd83009fa235326953a9ab11c70e9b0be4a8cb8657626e57ca5031a584b75295

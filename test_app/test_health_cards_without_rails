@@ -20,3 +20,10 @@ card1.to_json
 
 card2 = HealthCards::COVIDHealthCard.from_jws(jws.to_s)
 card2.to_json
+
+codes = HealthCards::QRCodes.from_jws(jws.to_s)
+codes.chunks.map(&:data)
+
+codes.to_jws
+
+puts 'Success!'
