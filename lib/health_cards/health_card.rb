@@ -85,10 +85,18 @@ module HealthCards
       # value (used as a getter)
       # @return [String] Current FHIR version supported
       def fhir_version(ver = nil)
-        @fhir_version ||= ver unless ver.nil?
+        if @fhir_version.nil? && ver.nil?
+          @fhir_version = superclass.fhir_version unless self == HealthCards::HealthCard
+        elsif ver
+          @fhir_version = ver
+        end
         @fhir_version
       end
     end
+
+    fhir_version '4.0.1'
+
+    additional_types 'https://smarthealth.cards#health-card'
 
     allow type: FHIR::Meta, attributes: %w[security]
 

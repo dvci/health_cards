@@ -8,12 +8,19 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     @card = rails_issuer.create_health_card(@bundle, type: HealthCards::COVIDHealthCard)
   end
 
+  class COVIDHealthCardSame < HealthCards::COVIDHealthCard; end
+
+  class COVIDHealthCardChanged < HealthCards::COVIDHealthCard
+    fhir_version '4.0.2'
+    additional_types 'https://smarthealth.cards#test'
+  end
+
   test 'is of custom type' do
     assert @card.is_a?(HealthCards::COVIDHealthCard)
   end
 
   test 'includes correct types' do
-    HealthCards::COVIDHealthCard.types.include?(HealthCards::CardTypes::VC_TYPE[0])
+    HealthCards::COVIDHealthCard.types.include?('https://smarthealth.cards#health-card')
     HealthCards::COVIDHealthCard.types.include?('https://smarthealth.cards#covid19')
   end
 
@@ -21,10 +28,8 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     hash = @card.to_hash
     type = hash.dig(:vc, :type)
     assert_not_nil type
-    assert_includes type, HealthCards::CardTypes::VC_TYPE[0]
+    assert_includes type, 'https://smarthealth.cards#health-card'
     assert_includes type, 'https://smarthealth.cards#covid19'
-    assert_includes type, 'https://smarthealth.cards#immunization'
-    assert_includes type, 'https://smarthealth.cards#labresult'
 
     fhir_version = hash.dig(:vc, :credentialSubject, :fhirVersion)
     assert_not_nil fhir_version
@@ -54,9 +59,11 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'supports multiple types' do
-    assert HealthCards::COVIDHealthCard.supports_type? ['https://smarthealth.cards#covid19',
-                                                        'https://smarthealth.cards#immunization',
-                                                        'https://smarthealth.cards#labresult']
+    assert HealthCards::COVIDHealthCard.supports_type? [
+      'https://smarthealth.cards#health-card', 'https://smarthealth.cards#covid19'
+    ]
+    assert HealthCards::COVIDImmunizationCard.supports_type?('https://smarthealth.cards#immunization')
+    assert HealthCards::COVIDLabResultCard.supports_type?('https://smarthealth.cards#laboratory')
   end
 
   test 'minified entries' do
@@ -70,5 +77,16 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert_nil patient.gender
 
     assert_equal '208', imm.vaccineCode.coding.first.code
+  end
+
+  test 'inheritance of attributes' do
+    assert_equal HealthCards::COVIDHealthCard.types, COVIDHealthCardSame.types
+    assert_equal HealthCards::COVIDHealthCard.fhir_version, COVIDHealthCardSame.fhir_version
+    assert_equal 1, HealthCards::HealthCard.types.length
+    assert_equal 2, HealthCards::COVIDHealthCard.types.length
+    assert_equal 3, COVIDHealthCardChanged.types.length
+    assert_equal HealthCards::COVIDHealthCard.types.length + 1, COVIDHealthCardChanged.types.length
+    assert_includes COVIDHealthCardChanged.types, 'https://smarthealth.cards#test'
+    assert_equal '4.0.2', COVIDHealthCardChanged.fhir_version
   end
 end
