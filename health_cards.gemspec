@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.license       = 'Apache-2.0'
   spec.add_runtime_dependency 'fhir_models', '>= 4.0.0'
   spec.add_runtime_dependency 'rqrcode'
+  spec.add_runtime_dependency 'rqrcode_core', '>= 1.2.0'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.7.0')
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/dvci/health_cards'
