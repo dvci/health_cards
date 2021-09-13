@@ -29,6 +29,21 @@ class QRCodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'submit scanning with unknown vaccine' do
+    @imm.destroy
+    @vax.destroy
+
+    stub_request(:get, /jwks.json/).to_return(body: HealthCards::KeySet.new(private_key.public_key).to_jwk)
+
+    scanning_input = load_json_fixture('example-scanning-input')
+
+    assert_difference('Vaccine.count') do
+      post(qr_codes_path(scanning_input))
+    end
+
+    assert_response :success
+  end
+
   test 'qr code image (single)' do
     get(patient_qr_code_path(@patient, 1, format: :png))
     assert_nothing_raised do
