@@ -49,8 +49,8 @@ Alternatively, you can create a Docker image and start it in a container:
 docker build -t health_cards .
 docker run -p 3000:3000 --env HOST=http://localhost:3000 health_cards
 ```
-The `HOST` environment variable will be used as the iss value in the SMART Health Card JWS.
-Docker container will be running at `http://127.0.0.1:3000`
+The `HOST` environment variable will be used as the `iss` value in the SMART Health Card JWS.
+Docker container will be running at `http://127.0.0.1:3000`.
 
 
 ## Health Cards Gem

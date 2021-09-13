@@ -32,7 +32,6 @@ ENV SECRET_KEY_BASE=f7c9be19114730b947c8f7f274ea7c128e792245d049ae2c808d479f7e63
 ENV RAILS_SERVE_STATIC_FILES=true
 
 RUN bundle exec rake webpacker:clobber
-RUN bundle exec rake webpacker:install
 
 RUN bin/rails db:create db:migrate db:seed
 RUN bin/rails assets:precompile
