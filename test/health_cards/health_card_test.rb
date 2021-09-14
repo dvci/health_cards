@@ -69,6 +69,18 @@ class HealthCardTest < ActiveSupport::TestCase
     end
   end
 
+  test 'export with unfiltered bundle' do
+    hash = @health_card.to_hash(filter: false)
+    bundle = hash.dig(:vc, :credentialSubject, :fhirBundle)
+
+    assert_not_nil bundle
+    assert_not_nil bundle['entry']
+    resources = bundle['entry'].map { |e| e['resource'] }
+    assert_not_nil resources[0]['telecom']
+    assert_not_nil resources[1].dig('code', 'coding')[0]['display']
+    assert_not_nil resources[2].dig('code', 'text')
+  end
+
   test 'redefine_uris populates Bundle.entry.fullUrl elements with short resource-scheme URIs' do
     stripped_bundle = @health_card.strip_fhir_bundle
 

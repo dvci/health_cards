@@ -116,8 +116,11 @@ module HealthCards
     end
 
     # A Hash matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
+    # @param filter [Boolean] specifies whether the bundle should apply allow/disallow rules
+    #  and meta filtering features. Defaults to true.
     # @return [Hash]
-    def to_hash
+    def to_hash(filter: true)
+      fhir_bundle = filter ? strip_fhir_bundle : bundle
       {
         iss: issuer,
         nbf: Time.now.to_i,
@@ -125,7 +128,7 @@ module HealthCards
           type: self.class.types,
           credentialSubject: {
             fhirVersion: self.class.fhir_version,
-            fhirBundle: strip_fhir_bundle.to_hash
+            fhirBundle: fhir_bundle.to_hash
           }
         }
       }
@@ -140,8 +143,8 @@ module HealthCards
 
     # A minified JSON string matching the VC structure specified by https://smarthealth.cards/#health-cards-are-encoded-as-compact-serialization-json-web-signatures-jws
     # @return [String] JSON string
-    def to_json(*_args)
-      to_hash.to_json
+    def to_json(*args)
+      to_hash.to_json(*args)
     end
 
     # Processes the bundle according to https://smarthealth.cards/#health-cards-are-small and returns
