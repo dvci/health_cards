@@ -15,7 +15,27 @@ Vaccine.find_or_create_by(code: '208') do |vaccine|
   vaccine.name = 'Pfizer COVID-19 Vaccine'
   vaccine.doses_required = 2
 end
+Vaccine.find_or_create_by(code: '210') do |vaccine|
+  vaccine.name = 'AstraZeneca COVID-19 Vaccine'
+  vaccine.doses_required = 2
+end
+Vaccine.find_or_create_by(code: '211') do |vaccine|
+  vaccine.name = 'Novavax COVID-19 Vaccine'
+  vaccine.doses_required = 2
+end
 Vaccine.find_or_create_by(code: '212') do |vaccine|
   vaccine.name = 'Janssen COVID-19 Vaccine'
   vaccine.doses_required = 1
+end
+Vaccine.find_or_create_by(code: '510') do |vaccine|
+  vaccine.name = 'Sinopharm (BIBP) COVID-19 Vaccine'
+  vaccine.doses_required = 2
+end
+Vaccine.find_or_create_by(code: '511') do |vaccine|
+  vaccine.name = 'Coronavac (Sinovac) COVID-19 Vaccine'
+  vaccine.doses_required = 2
+end
+Vaccine.find_or_create_by(code: '500') do |vaccine|
+  vaccine.name = 'Unknown Non-US Vaccine'
+  vaccine.doses_required = 2
 end

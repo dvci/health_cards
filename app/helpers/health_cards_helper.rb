@@ -18,8 +18,12 @@ module HealthCardsHelper
     immunizations = bundle.entry.select { |e| e.resource.is_a?(FHIR::Immunization) }
     immunizations.each do |i|
       immunization_resource = i.resource
+
+      vax = Vaccine.find_by(code: immunization_resource.vaccineCode.coding[0].code) || Vaccine.create(
+        code: immunization_resource.vaccineCode.coding[0].code, name: 'Unknown Vaccine'
+      )
       pat.immunizations.new({
-                              vaccine_id: Vaccine.find_by(code: immunization_resource.vaccineCode.coding[0].code).id,
+                              vaccine_id: vax.id,
                               lot_number: immunization_resource.lotNumber,
                               occurrence: immunization_resource.occurrenceDateTime
                             })
