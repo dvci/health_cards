@@ -1,0 +1,8 @@
+{
+  "participating_issuers": [
+    {
+      "iss": "https://connectathon.vci.org",
+      "name": "MITRE Connectathon Issuer/Verifier"
+    }
+  ]
+}
