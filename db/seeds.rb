@@ -35,8 +35,7 @@ Vaccine.find_or_create_by(code: '511') do |vaccine|
   vaccine.name = 'Coronavac (Sinovac) COVID-19 Vaccine'
   vaccine.doses_required = 2
 end
-
 Vaccine.find_or_create_by(code: '500') do |vaccine|
-  vaccine.name = 'Coronavac (Sinovac) COVID-19 Vaccine'
+  vaccine.name = 'Unknown Non-US Vaccine'
   vaccine.doses_required = 2
 end
