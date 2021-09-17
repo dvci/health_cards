@@ -53,6 +53,24 @@ The `HOST` environment variable will be used as the `iss` value in the SMART Hea
 Docker container will be running at `http://127.0.0.1:3000`.
 
 
+#### Docker Compose 
+
+Docker Compose can be used to deploy a production version of the application behind nginx and is
+especially useful for deployign behind an SSL terminating load balancer.
+
+```
+docker-compose up --build
+```
+
+There are two environment variables which can be configured:
+
+* `HEALTH_CARDS_HOST` is used as the `iss` value in issued Health Cards and for identifying the SMART Endpoint locations
+* `HEALTH_CARDS_SECRET_KEY_BASE` is used by rails as the input secret to the application's key generator, 
+which in turn is used to create all MessageVerifiers/MessageEncryptors, including the ones that 
+sign and encrypt cookies. [See `secret_key_base`](https://api.rubyonrails.org/classes/Rails/Application.html#method-i-secret_key_base)
+
+When testing locally `proxy_set_header  X-Forwarded-Ssl on;` should be commented out in `nginx/nginx.conf`.
+
 ## Health Cards Gem
 
 Health Cards is a Ruby gem that implements [SMART Health Cards](https://smarthealth.cards), a framework for sharing verifiable clinical data with [HL7 FHIR](https://hl7.org/FHIR/) and [JSON Web Signatures (JWS)](https://datatracker.ietf.org/doc/html/rfc7515) which may then be embedded into a QR code, exported to a `*.smart-health-card` file, or returned by a `$health-card-issue` FHIR operation.
