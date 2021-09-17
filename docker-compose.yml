@@ -5,8 +5,10 @@ services:
       context: .
     environment:
       - RAILS_LOG_TO_STDOUT=true
-      - SECRET_KEY_BASE="${HEALTH_CARDS_SECRET_KEY_BASE}"
-      - HOST="${HEALTH_CARDS_HOST}"
+      - "SECRET_KEY_BASE=${HEALTH_CARDS_SECRET_KEY_BASE}"
+      # HOST is used as the `iss` value in issued Health Cards and for identifying the SMART Endpoint locations
+      - "HOST=${HEALTH_CARDS_HOST}"
+      # PORT is the port the rails app will run on. This should be consistent with the exposed port and in nginx.conf
       - PORT=3000
     expose:
       - "3000"
