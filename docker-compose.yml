@@ -7,10 +7,9 @@ services:
       - RAILS_LOG_TO_STDOUT=true
       - SECRET_KEY_BASE="${HEALTH_CARDS_SECRET_KEY_BASE}"
       - HOST="${HEALTH_CARDS_HOST}"
-      # This needs to be port 80 for the QR to show up in the pdf
-      - PORT=80
+      - PORT=3000
     expose:
-      - "80"
+      - "3000"
   nginx:
     image: nginx
     volumes:
