@@ -61,7 +61,7 @@ module HealthCards
 
       return unless class_allowables
 
-      allowed = resource.to_hash.select! { |att| class_allowables.include?(att) }
+      allowed = resource.to_hash.keep_if { |att| class_allowables.include?(att) }
 
       resource.from_hash(allowed)
     end
