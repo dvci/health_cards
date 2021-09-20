@@ -69,6 +69,9 @@ There are two environment variables which can be configured:
 which in turn is used to create all MessageVerifiers/MessageEncryptors, including the ones that 
 sign and encrypt cookies. [See `secret_key_base`](https://api.rubyonrails.org/classes/Rails/Application.html#method-i-secret_key_base)
 
+When deploying a production instance it is important that a new secret base is generated and used. 
+A new secret base can be generated with `bin/rails secret`.
+
 When testing locally `proxy_set_header  X-Forwarded-Ssl on;` should be commented out in `nginx/nginx.conf`.
 
 ## Health Cards Gem
