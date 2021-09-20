@@ -3,6 +3,11 @@
 require 'test_helper'
 
 class HealthCardTest < ActiveSupport::TestCase
+  class TestCOVIDLabHealthCard < HealthCards::HealthCard
+    additional_types 'https://smarthealth.cards#covid19'
+    additional_types 'https://smarthealth.cards#laboratory'
+  end
+
   setup do
     # from https://smarthealth.cards/examples/example-00-d-jws.txt
 
@@ -19,6 +24,13 @@ class HealthCardTest < ActiveSupport::TestCase
   test 'HealthCard can be created from a Bundle' do
     assert_not_nil @health_card.bundle
     assert @health_card.bundle.is_a?(FHIR::Bundle)
+  end
+
+  test 'HealthCard can be created without allows' do
+    bundle = FHIR.from_contents(File.read('test/fixtures/files/example-bundle.json'))
+    test_card = TestCOVIDLabHealthCard.new(issuer: @issuer, bundle: bundle)
+    test_card.to_hash
+    test_card.to_hash(filter: false)
   end
 
   test 'HealthCard handles empty payloads' do
