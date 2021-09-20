@@ -56,7 +56,7 @@ Docker container will be running at `http://127.0.0.1:3000`.
 #### Docker Compose 
 
 Docker Compose can be used to deploy a production version of the application behind nginx and is
-especially useful for deployign behind an SSL terminating load balancer.
+especially useful for deploying behind an SSL terminating load balancer.
 
 ```
 docker-compose up --build
