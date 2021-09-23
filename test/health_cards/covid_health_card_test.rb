@@ -75,8 +75,11 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert_equal 'Jane', patient.name.first.given.first
     assert_equal '1961-01-20', patient.birthDate
     assert_nil patient.gender
+    assert_equal 'ghp-example', patient.identifier[0].value
 
     assert_equal '208', imm.vaccineCode.coding.first.code
+    
+
   end
 
   test 'inheritance of attributes' do

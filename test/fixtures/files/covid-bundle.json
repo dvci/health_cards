@@ -16,7 +16,13 @@
             ]
           }
         ],
-        "birthDate": "1961-01-20"
+        "birthDate": "1961-01-20",
+        "identifier": [
+          {
+            "system": "http://acme.com/lab/reports",
+            "value": "ghp-example"
+          }
+        ]
       }
     },
     {
