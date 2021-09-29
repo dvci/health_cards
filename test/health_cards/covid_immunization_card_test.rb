@@ -18,8 +18,7 @@ class COVIDImmunizationCardTest < ActiveSupport::TestCase
     HealthCards::COVIDImmunizationCard.types.include?('https://smarthealth.cards#immunization')
   end
 
-  
-  test 'supports immunization type' do 
+  test 'supports immunization type' do
     assert HealthCards::COVIDImmunizationCard.supports_type?('https://smarthealth.cards#immunization')
   end
 

@@ -31,5 +31,4 @@ class COVIDLabResultCardTest < ActiveSupport::TestCase
     assert_equal '2021-02-17', obs.effectiveDateTime
     assert_nil obs.issued
   end
-
 end
