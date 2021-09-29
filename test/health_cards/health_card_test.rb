@@ -27,7 +27,7 @@ class HealthCardTest < ActiveSupport::TestCase
   end
 
   test 'HealthCard can be created without allows' do
-    bundle = FHIR.from_contents(File.read('test/fixtures/files/example-bundle.json'))
+    bundle = FHIR.from_contents(File.read('test/fixtures/files/example-covid-lab-result-bundle.json'))
     test_card = TestCOVIDLabHealthCard.new(issuer: @issuer, bundle: bundle)
     test_card.to_hash
     test_card.to_hash(filter: false)

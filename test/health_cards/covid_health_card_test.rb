@@ -4,7 +4,7 @@ require 'test_helper'
 
 class COVIDHealthCardTest < ActiveSupport::TestCase
   setup do
-    @bundle = FHIR::Bundle.new(load_json_fixture('covid-bundle'))
+    @bundle = FHIR::Bundle.new(load_json_fixture('example-covid-immunization-bundle'))
     @card = rails_issuer.create_health_card(@bundle, type: HealthCards::COVIDHealthCard)
   end
 
@@ -89,7 +89,7 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'minified lab result entries' do
-    lab_bundle = FHIR::Bundle.new(load_json_fixture('example-bundle'))
+    lab_bundle = FHIR::Bundle.new(load_json_fixture('example-covid-lab-result-bundle'))
     lab_card = rails_issuer.create_health_card(lab_bundle, type: HealthCards::COVIDLabResultCard)
     bundle = lab_card.strip_fhir_bundle
     assert_equal 2, bundle.entry.size
