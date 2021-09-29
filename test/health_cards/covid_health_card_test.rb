@@ -62,8 +62,6 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert HealthCards::COVIDHealthCard.supports_type? [
       'https://smarthealth.cards#health-card', 'https://smarthealth.cards#covid19'
     ]
-    assert HealthCards::COVIDImmunizationCard.supports_type?('https://smarthealth.cards#immunization')
-    assert HealthCards::COVIDLabResultCard.supports_type?('https://smarthealth.cards#laboratory')
   end
 
   test 'minified patient entries' do
@@ -75,29 +73,6 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert_equal '1961-01-20', patient.birthDate
     assert_nil patient.gender
     assert_equal 'ghp-example', patient.identifier[0].value
-  end
-
-  test 'minified immunization entries' do
-    immunization_card = rails_issuer.create_health_card(@bundle, type: HealthCards::COVIDImmunizationCard)
-    bundle = immunization_card.strip_fhir_bundle
-    imm = bundle.entry[1].resource
-
-    assert_equal '208', imm.vaccineCode.coding.first.code
-    assert_equal '0000002', imm.lotNumber
-    assert_equal 'ABC General Hospital', imm.performer[0].actor.display
-    assert_nil imm.primarySource
-  end
-
-  test 'minified lab result entries' do
-    lab_bundle = FHIR::Bundle.new(load_json_fixture('example-covid-lab-result-bundle'))
-    lab_card = rails_issuer.create_health_card(lab_bundle, type: HealthCards::COVIDLabResultCard)
-    bundle = lab_card.strip_fhir_bundle
-    assert_equal 2, bundle.entry.size
-    obs = bundle.entry[1].resource
-
-    assert_equal 'final', obs.status
-    assert_equal '2021-02-17', obs.effectiveDateTime
-    assert_nil obs.issued
   end
 
   test 'inheritance of attributes' do
