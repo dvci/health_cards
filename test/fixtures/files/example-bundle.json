@@ -38,6 +38,7 @@
 	  "reference": "resource:0"
 	},
 	"effectiveDateTime": "2021-02-17",
+	"issued": "2021-02-17T15:30:10+01:00",
 	"valueCodeableConcept": {
 	  "coding": [
 	    {
