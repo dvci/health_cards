@@ -8,6 +8,6 @@ module HealthCards
   class COVIDHealthCard < HealthCards::HealthCard
     additional_types 'https://smarthealth.cards#covid19'
 
-    allow type: FHIR::Patient, attributes: %w[name birthDate]
+    allow type: FHIR::Patient, attributes: %w[identifier name birthDate]
   end
 end

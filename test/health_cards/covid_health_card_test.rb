@@ -4,7 +4,7 @@ require 'test_helper'
 
 class COVIDHealthCardTest < ActiveSupport::TestCase
   setup do
-    @bundle = FHIR::Bundle.new(load_json_fixture('covid-bundle'))
+    @bundle = FHIR::Bundle.new(load_json_fixture('example-covid-immunization-bundle'))
     @card = rails_issuer.create_health_card(@bundle, type: HealthCards::COVIDHealthCard)
   end
 
@@ -62,21 +62,17 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
     assert HealthCards::COVIDHealthCard.supports_type? [
       'https://smarthealth.cards#health-card', 'https://smarthealth.cards#covid19'
     ]
-    assert HealthCards::COVIDImmunizationCard.supports_type?('https://smarthealth.cards#immunization')
-    assert HealthCards::COVIDLabResultCard.supports_type?('https://smarthealth.cards#laboratory')
   end
 
-  test 'minified entries' do
+  test 'minified patient entries' do
     bundle = @card.strip_fhir_bundle
     assert_equal 3, bundle.entry.size
     patient = bundle.entry[0].resource
-    imm = bundle.entry[1].resource
 
     assert_equal 'Jane', patient.name.first.given.first
     assert_equal '1961-01-20', patient.birthDate
     assert_nil patient.gender
-
-    assert_equal '208', imm.vaccineCode.coding.first.code
+    assert_equal 'ghp-example', patient.identifier[0].value
   end
 
   test 'inheritance of attributes' do
