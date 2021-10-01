@@ -47,10 +47,11 @@ Then go to `http://127.0.0.1:3000` to view the locally running application.
 Alternatively, you can create a Docker image and start it in a container:
 ```
 docker build -t health_cards .
-docker run -p 3000:3000 --env HOST=http://localhost:3000 health_cards
+docker run -p 3000:3000 --env HOST=https://myserver.com health_cards
 ```
 The `HOST` environment variable will be used as the `iss` value in the SMART Health Card JWS.
-Docker container will be running at `http://127.0.0.1:3000`.
+By default this value is `http://localhost:3000`.
+The Docker container will be running at `http://127.0.0.1:3000`, unless mapped to a different port.
 
 
 #### Docker Compose 
