@@ -47,11 +47,33 @@ Then go to `http://127.0.0.1:3000` to view the locally running application.
 Alternatively, you can create a Docker image and start it in a container:
 ```
 docker build -t health_cards .
-docker run -p 3000:3000 --env HOST=http://localhost:3000 health_cards
+docker run -p 3000:3000 --env HOST=https://myserver.com health_cards
 ```
 The `HOST` environment variable will be used as the `iss` value in the SMART Health Card JWS.
-Docker container will be running at `http://127.0.0.1:3000`.
+By default this value is `http://localhost:3000`.
+The Docker container will be running at `http://127.0.0.1:3000`, unless mapped to a different port.
 
+
+#### Docker Compose 
+
+Docker Compose can be used to deploy a production version of the application behind nginx and is
+especially useful for deploying behind an SSL terminating load balancer.
+
+```
+docker-compose up --build
+```
+
+There are two environment variables which can be configured:
+
+* `HEALTH_CARDS_HOST` is used as the `iss` value in issued Health Cards and for identifying the SMART Endpoint locations
+* `HEALTH_CARDS_SECRET_KEY_BASE` is used by rails as the input secret to the application's key generator, 
+which in turn is used to create all MessageVerifiers/MessageEncryptors, including the ones that 
+sign and encrypt cookies. [See `secret_key_base`](https://api.rubyonrails.org/classes/Rails/Application.html#method-i-secret_key_base)
+
+When deploying a production instance it is important that a new secret base is generated and used. 
+A new secret base can be generated with `bin/rails secret`.
+
+When testing locally `proxy_set_header  X-Forwarded-Ssl on;` should be commented out in `nginx/nginx.conf`.
 
 ## Health Cards Gem
 

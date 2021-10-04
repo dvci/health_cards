@@ -87,7 +87,9 @@
         <% @qr_codes.chunks.each do |ch| %>
           <div class="tile is-parent">
             <div class="tile is-child box has-text-centered">
-              <%= wicked_pdf_image_tag patient_qr_code_url(@patient, ch.ordinal, format: :png) %>
+              <%= wicked_pdf_image_tag url_for(controller: 'qr_codes', action: 'show', host: "localhost",
+                                               protocol: 'http', port: ENV['PORT'], patient_id: @patient.id,
+                                               id: ch.ordinal, format: :png) %>
             </div>
           </div>
         <% end %>
