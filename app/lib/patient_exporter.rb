@@ -27,12 +27,12 @@ class PatientExporter
   # TODO: update when we support diffrent types of COVID health cards
   def issue(fhir_params)
     HealthCards::Exporter.issue(fhir_params) do |types|
-      HealthCards::COVIDHealthCard.supports_type?(types) ? jws : nil
+      HealthCards::COVIDPayload.supports_type?(types) ? jws : nil
     end
   end
 
   def jws
     issuer = Rails.application.config.issuer
-    @jws ||= issuer.issue_jws(@patient.to_bundle(issuer.url), type: HealthCards::COVIDImmunizationCard)
+    @jws ||= issuer.issue_jws(@patient.to_bundle(issuer.url), type: HealthCards::COVIDImmunizationPayload)
   end
 end

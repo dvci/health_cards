@@ -2,26 +2,26 @@
 
 require 'test_helper'
 
-class COVIDHealthCardTest < ActiveSupport::TestCase
+class COVIDPayloadTest < ActiveSupport::TestCase
   setup do
     @bundle = FHIR::Bundle.new(load_json_fixture('example-covid-immunization-bundle'))
-    @card = rails_issuer.create_health_card(@bundle, type: HealthCards::COVIDHealthCard)
+    @card = HealthCards::COVIDPayload.new(bundle: @bundle, issuer: 'http://example.org')
   end
 
-  class COVIDHealthCardSame < HealthCards::COVIDHealthCard; end
+  class COVIDHealthCardSame < HealthCards::COVIDPayload; end
 
-  class COVIDHealthCardChanged < HealthCards::COVIDHealthCard
+  class COVIDHealthCardChanged < HealthCards::COVIDPayload
     fhir_version '4.0.2'
     additional_types 'https://smarthealth.cards#test'
   end
 
   test 'is of custom type' do
-    assert @card.is_a?(HealthCards::COVIDHealthCard)
+    assert @card.is_a?(HealthCards::COVIDPayload)
   end
 
   test 'includes correct types' do
-    HealthCards::COVIDHealthCard.types.include?('https://smarthealth.cards#health-card')
-    HealthCards::COVIDHealthCard.types.include?('https://smarthealth.cards#covid19')
+    HealthCards::COVIDPayload.types.include?('https://smarthealth.cards#health-card')
+    HealthCards::COVIDPayload.types.include?('https://smarthealth.cards#covid19')
   end
 
   test 'includes required credential attributes in hash' do
@@ -33,11 +33,11 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
 
     fhir_version = hash.dig(:vc, :credentialSubject, :fhirVersion)
     assert_not_nil fhir_version
-    assert_equal HealthCards::COVIDHealthCard.fhir_version, fhir_version
+    assert_equal HealthCards::COVIDPayload.fhir_version, fhir_version
   end
 
   test 'bundle creation' do
-    @card = rails_issuer.create_health_card(@bundle, type: HealthCards::COVIDHealthCard)
+    @card = rails_issuer.issue_health_card(@bundle, type: HealthCards::COVIDPayload)
     bundle = @card.bundle
     assert_equal 3, bundle.entry.size
     assert_equal 'collection', bundle.type
@@ -59,7 +59,7 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'supports multiple types' do
-    assert HealthCards::COVIDHealthCard.supports_type? [
+    assert HealthCards::COVIDPayload.supports_type? [
       'https://smarthealth.cards#health-card', 'https://smarthealth.cards#covid19'
     ]
   end
@@ -76,12 +76,12 @@ class COVIDHealthCardTest < ActiveSupport::TestCase
   end
 
   test 'inheritance of attributes' do
-    assert_equal HealthCards::COVIDHealthCard.types, COVIDHealthCardSame.types
-    assert_equal HealthCards::COVIDHealthCard.fhir_version, COVIDHealthCardSame.fhir_version
-    assert_equal 1, HealthCards::HealthCard.types.length
-    assert_equal 2, HealthCards::COVIDHealthCard.types.length
+    assert_equal HealthCards::COVIDPayload.types, COVIDHealthCardSame.types
+    assert_equal HealthCards::COVIDPayload.fhir_version, COVIDHealthCardSame.fhir_version
+    assert_equal 1, HealthCards::Payload.types.length
+    assert_equal 2, HealthCards::COVIDPayload.types.length
     assert_equal 3, COVIDHealthCardChanged.types.length
-    assert_equal HealthCards::COVIDHealthCard.types.length + 1, COVIDHealthCardChanged.types.length
+    assert_equal HealthCards::COVIDPayload.types.length + 1, COVIDHealthCardChanged.types.length
     assert_includes COVIDHealthCardChanged.types, 'https://smarthealth.cards#test'
     assert_equal '4.0.2', COVIDHealthCardChanged.fhir_version
   end

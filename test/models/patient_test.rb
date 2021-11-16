@@ -31,7 +31,7 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.new_record?
   end
 
-  test 'health card creation from patient and immunization json' do
+  test 'payload creation from patient and immunization json' do
     patient = Patient.create(given: 'foo', birth_date: Time.zone.today)
     vax = Vaccine.create(code: 'a')
     patient.immunizations.create(vaccine: vax, occurrence: Time.zone.today)
@@ -43,10 +43,10 @@ class PatientTest < ActiveSupport::TestCase
 
     assert bundle.valid?
 
-    hc = rails_issuer.create_health_card(bundle)
+    payload = HealthCards::Payload.new(bundle: bundle, issuer: 'http://example.org')
 
     assert_nothing_raised do
-      new_bundle = hc.strip_fhir_bundle
+      new_bundle = payload.strip_fhir_bundle
 
       assert_entry_references_match(new_bundle.entry[0], new_bundle.entry[1].resource.patient)
     end

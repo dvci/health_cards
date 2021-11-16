@@ -1,6 +1,6 @@
 # The Core Classes
 
-## HealthCards::HealthCard
+## HealthCards::Payload
 > Represents a single health card
 > allows a fhir_bundle payload and uses VerifiableCredential to compress. raw inputs may also be provided
 
@@ -27,15 +27,15 @@
 
 ## HealthCards::Issuer
 > Issues health cards based on a stored private key
-> Issuer uses HealthCard
+> Issuer uses Payload
 
 **API**
 - `::new`
-- `#create_health_card`
+- `#issue_health_card`
 - `#issue_jws`
 - `#key` // Returns HealthCards::PrivateKey
 - `#key=`
-- `#to_jwk` // Returns HealthCard::KeySet as JWK
+- `#to_jwk` // Returns Payload::KeySet as JWK
 
 ## HealthCards::Verifier
 > Verify health cards based on a stored public key
@@ -119,5 +119,5 @@
 
 # Classes *outside* the library
 
-## COVIDHealthCard
+## COVIDPayload
 > Responsible for transforming the FHIR bundle payload to meet the COVID Vaccinations Data Minimization Profile

@@ -150,7 +150,7 @@ class VerifierTest < ActiveSupport::TestCase
     end
   end
 
-  test 'Verifier will raise a HealthCard error if key resolution times out' do
+  test 'Verifier will raise a Payload error if key resolution times out' do
     stub_request(:get, /jwks.json/).to_timeout
     verifier = HealthCards::Verifier
     assert_raises HealthCards::UnresolvableKeySetError do

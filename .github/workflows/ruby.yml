@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        ruby-version: [ 2.7.3 ]
+        ruby-version: [ 2.7.4 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ['2.7.3']
+        ruby-version: ['2.7.4']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ['2.7.3']
+        ruby-version: ['2.7.4']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby

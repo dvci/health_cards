@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module HealthCards
-  # Logic for verifying a HealthCard JWS
+  # Logic for verifying a Payload JWS
   module Verification
     # Verify Health Card with given KeySet
     #
@@ -28,7 +28,7 @@ module HealthCards
     # @param jws [HealthCards::JWS, String] The JWS for which to resolve keys
     # @return [HealthCards::KeySet]
     def resolve_key(jws)
-      jwks_uri = URI("#{HealthCard.from_jws(jws.to_s).issuer}/.well-known/jwks.json")
+      jwks_uri = URI("#{HealthCard.new(jws.to_s).issuer}/.well-known/jwks.json")
       res = Net::HTTP.get(jwks_uri)
       HealthCards::KeySet.from_jwks(res)
     # Handle response if key is malformed or unreachable

@@ -12,7 +12,7 @@ _Note: This changelog is tracking changes related to the `health_cards` library.
 - Updated Bundle minification to use `each_element` [\#75](https://github.com/dvci/health_cards/pull/75)
 - Updated README [\#70](https://github.com/dvci/health_cards/pull/70)
 - Removed `json-minify` dependency [\#69](https://github.com/dvci/health_cards/pull/69)
-- Fixed `COVIDHealthCard` VC Type [\#56](https://github.com/dvci/health_cards/pull/56)
+- Fixed `COVIDPayload` VC Type [\#56](https://github.com/dvci/health_cards/pull/56)
 
 ## v0.0.1 (2021-05-14)
  - Initial `health_cards` release

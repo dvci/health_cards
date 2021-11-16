@@ -27,7 +27,7 @@ module HealthCards
     # @return [Hash] Hash containing the JWS payload and verification contents
     private_class_method def self.verify_jws(jws_string)
       jws = JWS.from_jws jws_string
-      result = { payload: HealthCard.decompress_payload(jws.payload) }
+      result = { payload: Payload.decompress_payload(jws.payload) }
       begin
         result[:verified] = Verifier.verify jws
         result[:error_message] = 'Signature Invalid' if result[:verified] == false

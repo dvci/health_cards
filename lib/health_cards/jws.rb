@@ -10,7 +10,7 @@ module HealthCards
       # @param jws [String, HealthCards::JWS] the JWS string
       # @param public_key [HealthCards::PublicKey] the public key associated with the JWS
       # @param key [HealthCards::PrivateKey] the private key associated with the JWS
-      # @return [HealthCards::HealthCard]
+      # @return [HealthCards::Payload]
       def from_jws(jws, public_key: nil, key: nil)
         unless jws.is_a?(HealthCards::JWS) || jws.is_a?(String)
           raise ArgumentError,

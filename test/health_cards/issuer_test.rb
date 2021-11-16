@@ -24,9 +24,9 @@ class IssuerTest < ActiveSupport::TestCase
   ## Creating Health Cards
 
   test 'Generate a health card from an Issuer' do
-    health_card = @issuer.create_health_card(@bundle)
-    assert health_card.is_a?(HealthCards::HealthCard) # Should be a HealthCard or subclass of HealthCard
-    assert_equal @bundle, health_card.bundle
+    health_card = @issuer.issue_health_card(@bundle)
+    assert health_card.is_a?(HealthCards::HealthCard)
+    assert_equal @bundle.entry[0].resource, health_card.bundle.entry[0].resource
   end
 
   ## Key Export

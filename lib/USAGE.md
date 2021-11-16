@@ -11,8 +11,8 @@ issuer = HealthCards::Issuer.new(key: key)
 
 # Create Health Cards with the Issuer
 
-health_card = issuer.create_health_card(FHIR::Bundle.new)
-covid_health_card = issuer.create_health_card(FHIR::Bundle.new, type: COVIDHealthCard)
+health_card = issuer.issue_health_card(FHIR::Bundle.new)
+covid_health_card = issuer.issue_health_card(FHIR::Bundle.new, type: COVIDPayload)
 
 # Create JWS with the Issuer. The Bundle will be converted into a HealthCad and used as 
 # a payload for the JWS
@@ -46,7 +46,7 @@ Health Cards can also be manually created and verified if more control is needed
 key = HealthCards::Key.generate_key # or `key = HealthCards::Key.from_file`
 
 # Create the Health Card
-health_card = HealthCards::HealthCard.new(issuer: "http://example-issuer.com", bundle: FHIR::Bundle.new)
+health_card = HealthCards::Payload.new(issuer: "http://example-issuer.com", bundle: FHIR::Bundle.new)
 
 ```
 
@@ -71,13 +71,13 @@ jws.verify
 ### Custom Health Cards
 
 An application might want to issue specific types of Health Cards. 
-Custom `HealthCard` or `Issuer` class can be created to customize their behavior.
-`HealthCard` provides hooks for adding functionality to the health card.
+Custom `Payload` or `Issuer` class can be created to customize their behavior.
+`Payload` provides hooks for adding functionality to the health card.
 
 ```ruby
 
-# Subclass the base `HealthCard` class to add specific behavior and/or set IG specific requirements
-class CustomHealthCard < HealthCards::HealthCard
+# Subclass the base `Payload` class to add specific behavior and/or set IG specific requirements
+class CustomHealthCard < HealthCards::Payload
   fhir_version '4.0.1' # Sets FHIR version
   additional_types 'https://my.custom.cards#type' #Adds additional claim types to those required by SMART Health Cards
   allow FHIR::Patient, %w[name] #Specify allowed attributes for FHIR resources
@@ -89,7 +89,7 @@ end
 
 #### Globally
 Public key resolution can be configured across the library. This will affect the public key resolution
-for all classes and instances, including `Issuer` and `HealthCard
+for all classes and instances, including `Issuer` and `Payload
 ```ruby
 # The current state can be checked with:
 HealthCards.resolves_keys?
@@ -98,7 +98,7 @@ HealthCards.resolves_keys?
 HealthCards.resolve_keys=false
 ```
 
-#### Verifier and HealthCard
+#### Verifier and Payload
 Public Key resolution can be disabled for all `Verifier` instances with:
 ```ruby
 # The current state can be checked with:
@@ -122,7 +122,7 @@ key = HealthCards::Key.load_file('my_keys.pem')
 verifier.add_key(key) # this only requires the public key so `verifier.add_key(key.public_key)` works too
 ```
 
-The `HealthCard` supports these features as well.
+The `Payload` supports these features as well.
 
 ## QR Codes
 

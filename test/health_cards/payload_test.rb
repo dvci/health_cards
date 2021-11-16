@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class HealthCardTest < ActiveSupport::TestCase
-  class TestCOVIDLabHealthCard < HealthCards::HealthCard
+  class TestCOVIDLabHealthCard < HealthCards::Payload
     additional_types 'https://smarthealth.cards#covid19'
     additional_types 'https://smarthealth.cards#laboratory'
   end
@@ -16,51 +16,51 @@ class HealthCardTest < ActiveSupport::TestCase
 
     file = File.read('test/fixtures/files/example-verbose-jws-payload.json')
     @bundle = FHIR.from_contents(file)
-    @health_card = HealthCards::HealthCard.new(issuer: @issuer, bundle: @bundle)
+    @health_card = HealthCards::Payload.new(issuer: @issuer, bundle: @bundle)
   end
 
   ## Constructor
 
-  test 'HealthCard can be created from a Bundle' do
+  test 'Payload can be created from a Bundle' do
     assert_not_nil @health_card.bundle
     assert @health_card.bundle.is_a?(FHIR::Bundle)
   end
 
-  test 'HealthCard can be created without allows' do
+  test 'Payload can be created without allows' do
     bundle = FHIR.from_contents(File.read('test/fixtures/files/example-covid-lab-result-bundle.json'))
     test_card = TestCOVIDLabHealthCard.new(issuer: @issuer, bundle: bundle)
     test_card.to_hash
     test_card.to_hash(filter: false)
   end
 
-  test 'HealthCard handles empty payloads' do
-    compressed_payload = HealthCards::HealthCard.compress_payload(FHIR::Bundle.new.to_json)
+  test 'Payload handles empty payloads' do
+    compressed_payload = HealthCards::Payload.compress_payload(FHIR::Bundle.new.to_json)
     jws = HealthCards::JWS.new(header: {}, payload: compressed_payload, key: rails_private_key)
     assert_raises HealthCards::InvalidCredentialError do
-      HealthCards::HealthCard.from_jws(jws.to_s)
+      HealthCards::HealthCard.new(jws.to_s)
     end
   end
 
-  ## Creating a HealthCard from a JWS
+  ## Creating a Payload from a JWS
 
-  test 'HealthCard can be created from a JWS' do
+  test 'Payload can be created from a JWS' do
     jws_string = load_json_fixture('example-jws')
-    card = HealthCards::HealthCard.from_jws(jws_string)
+    card = HealthCards::HealthCard.new(jws_string)
     assert_not_nil card.bundle
     assert card.bundle.is_a?(FHIR::Bundle)
   end
 
-  test 'HealthCard throws an exception when the payload is not a FHIR Bundle' do
+  test 'Payload throws an exception when the payload is not a FHIR Bundle' do
     assert_raises HealthCards::InvalidPayloadError do
-      HealthCards::HealthCard.new(issuer: @issuer, bundle: FHIR::Patient.new)
+      HealthCards::Payload.new(issuer: @issuer, bundle: FHIR::Patient.new)
     end
 
     assert_raises HealthCards::InvalidPayloadError do
-      HealthCards::HealthCard.new(issuer: @issuer, bundle: '{"foo": "bar"}')
+      HealthCards::Payload.new(issuer: @issuer, bundle: '{"foo": "bar"}')
     end
 
     assert_raises HealthCards::InvalidPayloadError do
-      HealthCards::HealthCard.new(issuer: @issuer, bundle: 'foo')
+      HealthCards::Payload.new(issuer: @issuer, bundle: 'foo')
     end
   end
 
@@ -138,7 +138,7 @@ class HealthCardTest < ActiveSupport::TestCase
   end
 
   test 'support single type' do
-    assert HealthCards::HealthCard.supports_type?('https://smarthealth.cards#health-card')
+    assert HealthCards::Payload.supports_type?('https://smarthealth.cards#health-card')
   end
 
   test 'update_nested_elements strips any "CodeableConcept.text" and "Coding.display" elements from the FHIR Bundle' do
@@ -165,7 +165,7 @@ class HealthCardTest < ActiveSupport::TestCase
 
   test 'all reference types are replaced with short resource-scheme URIs' do
     bundle = FHIR::Bundle.new(load_json_fixture('example-logical-link-bundle'))
-    card = HealthCards::HealthCard.new(issuer: 'http://example.org/fhir', bundle: bundle)
+    card = HealthCards::Payload.new(issuer: 'http://example.org/fhir', bundle: bundle)
     assert_nothing_raised do
       new_bundle = card.strip_fhir_bundle
 
@@ -177,15 +177,15 @@ class HealthCardTest < ActiveSupport::TestCase
 
   test 'raises error when url refers to resource outside bundle' do
     bundle = FHIR::Bundle.new(load_json_fixture('example-logical-link-bundle-bad'))
-    card = HealthCards::HealthCard.new(issuer: 'http://example.org/fhir', bundle: bundle)
+    card = HealthCards::Payload.new(issuer: 'http://example.org/fhir', bundle: bundle)
     assert_raises HealthCards::InvalidBundleReferenceError do
       card.strip_fhir_bundle
     end
   end
 
   test 'compress_payload applies a raw deflate compression and allows for the original payload to be restored' do
-    original_hc = HealthCards::HealthCard.new(issuer: @issuer, bundle: FHIR::Bundle.new)
-    new_hc = HealthCards::HealthCard.from_payload(original_hc.to_s)
+    original_hc = HealthCards::Payload.new(issuer: @issuer, bundle: FHIR::Bundle.new)
+    new_hc = HealthCards::Payload.from_payload(original_hc.to_s)
     assert_equal original_hc.to_hash, new_hc.to_hash
   end
 end

@@ -12,7 +12,7 @@ module HealthCards
     include HealthCards::Verification
     extend HealthCards::Verification
 
-    # Verify a HealthCard
+    # Verify a Payload
     #
     # This method _always_ uses key resolution and does not depend on any cached keys
     #
@@ -53,7 +53,7 @@ module HealthCards
       @keys.remove_keys(key)
     end
 
-    # Verify a HealthCard
+    # Verify a Payload
     #
     # @param verifiable [HealthCards::JWS, String] the health card to verify
     # @return [Boolean]
