@@ -38,9 +38,10 @@ class ApplicationController < ActionController::Base
 
     if @patient.id != session[:patient_id]
       issuer = Rails.application.config.issuer
-      @health_card = issuer.issue_health_card(@patient.to_bundle(issuer.url), type: HealthCards::COVIDImmunizationPayload)
+      @health_card = issuer.issue_health_card(@patient.to_bundle(issuer.url),
+                                              type: HealthCards::COVIDImmunizationPayload)
       session[:patient_id] = @patient.id
-      session[:jws] = @health_card.jws
+      session[:jws] = @health_card.jws.to_s
     elsif session[:jws]
       @health_card = HealthCards::HealthCard.new(session[:jws])
     end

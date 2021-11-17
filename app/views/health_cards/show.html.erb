@@ -96,7 +96,7 @@
         <div class="card-content">
           <pre style="white-space:pre-wrap;">
             <div class="content", style="word-wrap: break-word; width: 800px">
-                <% @qr_codes.chunks.each do |ch| %>
+                <% @health_card.qr_codes.each do |ch| %>
                 <p> <%= ch.data %> </p>
                 <% end %>
             </div>

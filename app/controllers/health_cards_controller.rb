@@ -11,7 +11,7 @@ class HealthCardsController < SecuredController
   def show
     respond_to do |format|
       format.healthcard { render json: health_card.to_json }
-      format.html {}
+      format.html
       format.pdf do
         render pdf: 'health_card', layout: 'pdf', encoding: 'utf8'
       end
@@ -23,7 +23,7 @@ class HealthCardsController < SecuredController
       format.fhir_json do
         fhir_params = FHIR.from_contents(request.raw_post)
         out_params = HealthCards::Exporter.issue(fhir_params) do |types|
-          HealthCards::COVIDImmunizationPayload.supports_type?(types) ? jws : nil
+          HealthCards::COVIDImmunizationPayload.supports_type?(types) ? health_card.jws : nil
         end
         render json: out_params
       end

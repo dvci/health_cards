@@ -1,3 +1,11 @@
+PATH
+  remote: .
+  specs:
+    health_cards (0.0.2)
+      fhir_models (>= 4.0.0)
+      rqrcode
+      rqrcode_core (>= 1.2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -294,6 +302,7 @@ DEPENDENCIES
   faker
   fhir_models (~> 4.2.0)
   font-awesome-rails
+  health_cards!
   jbuilder (~> 2.7)
   listen (~> 3.3)
   pry

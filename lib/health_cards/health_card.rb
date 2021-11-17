@@ -26,7 +26,7 @@ module HealthCards
     end
 
     def qr_codes
-      qr_codes.chunks
+      @qr_codes.chunks
     end
 
     def resource(type:, &block)

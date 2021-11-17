@@ -17,7 +17,7 @@ class QRCodesController < ApplicationController
 
         head :not_found and return unless code
 
-        send_data code.image, type: 'image/png', disposition: 'inline'
+        send_data code.image.to_s, type: 'image/png', disposition: 'inline'
       end
     end
   end
