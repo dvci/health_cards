@@ -3,9 +3,13 @@
 module HealthCards
   # Represents a signed SMART Health Card
   class HealthCard
-    delegate :bundle, to: :@payload
-    delegate :issuer, to: :@payload
-    delegate :verify, to: :@jws
+    extend Forwardable
+
+    attr_reader :jws
+
+    def_delegator :@jws, :verify
+    def_delegator :@qr_codes, :code_by_ordinal
+    def_delegators :@payload, :bundle, :issuer
 
     def initialize(jws)
       @jws = jws.is_a?(String) ? JWS.from_jws(jws) : jws

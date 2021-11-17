@@ -12,9 +12,9 @@ class PatientsController < SecuredController
   # GET /patients/1 or /patients/1.json
   def show
     respond_to do |format|
-      format.html { @qr_codes = exporter.qr_codes }
-      format.fhir_json { render json: exporter.to_fhir }
-      format.json { render json: exporter.to_fhir }
+      format.html { health_card }
+      format.fhir_json { render json: @patient.json }
+      format.json { render json: @patient.json }
     end
   end
 
