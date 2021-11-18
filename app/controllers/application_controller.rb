@@ -5,10 +5,6 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def exporter
-    @exporter ||= PatientExporter.new(@patient)
-  end
-
   def find_patient
     @patient = Patient.find(params[:patient_id])
   end
