@@ -2,8 +2,8 @@
 
 require 'test_helper'
 
-class HealthCardTest < ActiveSupport::TestCase
-  class TestCOVIDLabHealthCard < HealthCards::Payload
+class PayloadTest < ActiveSupport::TestCase
+  class TestCOVIDLabPayload < HealthCards::Payload
     additional_types 'https://smarthealth.cards#covid19'
     additional_types 'https://smarthealth.cards#laboratory'
   end
@@ -28,7 +28,7 @@ class HealthCardTest < ActiveSupport::TestCase
 
   test 'Payload can be created without allows' do
     bundle = FHIR.from_contents(File.read('test/fixtures/files/example-covid-lab-result-bundle.json'))
-    test_card = TestCOVIDLabHealthCard.new(issuer: @issuer, bundle: bundle)
+    test_card = TestCOVIDLabPayload.new(issuer: @issuer, bundle: bundle)
     test_card.to_hash
     test_card.to_hash(filter: false)
   end

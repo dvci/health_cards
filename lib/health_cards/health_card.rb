@@ -29,14 +29,30 @@ module HealthCards
       @qr_codes.chunks
     end
 
-    def resource(type:, &block)
+    def resource(type: nil, &block)
       resources(type: type, &block).first
     end
 
-    def resources(type: nil,  &block)
-      return bundle.entry.map(&:resource) unless type || block
+    def resources(type: nil, &block)
+      all_resources = bundle.entry.map(&:resource)
+      return all_resources unless type || block
 
-      type ? bundle.filter { |_e| entry.resource.is_a?(type) } : bundle.filter { |e| yield(e.resource) }
+      all_resources.filter do |r|
+        resource_matches_criteria(r, type, &block)
+      end
+    end
+
+    private
+
+    def resource_matches_criteria(resource, type, &block)
+      of_type = type && resource.is_a?(type)
+      if block && type
+        of_type && yield(resource)
+      elsif !type && block
+        yield(resource)
+      else
+        of_type
+      end
     end
   end
 end

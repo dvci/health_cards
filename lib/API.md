@@ -1,8 +1,19 @@
 # The Core Classes
 
+## HealthCards::HealthCard
+> Represents a signed SMART Health Card, signed by an Issuer
+> Provides access to the data elements necessary to use a health card (FHIR data, QR Codes, jws)
+
+**API**
+- `::new`
+- `#credential`
+- `#to_json`
+- `#qr_codes`
+- `#resource`
+- `#resources`
+
 ## HealthCards::Payload
-> Represents a single health card
-> allows a fhir_bundle payload and uses VerifiableCredential to compress. raw inputs may also be provided
+> Represents a payload for a health card (i.e. a FHIR Bundle with SHC and IG rules applied). Maps the the credential that is contained in a JWS/HealthCard
 
 **API**
 - `::new`
@@ -14,7 +25,7 @@
 - `#to_s`
 
 ## HealthCards::JWS
-> Takes a payload and signs it as a JWS
+> Generic JWS implementation used by health_card libraries, and used to exchange health cards
 
 **API**
 - `::new`
@@ -26,8 +37,7 @@
 - `#payload`
 
 ## HealthCards::Issuer
-> Issues health cards based on a stored private key
-> Issuer uses Payload
+> Issues health cards and/or JWS based on a stored private key
 
 **API**
 - `::new`
