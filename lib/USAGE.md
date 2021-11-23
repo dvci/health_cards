@@ -37,7 +37,7 @@ verifier.verify(jws)
 
 ## Creating/Using a Health Card
 
-HealthCards encapsulate a JWS in order to faciliate the use of the data by systems
+HealthCards encapsulate a data in a JWS in order to faciliate the use of the data by systems
 that want to use/evaluate a card.
 
 ```

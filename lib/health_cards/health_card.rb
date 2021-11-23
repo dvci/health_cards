@@ -12,13 +12,13 @@ module HealthCards
     def_delegators :@payload, :bundle, :issuer
 
     def initialize(jws)
-      @jws = jws.is_a?(String) ? JWS.from_jws(jws) : jws
+      @jws = JWS.from_jws(jws)
       @payload = Payload.from_payload(@jws.payload)
       @qr_codes = QRCodes.from_jws(@jws)
     end
 
-    def credential
-      { verifiableCredential: [@jws.to_s] }
+    def download
+      Exporter.download(@jws)
     end
 
     def to_json(*_args)
