@@ -42,7 +42,7 @@
           <div class="card-content">
           <div class="content">
             <pre style="white-space:pre-wrap;">
-              <p> <%= JSON.pretty_generate(@health_card.credential) %> </p>
+              <p> <%= JSON.pretty_generate(@health_card.to_json) %> </p>
             </pre>
             </div>
           </div>

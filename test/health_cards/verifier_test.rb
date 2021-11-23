@@ -77,6 +77,11 @@ class VerifierTest < ActiveSupport::TestCase
     assert @verifier.verify(@jws.to_s)
   end
 
+  test 'Verifier can verify a HealthCard' do
+    card = HealthCards::HealthCard.new(@jws)
+    assert @verifier.verify(card)
+  end
+
   test 'Verifier doesn\'t verify none JWS-able object' do
     assert_raises ArgumentError do
       @verifier.verify(OpenStruct.new(foo: 'bar'))

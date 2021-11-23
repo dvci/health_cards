@@ -7,7 +7,7 @@ module HealthCards
       # Export JWS for file download
       # @param [Array<JWS, String>] An array of JWS objects to be exported
       # @return [String] JSON string containing file download contents
-      def download(jws)
+      def file_download(jws)
         { verifiableCredential: jws.map(&:to_s) }.to_json
       end
 
