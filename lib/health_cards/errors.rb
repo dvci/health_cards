@@ -25,7 +25,7 @@ module HealthCards
 
   class UnresolvableKeySetError < JWSError; end
 
-  # Errors related to HealthCard / Bundle
+  # Errors related to Payload / Bundle
 
   # Exception thrown when an invalid payload is provided
   class InvalidPayloadError < HealthCardError

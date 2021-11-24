@@ -24,6 +24,19 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'changed session jws between different patients' do
+    get patient_url(@patient)
+    assert_response :success
+    jws = session[:jws]
+
+    @patient2 = Patient.create({ given: 'foo2', family: 'bar2', gender: 'female' })
+
+    get patient_url(@patient2)
+    assert_response :success
+    jws2 = session[:jws]
+    assert_not_equal jws, jws2
+  end
+
   test 'should create patient' do
     assert_difference('Patient.count') do
       post patients_url, params: { patient: @attributes }

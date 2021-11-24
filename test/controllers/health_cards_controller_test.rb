@@ -81,7 +81,7 @@ class HealthCardsControllerTest < ActionDispatch::IntegrationTest
     # Turn this back on when we can update the code/validator
     # assert imm.valid?, imm.validate
 
-    card = HealthCards::COVIDHealthCard.from_payload(jws.payload)
+    card = HealthCards::COVIDPayload.from_payload(jws.payload)
     assert card.bundle.entry[0].resource.is_a?(FHIR::Patient)
     assert card.bundle.entry[1].resource.is_a?(FHIR::Immunization)
   end

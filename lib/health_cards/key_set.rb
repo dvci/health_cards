@@ -44,7 +44,7 @@ module HealthCards
     # Retrieves a key from the keyset with a kid
     # that matches the parameter
     # @param kid [String] a Base64 encoded kid from a JWS or Key
-    # @return [HealthCard::Key] a key with a matching kid or nil if not found
+    # @return [Payload::Key] a key with a matching kid or nil if not found
     def find_key(kid)
       @key_map[kid]
     end

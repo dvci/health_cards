@@ -42,7 +42,7 @@
           <div class="card-content">
           <div class="content">
             <pre style="white-space:pre-wrap;">
-              <p> <%= JSON.pretty_generate(@health_card.to_hash) %> </p>
+              <p> <%= JSON.pretty_generate(@health_card.to_json) %> </p>
             </pre>
             </div>
           </div>
@@ -96,7 +96,7 @@
         <div class="card-content">
           <pre style="white-space:pre-wrap;">
             <div class="content", style="word-wrap: break-word; width: 800px">
-                <% @qr_codes.chunks.each do |ch| %>
+                <% @health_card.qr_codes.each do |ch| %>
                 <p> <%= ch.data %> </p>
                 <% end %>
             </div>

@@ -19,7 +19,7 @@ puts '--------'
 qr_inspect.call(qr)
 
 jws = qr.to_jws
-hc = HealthCards::COVIDImmunizationCard.from_jws(jws)
+hc = HealthCards::COVIDImmunizationPayload.from_jws(jws)
 
 puts "\n------"
 puts 'Bundle'

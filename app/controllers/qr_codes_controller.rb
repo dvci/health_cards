@@ -13,11 +13,11 @@ class QRCodesController < ApplicationController
   def show
     respond_to do |format|
       format.png do
-        image = exporter.qr_code_image(params[:id].to_i)
+        code = health_card.code_by_ordinal(params[:id].to_i)
 
-        head :not_found and return unless image
+        head :not_found and return unless code
 
-        send_data image, type: 'image/png', disposition: 'inline'
+        send_data code.image.to_s, type: 'image/png', disposition: 'inline'
       end
     end
   end

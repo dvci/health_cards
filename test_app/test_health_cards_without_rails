@@ -10,16 +10,18 @@ key.to_jwk
 issuer = HealthCards::Issuer.new(key: key, url: 'http://example.com')
 
 jws = issuer.issue_jws(FHIR::Bundle.new)
+hc = issuer.issue_health_card(FHIR::Bundle.new)
+
 jws.verify
 
 ver = HealthCards::Verifier.new(keys: key.public_key)
 ver.verify(jws)
 
-card1 = HealthCards::HealthCard.from_jws(jws.to_s)
-card1.to_json
+card = HealthCards::HealthCard.new(jws.to_s)
+card.to_json
 
-card2 = HealthCards::COVIDHealthCard.from_jws(jws.to_s)
-card2.to_json
+ver.verify(hc)
+ver.verify(card)
 
 codes = HealthCards::QRCodes.from_jws(jws.to_s)
 codes.chunks.map(&:data)

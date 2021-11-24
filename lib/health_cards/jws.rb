@@ -6,12 +6,15 @@ module HealthCards
     class << self
       include Encoding
 
-      # Creates a Card from a JWS
-      # @param jws [String, HealthCards::JWS] the JWS string
+      # Creates a JWS from a String representation, or returns the HealthCards::JWS object
+      # that was passed in
+      # @param jws [String, HealthCards::JWS] the JWS string, or a JWS object
       # @param public_key [HealthCards::PublicKey] the public key associated with the JWS
       # @param key [HealthCards::PrivateKey] the private key associated with the JWS
-      # @return [HealthCards::HealthCard]
+      # @return [HealthCards::JWS] A new JWS object, or the JWS object that was passed in
       def from_jws(jws, public_key: nil, key: nil)
+        return jws if jws.is_a?(HealthCards::JWS) && public_key.nil? && key.nil?
+
         unless jws.is_a?(HealthCards::JWS) || jws.is_a?(String)
           raise ArgumentError,
                 'Expected either a HealthCards::JWS or String'

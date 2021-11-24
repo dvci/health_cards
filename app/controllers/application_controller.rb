@@ -5,10 +5,6 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def exporter
-    @exporter ||= PatientExporter.new(@patient)
-  end
-
   def find_patient
     @patient = Patient.find(params[:patient_id])
   end
@@ -30,6 +26,23 @@ class ApplicationController < ActionController::Base
     else
       yield
     end
+  end
+
+  def health_card
+    return @health_card if @health_card
+    return unless @patient
+
+    if @patient.id != session[:patient_id]
+      issuer = Rails.application.config.issuer
+      @health_card = issuer.issue_health_card(@patient.to_bundle(issuer.url),
+                                              type: HealthCards::COVIDImmunizationPayload)
+      session[:patient_id] = @patient.id
+      session[:jws] = @health_card.jws.to_s
+    elsif session[:jws]
+      @health_card = HealthCards::HealthCard.new(session[:jws])
+    end
+
+    @health_card
   end
 
   def render_operation_outcome(code: nil, http: nil, error: nil, message: nil)

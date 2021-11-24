@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module HealthCards
-  class COVIDImmunizationCard < COVIDHealthCard
+  class COVIDImmunizationPayload < COVIDPayload
     additional_types 'https://smarthealth.cards#immunization'
 
     allow type: FHIR::Immunization,

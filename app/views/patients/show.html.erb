@@ -110,7 +110,7 @@
         <% end %>
       </div>
     </div>
-    <%= render partial: 'qr_codes/chunks', object: @qr_codes.chunks %>
+    <%= render partial: 'qr_codes/chunks', object: @health_card.qr_codes %>
     <div id="qr-code"></div>
     <%= link_to 'Patient List', patients_path, class: 'button is-info' %>
   </div>

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'health_cards/attribute_filters'
-require 'health_cards/card_types'
+require 'health_cards/payload_types'
 
 module HealthCards
-  # Implements HealthCard for use with COVID Vaccination IG
-  class COVIDHealthCard < HealthCards::HealthCard
+  # Implements Payload for use with COVID Vaccination IG
+  class COVIDPayload < HealthCards::Payload
     additional_types 'https://smarthealth.cards#covid19'
 
     allow type: FHIR::Patient, attributes: %w[identifier name birthDate]

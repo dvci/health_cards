@@ -9,9 +9,9 @@ module HealthCards
       base.extend ClassMethods
     end
 
-    # Class level methods for HealthCard class specific settings
+    # Class level methods for Payload class specific settings
     module ClassMethods
-      # Define allowed attributes for this HealthCard class
+      # Define allowed attributes for this Payload class
       # @param type [Class] Scopes the attributes to a spefic class. Must be a subclass of FHIR::Model
       # @param attributes [Array] An array of string with the attribute names that will be passed through
       #  when data is minimized
@@ -19,7 +19,7 @@ module HealthCards
         allowable[type] = attributes
       end
 
-      # Define disallowed attributes for this HealthCard class
+      # Define disallowed attributes for this Payload class
       # @param type [Class] Scopes the attributes to a spefic class. If not used will default to all FHIR resources.
       # To apply a rule to all FHIR types (resources and types), use FHIR::Model as the type
       # @param attributes [Array] An array of string with the attribute names that will be passed through
@@ -29,7 +29,7 @@ module HealthCards
         disallowable[type].concat(attributes)
       end
 
-      # Define disallowed attributes for this HealthCard class
+      # Define disallowed attributes for this Payload class
       # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
       def disallowable
         return @disallowable if @disallowable
@@ -37,7 +37,7 @@ module HealthCards
         @disallowable = parent_disallowables
       end
 
-      # Define allowed attributes for this HealthCard class
+      # Define allowed attributes for this Payload class
       # @return [Hash] A hash of FHIR::Model subclasses and attributes that will pass through minimization
       def allowable
         return @allowable if @allowable
@@ -48,11 +48,11 @@ module HealthCards
       protected
 
       def parent_allowables(base = {})
-        self < HealthCards::HealthCard ? base.merge(superclass.allowable) : base
+        self < HealthCards::Payload ? base.merge(superclass.allowable) : base
       end
 
       def parent_disallowables(base = {})
-        self < HealthCards::HealthCard ? base.merge(superclass.disallowable) : base
+        self < HealthCards::Payload ? base.merge(superclass.disallowable) : base
       end
     end
 

@@ -16,11 +16,11 @@ module HealthCards
       self.key = key
     end
 
-    # Create a HealthCard from the supplied FHIR bundle
+    # Create a Payload from the supplied FHIR bundle
     #
     # @param bundle [FHIR::Bundle, String] the FHIR bundle used as the Health Card payload
-    # @return [HealthCard::]
-    def create_health_card(bundle, type: HealthCard)
+    # @return [Payload::]
+    def create_payload(bundle, type: Payload)
       type.new(issuer: url, bundle: bundle)
     end
 
@@ -30,9 +30,14 @@ module HealthCards
     # @param type [Class] A subclass of HealthCards::Card that processes the bundle according to a specific IG.
     # Leave blank for default SMART Health Card behavior
     # @return [HealthCards::JWS] An instance of JWS using the payload and signed by the issuer's private key
-    def issue_jws(bundle, type: HealthCard)
-      card = create_health_card(bundle, type: type)
+    def issue_jws(bundle, type: Payload)
+      card = create_payload(bundle, type: type)
       JWS.new(header: jws_header, payload: card.to_s, key: key)
+    end
+
+    def issue_health_card(bundle, type: Payload)
+      jws = issue_jws(bundle, type: type)
+      HealthCards::HealthCard.new(jws)
     end
 
     # Set the private key used for signing issued health cards

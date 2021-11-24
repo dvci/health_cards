@@ -70,7 +70,7 @@ module ActiveSupport
 
     def bundle_payload
       bundle = FHIR::Bundle.new(type: 'collection')
-      bundle.entry << FHIR::Bundle::Entry.new(resource: FHIR::Patient.new)
+      bundle.entry << FHIR::Bundle::Entry.new(fullUrl: 'http://patient/1', resource: FHIR::Patient.new)
       bundle
     end
 
@@ -94,11 +94,11 @@ module ActiveSupport
       assert_equal patient_url, ref_url
     end
 
-    def assert_jws_bundle_match(jws, key, patient_entry, vax_entry)
+    def assert_jws_bundle_match(jws, _key, patient_entry, vax_entry)
       card = nil
 
       assert_nothing_raised do
-        card = HealthCards::HealthCard.from_jws(jws, public_key: key)
+        card = HealthCards::HealthCard.new(jws)
       end
 
       entries = card.bundle.entry

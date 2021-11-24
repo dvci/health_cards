@@ -1,8 +1,19 @@
 # The Core Classes
 
 ## HealthCards::HealthCard
-> Represents a single health card
-> allows a fhir_bundle payload and uses VerifiableCredential to compress. raw inputs may also be provided
+> Represents a signed SMART Health Card, signed by an Issuer
+> Provides access to the data elements necessary to use a health card (FHIR data, QR Codes, jws)
+
+**API**
+- `::new`
+- `#credential`
+- `#to_json`
+- `#qr_codes`
+- `#resource`
+- `#resources`
+
+## HealthCards::Payload
+> Represents a payload for a health card (i.e. a FHIR Bundle with SHC and IG rules applied). Maps the the credential that is contained in a JWS/HealthCard
 
 **API**
 - `::new`
@@ -14,7 +25,7 @@
 - `#to_s`
 
 ## HealthCards::JWS
-> Takes a payload and signs it as a JWS
+> Generic JWS implementation used by health_card libraries, and used to exchange health cards
 
 **API**
 - `::new`
@@ -26,16 +37,15 @@
 - `#payload`
 
 ## HealthCards::Issuer
-> Issues health cards based on a stored private key
-> Issuer uses HealthCard
+> Issues health cards and/or JWS based on a stored private key
 
 **API**
 - `::new`
-- `#create_health_card`
+- `#issue_health_card`
 - `#issue_jws`
 - `#key` // Returns HealthCards::PrivateKey
 - `#key=`
-- `#to_jwk` // Returns HealthCard::KeySet as JWK
+- `#to_jwk` // Returns Payload::KeySet as JWK
 
 ## HealthCards::Verifier
 > Verify health cards based on a stored public key
@@ -119,5 +129,5 @@
 
 # Classes *outside* the library
 
-## COVIDHealthCard
+## COVIDPayload
 > Responsible for transforming the FHIR bundle payload to meet the COVID Vaccinations Data Minimization Profile

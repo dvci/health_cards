@@ -77,6 +77,11 @@ class VerifierTest < ActiveSupport::TestCase
     assert @verifier.verify(@jws.to_s)
   end
 
+  test 'Verifier can verify a HealthCard' do
+    card = HealthCards::HealthCard.new(@jws)
+    assert @verifier.verify(card)
+  end
+
   test 'Verifier doesn\'t verify none JWS-able object' do
     assert_raises ArgumentError do
       @verifier.verify(OpenStruct.new(foo: 'bar'))
@@ -150,7 +155,7 @@ class VerifierTest < ActiveSupport::TestCase
     end
   end
 
-  test 'Verifier will raise a HealthCard error if key resolution times out' do
+  test 'Verifier will raise a Payload error if key resolution times out' do
     stub_request(:get, /jwks.json/).to_timeout
     verifier = HealthCards::Verifier
     assert_raises HealthCards::UnresolvableKeySetError do

@@ -84,7 +84,7 @@
     </div>
     <div id="qr-code">
       <div class="tile is-ancestor">
-        <% @qr_codes.chunks.each do |ch| %>
+        <% @health_card.qr_codes.each do |ch| %>
           <div class="tile is-parent">
             <div class="tile is-child box has-text-centered">
               <%= wicked_pdf_image_tag url_for(controller: 'qr_codes', action: 'show', host: "localhost",

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module HealthCards
-  class COVIDLabResultCard < COVIDHealthCard
+  class COVIDLabResultPayload < COVIDPayload
     additional_types 'https://smarthealth.cards#laboratory'
 
     allow type: FHIR::Observation,
