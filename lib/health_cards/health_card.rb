@@ -7,7 +7,6 @@ module HealthCards
 
     attr_reader :jws
 
-    def_delegator :@jws, :verify
     def_delegator :@qr_codes, :code_by_ordinal
     def_delegators :@payload, :bundle, :issuer
 
