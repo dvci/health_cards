@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    health_cards (0.0.2)
+    health_cards (1.0.0)
       fhir_models (>= 4.0.0)
       rqrcode
       rqrcode_core (>= 1.2.0)
