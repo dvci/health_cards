@@ -20,6 +20,7 @@ ver.verify(jws)
 card = HealthCards::HealthCard.new(jws.to_s)
 card.to_json
 
+ver.verify(hc)
 ver.verify(card)
 
 codes = HealthCards::QRCodes.from_jws(jws.to_s)
