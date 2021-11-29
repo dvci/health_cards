@@ -2,6 +2,15 @@
 
 _Note: This changelog is tracking changes related to the `health_cards` library._
 
+## [v1.0.0]
+- API Redesign: Old HealthCard class becomes Payload, new HealthCard class used by Issuer and Verifier [\#99](https://github.com/dvci/health_cards/pull/99)
+- Updated Allowables to reflect latest Vaccination IG [\#98](https://github.com/dvci/health_cards/pull/98)
+- Allow for unfiltered Health Cards [\#93](https://github.com/dvci/health_cards/pull/93)
+- More Robust Multi-Mode Support via updated RQRCode gem [\#88](https://github.com/dvci/health_cards/pull/88)
+- HealthCard attributes (FHIR Version, Card Types) are inheritable [\#87](https://github.com/dvci/health_cards/pull/87)
+- Update README [\#85](https://github.com/dvci/health_cards/pull/85) [\#90](https://github.com/dvci/health_cards/pull/90)
+- Added Support for Lab Results in Health Cards [\#72](https://github.com/dvci/health_cards/pull/72)
+
 ## [v0.0.2](https://github.com/dvci/health_cards/tree/v0.0.2) (2021-07-09)
 - Added `fhir_models` >= 4.0 dependency [\#69](https://github.com/dvci/health_cards/pull/69)
 - Added native QR Code generation [\#62](https://github.com/dvci/health_cards/pull/62)
