@@ -9,6 +9,8 @@ key.to_jwk
 
 issuer = HealthCards::Issuer.new(key: key, url: 'http://example.com')
 
+# TODO: Ensure these steps align with USAGE.md
+
 jws = issuer.issue_jws(FHIR::Bundle.new)
 hc = issuer.issue_health_card(FHIR::Bundle.new)
 
