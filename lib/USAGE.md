@@ -4,7 +4,7 @@
 
 ```ruby
 # Generate or load a private key
-key = HealthCards::Key.generate_key # or `key = HealthCards::Key.from_file`
+key = HealthCards::PrivateKey.generate_key # or `key = HealthCards::PrivateKey.from_file`
 
 # Create an Issuer
 issuer = HealthCards::Issuer.new(key: key)
@@ -13,11 +13,13 @@ issuer = HealthCards::Issuer.new(key: key)
 # subclass
 
 health_card = issuer.issue_health_card(FHIR::Bundle.new)
-covid_health_card = issuer.issue_health_card(FHIR::Bundle.new, type: COVIDPayload)
+covid_health_card = issuer.issue_health_card(FHIR::Bundle.new, type: HealthCards::COVIDPayload)
 
 # Create JWS with the Issuer. 
 
 jws = issuer.issue_jws(FHIR::Bundle.new)
+
+```
 
 ## Verifying SMART Health Cards
 
@@ -40,7 +42,7 @@ verifier.verify(jws)
 HealthCards encapsulate a data in a JWS in order to faciliate the use of the data by systems
 that want to use/evaluate a card.
 
-```
+```ruby
   # While local health cards should be created by an Issuer, you may receive a JWS
   # from an external system. A HealthCard can be created manually using only a JWS
   jws = 'foofoofoo.barbarbar.bazbazbaz'
@@ -109,13 +111,15 @@ class CustomHealthCard < HealthCards::Payload
   allow FHIR::Patient, %w[name] #Specify allowed attributes for FHIR resources
 end
 
+```
+
 ### Disable Public Key Resolution
 
 **Should the global configuration be prefixed with `globally_`? e.g. `HealthCards.globally_resolve_keys = false`**
 
 #### Globally
 Public key resolution can be configured across the library. This will affect the public key resolution
-for all classes and instances, including `Issuer` and `Payload
+for all classes and instances, including `Issuer` and `Payload`
 ```ruby
 # The current state can be checked with:
 HealthCards.resolves_keys?
