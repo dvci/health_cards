@@ -18,7 +18,6 @@ covid_health_card = issuer.issue_health_card(FHIR::Bundle.new, type: HealthCards
 # Create JWS with the Issuer. 
 
 jws = issuer.issue_jws(FHIR::Bundle.new)
-
 ```
 
 ## Verifying SMART Health Cards
@@ -34,12 +33,11 @@ jws = 'foofoofoo.barbarbar.bazbazbaz'
 
 # By default the verifier will search for and resolve public keys to verify credentials
 verifier.verify(jws)
-
 ```
 
 ## Creating/Using a Health Card
 
-HealthCards encapsulate a data in a JWS in order to faciliate the use of the data by systems
+HealthCards encapsulate data in a JWS in order to facilitate the use of the data by systems
 that want to use/evaluate a card.
 
 ```ruby
@@ -91,7 +89,6 @@ jws.verify
 
 health_card = HealthCards::HealthCard.new(jws)
 health_card.verify
-
 ```
 
 ## Configuration
@@ -103,14 +100,12 @@ Custom `Payload` or `Issuer` class can be created to customize their behavior.
 `Payload` provides hooks for adding functionality to the health card.
 
 ```ruby
-
 # Subclass the base `Payload` class to add specific behavior and/or set IG specific requirements
 class CustomHealthCard < HealthCards::Payload
   fhir_version '4.0.1' # Sets FHIR version
-  additional_types 'https://my.custom.cards#type' #Adds additional claim types to those required by SMART Health Cards
-  allow FHIR::Patient, %w[name] #Specify allowed attributes for FHIR resources
+  additional_types 'https://my.custom.cards#type' # Adds additional claim types to those required by SMART Health Cards
+  allow FHIR::Patient, %w[name] # Specify allowed attributes for FHIR resources
 end
-
 ```
 
 ### Disable Public Key Resolution
@@ -143,13 +138,13 @@ Public key resolution can be disabled for a single instance issuer with:
 verifier = HealthCards::Verifier.new
 
 # The current state can be checked with:
-verifier.resolves_keys?
+verifier.resolve_keys?
 # Public key resolution can be disabled with
 verifier.resolve_keys = false
 
 # Keys can be manually added that the verifier can use to verify credentials
-key = HealthCards::Key.load_file('my_keys.pem')
-verifier.add_key(key) # this only requires the public key so `verifier.add_key(key.public_key)` works too
+key = HealthCards::PrivateKey.from_file('my_keys.pem')
+verifier.add_keys(key) # this only requires the public key so `verifier.add_keys(key.public_key)` works too
 ```
 
 The `HealthCard` supports these features as well.
@@ -159,7 +154,6 @@ The `HealthCard` supports these features as well.
 A QR Code can be created from either a set of encoded strings (from scanning QR Codes) or a JWS (object or string).
 
 ```ruby
-
 jws = 'foofoofoo.barbarbar.bazbazbaz'
 
 qr_codes = HealthCards::QRCodes.from_jws(jws)
@@ -167,16 +161,14 @@ qr_codes = HealthCards::QRCodes.from_jws(jws)
 # Chunks would normally be longer but are truncated here for readability
 chunks = ['shc:/1/2/1234123412341234', 'shc:/2/2/2345234523452345']
 
-qr_codes = Healthcards::QRCodes.new(chunks)
+qr_codes = HealthCards::QRCodes.new(chunks)
 ```
 Each QRCodes object contains an array of 'chunks' which each represent an individual QR Code.
 Each chunk contains an ordinal integer representing their position, along with a chunk of data. These can be converted to images (PNGs) and saved or displayed.
 
 ```ruby
-
 # Save to File
 qr_codes.chunks.each do |chunk|
   chunk.image.save("qr-code-#{chunk.ordinal}.png")
 end
-
 ```
