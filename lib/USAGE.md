@@ -110,30 +110,9 @@ end
 
 ### Disable Public Key Resolution
 
-**Should the global configuration be prefixed with `globally_`? e.g. `HealthCards.globally_resolve_keys = false`**
-
-#### Globally
-Public key resolution can be configured across the library. This will affect the public key resolution
-for all classes and instances, including `Issuer` and `Payload`
-```ruby
-# The current state can be checked with:
-HealthCards.resolves_keys?
-
-# Public Key resolution can be disabled with
-HealthCards.resolve_keys=false
-```
-
 #### Verifier and Payload
-Public Key resolution can be disabled for all `Verifier` instances with:
-```ruby
-# The current state can be checked with:
-HealthCards::Verifier.resolves_keys?
 
-# Public key resolution can be disabled with
-HealthCards::Verifier.resolve_keys=false
-```
-
-Public key resolution can be disabled for a single instance issuer with:
+Public key resolution can be disabled for a single instance `Verifier` with:
 ```ruby
 verifier = HealthCards::Verifier.new
 
@@ -146,8 +125,6 @@ verifier.resolve_keys = false
 key = HealthCards::PrivateKey.from_file('my_keys.pem')
 verifier.add_keys(key) # this only requires the public key so `verifier.add_keys(key.public_key)` works too
 ```
-
-The `HealthCard` supports these features as well.
 
 ## QR Codes
 
