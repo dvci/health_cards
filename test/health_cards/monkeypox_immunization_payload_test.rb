@@ -13,9 +13,9 @@ class MonkeypoxImmunizationPayloadTest < ActiveSupport::TestCase
   end
 
   test 'includes correct types' do
-    assert HealthCards::MonkeypoxImmunizationPayload.types.include?('https://smarthealth.cards#health-card')
-    assert HealthCards::MonkeypoxImmunizationPayload.types.include?('https://smarthealth.cards#monkeypox')
-    assert HealthCards::MonkeypoxImmunizationPayload.types.include?('https://smarthealth.cards#immunization')
+    assert_includes HealthCards::MonkeypoxImmunizationPayload.types, 'https://smarthealth.cards#health-card'
+    assert_includes HealthCards::MonkeypoxImmunizationPayload.types, 'https://smarthealth.cards#monkeypox'
+    assert_includes HealthCards::MonkeypoxImmunizationPayload.types, 'https://smarthealth.cards#immunization'
   end
 
   test 'supports immunization type' do

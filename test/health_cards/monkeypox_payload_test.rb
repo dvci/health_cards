@@ -20,8 +20,8 @@ class MonkeypoxPayloadTest < ActiveSupport::TestCase
   end
 
   test 'includes correct types' do
-    assert HealthCards::MonkeypoxPayload.types.include?('https://smarthealth.cards#health-card')
-    assert HealthCards::MonkeypoxPayload.types.include?('https://smarthealth.cards#monkeypox')
+    assert_includes HealthCards::MonkeypoxPayload.types, 'https://smarthealth.cards#health-card'
+    assert_includes HealthCards::MonkeypoxPayload.types, 'https://smarthealth.cards#monkeypox'
   end
 
   test 'includes required credential attributes in hash' do
