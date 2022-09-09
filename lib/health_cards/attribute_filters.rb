@@ -12,7 +12,7 @@ module HealthCards
     # Class level methods for Payload class specific settings
     module ClassMethods
       # Define allowed attributes for this Payload class
-      # @param type [Class] Scopes the attributes to a spefic class. Must be a subclass of FHIR::Model
+      # @param type [Class] Scopes the attributes to a specific class. Must be a subclass of FHIR::Model
       # @param attributes [Array] An array of string with the attribute names that will be passed through
       #  when data is minimized
       def allow(type:, attributes: [])
@@ -20,7 +20,7 @@ module HealthCards
       end
 
       # Define disallowed attributes for this Payload class
-      # @param type [Class] Scopes the attributes to a spefic class. If not used will default to all FHIR resources.
+      # @param type [Class] Scopes the attributes to a specific class. If not used will default to all FHIR resources.
       # To apply a rule to all FHIR types (resources and types), use FHIR::Model as the type
       # @param attributes [Array] An array of string with the attribute names that will be passed through
       #  when data is minimized

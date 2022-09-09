@@ -2,26 +2,26 @@
 
 require 'test_helper'
 
-class COVIDPayloadTest < ActiveSupport::TestCase
+class MonkeypoxPayloadTest < ActiveSupport::TestCase
   setup do
-    @bundle = FHIR::Bundle.new(load_json_fixture('example-covid-immunization-bundle'))
-    @card = HealthCards::COVIDPayload.new(bundle: @bundle, issuer: 'http://example.org')
+    @bundle = FHIR::Bundle.new(load_json_fixture('example-monkeypox-immunization-bundle'))
+    @card = HealthCards::MonkeypoxPayload.new(bundle: @bundle, issuer: 'http://example.org')
   end
 
-  class COVIDHealthCardSame < HealthCards::COVIDPayload; end
+  class MonkeypoxHealthCardSame < HealthCards::MonkeypoxPayload; end
 
-  class COVIDHealthCardChanged < HealthCards::COVIDPayload
+  class MonkeypoxHealthCardChanged < HealthCards::MonkeypoxPayload
     fhir_version '4.0.2'
     additional_types 'https://smarthealth.cards#test'
   end
 
   test 'is of custom type' do
-    assert @card.is_a?(HealthCards::COVIDPayload)
+    assert @card.is_a?(HealthCards::MonkeypoxPayload)
   end
 
   test 'includes correct types' do
-    assert_includes HealthCards::COVIDPayload.types, 'https://smarthealth.cards#health-card'
-    assert_includes HealthCards::COVIDPayload.types, 'https://smarthealth.cards#covid19'
+    assert_includes HealthCards::MonkeypoxPayload.types, 'https://smarthealth.cards#health-card'
+    assert_includes HealthCards::MonkeypoxPayload.types, 'https://smarthealth.cards#monkeypox'
   end
 
   test 'includes required credential attributes in hash' do
@@ -29,15 +29,15 @@ class COVIDPayloadTest < ActiveSupport::TestCase
     type = hash.dig(:vc, :type)
     assert_not_nil type
     assert_includes type, 'https://smarthealth.cards#health-card'
-    assert_includes type, 'https://smarthealth.cards#covid19'
+    assert_includes type, 'https://smarthealth.cards#monkeypox'
 
     fhir_version = hash.dig(:vc, :credentialSubject, :fhirVersion)
     assert_not_nil fhir_version
-    assert_equal HealthCards::COVIDPayload.fhir_version, fhir_version
+    assert_equal HealthCards::MonkeypoxPayload.fhir_version, fhir_version
   end
 
   test 'bundle creation' do
-    @card = rails_issuer.issue_health_card(@bundle, type: HealthCards::COVIDPayload)
+    @card = rails_issuer.issue_health_card(@bundle, type: HealthCards::MonkeypoxPayload)
     bundle = @card.bundle
     assert_equal 3, bundle.entry.size
     assert_equal 'collection', bundle.type
@@ -59,8 +59,8 @@ class COVIDPayloadTest < ActiveSupport::TestCase
   end
 
   test 'supports multiple types' do
-    assert HealthCards::COVIDPayload.supports_type? [
-      'https://smarthealth.cards#health-card', 'https://smarthealth.cards#covid19'
+    assert HealthCards::MonkeypoxPayload.supports_type? [
+      'https://smarthealth.cards#health-card', 'https://smarthealth.cards#monkeypox'
     ]
   end
 
@@ -76,13 +76,13 @@ class COVIDPayloadTest < ActiveSupport::TestCase
   end
 
   test 'inheritance of attributes' do
-    assert_equal HealthCards::COVIDPayload.types, COVIDHealthCardSame.types
-    assert_equal HealthCards::COVIDPayload.fhir_version, COVIDHealthCardSame.fhir_version
+    assert_equal HealthCards::MonkeypoxPayload.types, MonkeypoxHealthCardSame.types
+    assert_equal HealthCards::MonkeypoxPayload.fhir_version, MonkeypoxHealthCardSame.fhir_version
     assert_equal 1, HealthCards::Payload.types.length
-    assert_equal 2, HealthCards::COVIDPayload.types.length
-    assert_equal 3, COVIDHealthCardChanged.types.length
-    assert_equal HealthCards::COVIDPayload.types.length + 1, COVIDHealthCardChanged.types.length
-    assert_includes COVIDHealthCardChanged.types, 'https://smarthealth.cards#test'
-    assert_equal '4.0.2', COVIDHealthCardChanged.fhir_version
+    assert_equal 2, HealthCards::MonkeypoxPayload.types.length
+    assert_equal 3, MonkeypoxHealthCardChanged.types.length
+    assert_equal HealthCards::MonkeypoxPayload.types.length + 1, MonkeypoxHealthCardChanged.types.length
+    assert_includes MonkeypoxHealthCardChanged.types, 'https://smarthealth.cards#test'
+    assert_equal '4.0.2', MonkeypoxHealthCardChanged.fhir_version
   end
 end

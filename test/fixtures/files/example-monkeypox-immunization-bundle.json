@@ -1,0 +1,84 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "resource:0",
+      "resource": {
+        "resourceType": "Patient",
+        "gender": "female",
+        "name": [
+          {
+            "family": "Anyperson",
+            "given": [
+              "Jane",
+              "C."
+            ]
+          }
+        ],
+        "birthDate": "1961-01-20",
+        "identifier": [
+          {
+            "system": "http://acme.com/lab/reports",
+            "value": "ghp-example"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "resource:1",
+      "resource": {
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "206"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "resource:0"
+        },
+        "occurrenceDateTime": "2021-01-01",
+        "primarySource": true,
+        "performer": [
+          {
+            "actor": {
+              "display": "ABC General Hospital"
+            }
+          }
+        ],
+        "lotNumber": "0000002"
+      }
+    },
+    {
+      "fullUrl": "resource:2",
+      "resource": {
+        "resourceType": "Immunization",
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "206"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "resource:0"
+        },
+        "occurrenceDateTime": "2021-01-29",
+        "performer": [
+          {
+            "actor": {
+              "display": "ABC General Hospital"
+            }
+          }
+        ],
+        "lotNumber": "0000008"
+      }
+    }
+  ]
+}
