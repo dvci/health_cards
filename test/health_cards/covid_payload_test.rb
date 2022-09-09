@@ -20,8 +20,8 @@ class COVIDPayloadTest < ActiveSupport::TestCase
   end
 
   test 'includes correct types' do
-    HealthCards::COVIDPayload.types.include?('https://smarthealth.cards#health-card')
-    HealthCards::COVIDPayload.types.include?('https://smarthealth.cards#covid19')
+    assert HealthCards::COVIDPayload.types.include?('https://smarthealth.cards#health-card')
+    assert HealthCards::COVIDPayload.types.include?('https://smarthealth.cards#covid19')
   end
 
   test 'includes required credential attributes in hash' do

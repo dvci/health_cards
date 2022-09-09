@@ -13,9 +13,9 @@ class COVIDImmunizationPayloadTest < ActiveSupport::TestCase
   end
 
   test 'includes correct types' do
-    HealthCards::COVIDImmunizationPayload.types.include?('https://smarthealth.cards#health-card')
-    HealthCards::COVIDImmunizationPayload.types.include?('https://smarthealth.cards#covid19')
-    HealthCards::COVIDImmunizationPayload.types.include?('https://smarthealth.cards#immunization')
+    assert HealthCards::COVIDImmunizationPayload.types.include?('https://smarthealth.cards#health-card')
+    assert HealthCards::COVIDImmunizationPayload.types.include?('https://smarthealth.cards#covid19')
+    assert HealthCards::COVIDImmunizationPayload.types.include?('https://smarthealth.cards#immunization')
   end
 
   test 'supports immunization type' do
