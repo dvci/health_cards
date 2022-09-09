@@ -2,7 +2,10 @@
 
 _Note: This changelog is tracking changes related to the `health_cards` library._
 
-## [v1.0.0]
+## [v1.1.0]
+- Added `MonkeypoxImmunizationPayload` [\#103](https://github.com/dvci/health_cards/pull/103)
+
+## [v1.0.0](https://github.com/dvci/health_cards/tree/v1.0.0)
 - API Redesign: Old HealthCard class becomes Payload, new HealthCard class used by Issuer and Verifier [\#99](https://github.com/dvci/health_cards/pull/99)
 - Updated Allowables to reflect latest Vaccination IG [\#98](https://github.com/dvci/health_cards/pull/98)
 - Allow for unfiltered Health Cards [\#93](https://github.com/dvci/health_cards/pull/93)
