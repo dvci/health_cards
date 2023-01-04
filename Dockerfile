@@ -1,4 +1,4 @@
-FROM ruby:2.7.4
+FROM ruby:3.0.5
 
 ENV INSTALL_PATH=/opt/health_cards/
 ENV RAILS_ENV=production
