@@ -29,12 +29,33 @@ module HealthCards
     def public_key
       return @public_key if @public_key
 
-      pub = OpenSSL::PKey::EC.new('prime256v1')
-      pub.public_key = @key.public_key
-      @public_key = PublicKey.new(pub)
+      @public_key = if HealthCards.openssl_3?
+                      public_key_openssl3
+                    else
+                      public_key_openssl1
+                    end
     end
 
     private
+
+    def public_key_openssl3
+      # Largely taken, then slightly modified from
+      # https://github.com/jwt/ruby-jwt/blob/main/lib/jwt/jwk/ec.rb#L131 on 2022-01-17
+      curve = 'prime256v1'
+      point = @key.public_key
+      sequence = OpenSSL::ASN1::Sequence([
+                                           OpenSSL::ASN1::Sequence([OpenSSL::ASN1::ObjectId('id-ecPublicKey'), OpenSSL::ASN1::ObjectId(curve)]),
+                                           OpenSSL::ASN1::BitString(point.to_octet_string(:uncompressed))
+                                         ])
+      pub = OpenSSL::PKey::EC.new(sequence.to_der)
+      PublicKey.new(pub)
+    end
+
+    def public_key_openssl1
+      pub = OpenSSL::PKey::EC.new('prime256v1')
+      pub.public_key = @key.public_key
+      PublicKey.new(pub)
+    end
 
     # Convert the ASN.1 Representation into the raw signature
     #
