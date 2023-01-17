@@ -29,7 +29,7 @@ module HealthCards
     def public_key
       return @public_key if @public_key
 
-      @public_key = if HealthCards.openssl_3?
+      @public_key = if Key.openssl_3?
                       public_key_openssl3
                     else
                       public_key_openssl1
@@ -44,7 +44,8 @@ module HealthCards
       curve = 'prime256v1'
       point = @key.public_key
       sequence = OpenSSL::ASN1::Sequence([
-                                           OpenSSL::ASN1::Sequence([OpenSSL::ASN1::ObjectId('id-ecPublicKey'), OpenSSL::ASN1::ObjectId(curve)]),
+                                           OpenSSL::ASN1::Sequence([OpenSSL::ASN1::ObjectId('id-ecPublicKey'),
+                                                                    OpenSSL::ASN1::ObjectId(curve)]),
                                            OpenSSL::ASN1::BitString(point.to_octet_string(:uncompressed))
                                          ])
       pub = OpenSSL::PKey::EC.new(sequence.to_der)
